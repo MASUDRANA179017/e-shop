@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage'
 import { ProductDetailsPage } from './pages/ProductDetailsPage'
 import { ProductList } from './pages/ProductList'
 import { BlogPage } from './pages/BlogPage'
-import { ContactPage } from './pages/ContactPage'
+
 
 
 function App() {
@@ -15,7 +15,6 @@ function App() {
       <Route path="/product-list" element={<ProductList/>} />
       <Route path="/product-details" element={<ProductDetailsPage/>} />
       <Route path="/blog" element={<BlogPage/>} />
-      <Route path="/contact" element={<ContactPage/>} />
     </Routes>
   )
 }
