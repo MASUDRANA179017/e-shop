@@ -1,10 +1,14 @@
 import React from "react";
+import Banner from "../components/banner/Banner";
+import QuackService from "../components/quackService/QuackService";
+import Product from "../components/product/Product";
 
 const HomePage = () => {
   return (
     <div>
-      <h1>Home Page</h1>
-      <p>Welcome to the home page!</p>
+      <Banner />
+      <QuackService />
+      <Product/>
     </div>
   );
 };

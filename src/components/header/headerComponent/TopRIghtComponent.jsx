@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FaAngleDown } from "react-icons/fa";
+import { BsTwitter } from "react-icons/bs";
+import { FaAngleDown, FaFacebook, FaLinkedin } from "react-icons/fa";
 
 const TopRIghtComponent = () => {
   const Countries = [
@@ -96,7 +97,46 @@ const TopRIghtComponent = () => {
           )}
         </div>
       </div>
-      <div>currency</div>
+      <div className="flex items-center gap-4">
+        {/* Facebook Icon */}
+        <a
+          href="#" 
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-white transform hover:scale-125 transition duration-300 ease-in-out
+                   rounded-full p-2 hover:bg-blue-600 shadow-md hover:shadow-lg
+                   flex items-center justify-center w-10 h-10"
+          aria-label="Facebook"
+        >
+          <FaFacebook className="text-2xl" />
+        </a>
+
+        {/* Twitter (X) Icon */}
+        <a
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-white transform hover:scale-125 transition duration-300 ease-in-out
+                   rounded-full p-2 hover:bg-blue-400 shadow-md hover:shadow-lg
+                   flex items-center justify-center w-10 h-10"
+          aria-label="Twitter (X)"
+        >
+          <BsTwitter className="text-2xl" />
+        </a>
+
+        {/* LinkedIn Icon */}
+        <a
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-700 hover:text-white transform hover:scale-125 transition duration-300 ease-in-out
+                   rounded-full p-2 hover:bg-blue-700 shadow-md hover:shadow-lg
+                   flex items-center justify-center w-10 h-10"
+          aria-label="LinkedIn"
+        >
+          <FaLinkedin className="text-2xl" />
+        </a>
+      </div>
     </div>
   );
 };
