@@ -7,6 +7,7 @@ const Product = () => {
     <div>
         <Container>
             <ProductSlide/>
+            
         </Container>
     </div>
   )
