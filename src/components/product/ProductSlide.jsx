@@ -1,77 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductSingle from "./ProductSingle";
 import Slider from "react-slick";
 
-const featuredProducts = [
-  {
-    id: 1,
-    image: "/frontend/products/product01.png",
-    category: "PHONE",
-    title: "JPhone 13 High Quality Value Buy Best Cam...",
-    rating: 5,
-    reviews: 50,
-    currentPrice: 999.0,
-  },
-  {
-    id: 2,
-    image: "/frontend/products/product01.png",
-    category: "AUDIO",
-    title: "WH-1000XM4 Wireless Headphones High Qu...",
-    rating: 4.5,
-    reviews: 120,
-    currentPrice: 59.0,
-    oldPrice: 118.0,
-    discount: "50%",
-  },
-  {
-    id: 3,
-    image: "/frontend/products/product01.png",
-    category: "LAPTOP",
-    title: "S21 Laptop Ultra HD LED Screen Feature 2023 ...",
-    rating: 4,
-    reviews: 100,
-    currentPrice: 1199.0,
-  },
-  {
-    id: 4,
-    image: "/frontend/products/product01.png",
-    category: "CAMERA",
-    title: "Mini Polaroid Camera for Girls with Flash Li...",
-    rating: 4,
-    reviews: 70,
-    currentPrice: 79.0,
-  },
-  {
-    id: 5,
-    image: "/frontend/products/product01.png",
-    category: "TELEVISION",
-    title: "AG OLED65CXPUA 4K Smart OLED TV New ...",
-    rating: 3.5,
-    reviews: 20,
-    currentPrice: 2799.0,
-  },
-  {
-    id: 6,
-    image: "/frontend/products/product01.png",
-    category: "HEADPHONE",
-    title: "Wireless Earbuds Pro Max with Noise Can...",
-    rating: 4,
-    reviews: 80,
-    currentPrice: 129.0,
-  },
-  {
-    id: 7,
-    image: "/frontend/products/product01.png",
-    category: "SMARTWATCH",
-    title: "Smartwatch X20 with Health Tracking & GPS",
-    rating: 4.8,
-    reviews: 150,
-    currentPrice: 249.0,
-  },
-];
+
 
 const NextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -100,11 +34,34 @@ const PrevArrow = (props) => {
 };
 
 const ProductSlider = () => {
+   const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/product/getAll")
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = data.map((item) => ({
+          id: item.id,
+          title: item.name,
+          description: item.description,
+          currentPrice: item.price / 100,
+          oldPrice: item.old_price ? item.old_price / 100 : null,
+          image: item.image || "/frontend/products/product01.png", // fallback
+          rating: item.rating || 4,
+          reviews: item.reviews || 100,
+          category: item.category || "Laptop",
+          discount: item.discount || null,
+        }));
+        setProducts(formatted);
+      })
+      .catch((err) => console.error("Failed to fetch products:", err));
+  }, []);
+  // console.log("hello rana kemon acho?" );
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: false,
     autoplaySpeed: 3000,
@@ -152,7 +109,7 @@ const ProductSlider = () => {
 
         {/* Product Slider */}
         <Slider {...settings}>
-          {featuredProducts.map((product) => (
+          {products.map((product) => (
             <div key={product.id} className="px-3">
               <ProductSingle product={product} />
             </div>
