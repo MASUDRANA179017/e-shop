@@ -4,18 +4,15 @@ import { FaAngleDown, FaFacebook, FaLinkedin } from "react-icons/fa";
 
 const TopRIghtComponent = () => {
   const Countries = [
-    {
-      name: "United States",
-      code: "US",
-      flag: "https://flagcdn.com/16x12/us.png",
-    },
-    { name: "Canada", code: "CA", flag: "https://flagcdn.com/16x12/ca.png" },
-    { name: "Australia", code: "AU", flag: "https://flagcdn.com/16x12/au.png" },
-    { name: "Germany", code: "DE", flag: "https://flagcdn.com/16x12/de.png" },
-    { name: "France", code: "FR", flag: "https://flagcdn.com/16x12/fr.png" },
-    { name: "Italy", code: "IT", flag: "https://flagcdn.com/16x12/it.png" },
-    { name: "Spain", code: "ES", flag: "https://flagcdn.com/16x12/es.png" },
-  ];
+  { name: "United States", code: "US", flag: "https://flagcdn.com/16x12/us.png", currency: "USD" },
+  { name: "Canada", code: "CA", flag: "https://flagcdn.com/16x12/ca.png", currency: "CAD" },
+  { name: "Australia", code: "AU", flag: "https://flagcdn.com/16x12/au.png", currency: "AUD" },
+  { name: "Germany", code: "DE", flag: "https://flagcdn.com/16x12/de.png", currency: "EUR" },
+  { name: "France", code: "FR", flag: "https://flagcdn.com/16x12/fr.png", currency: "EUR" },
+  { name: "Italy", code: "IT", flag: "https://flagcdn.com/16x12/it.png", currency: "EUR" },
+  { name: "Spain", code: "ES", flag: "https://flagcdn.com/16x12/es.png", currency: "EUR" },
+];
+
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const handleSelect = (country) => {
@@ -23,10 +20,16 @@ const TopRIghtComponent = () => {
     setIsDropdownOpen(false);
   };
 
+  
+  const currency = selectedCountry? selectedCountry.currency : "default" ;
+  // console.log(currency);
+
   return (
     <div className="flex gap-[50px] items-center">
       <div className="flex relative after:content-[''] after:absolute after:w-[2px] after:h-[32px] after:bg-[#BFBFBF] after:top-[50%] after:right-[-20px] after:-translate-y-1/2">
-        USD
+        
+      {currency}
+
       </div>
       <div className="flex w-[150px] relative after:content-[''] after:absolute after:w-[2px] after:h-[32px] after:bg-[#BFBFBF] after:top-[50%] after:right-[-20px] after:-translate-y-1/2">
         <div className=" relative w-full ">
@@ -49,11 +52,11 @@ const TopRIghtComponent = () => {
           {/* Custom Dropdown */}
 
           <div
-            className="top-0 left-0 w-full h-full bg-white shadow:lg rounded-md z-10"
+            className="top-0 left-0 w-full h-full shadow:lg rounded-md z-100"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             {selectedCountry ? (
-              <div className="flex justify-between items-center gap-2 p-2 cursor-pointer">
+              <div className="flex justify-between items-center gap-2 p-2 cursor-pointer ">
                 <div className="flex items-center gap-2">
                   <img
                     src={selectedCountry?.flag}
@@ -67,17 +70,17 @@ const TopRIghtComponent = () => {
                 <FaAngleDown />
               </div>
             ) : (
-              <span>Select a Country</span>
+              <span className="">Select a Country</span>
             )}
           </div>
           {/* option list*/}
           {isDropdownOpen && (
-            <div className="w-full h-full shadow:lg rounded-md z-10">
-              <ul className="absolute top-[40px] left-0 w-full h-full rounded-md z-10">
+            <div className="w-full bg-white h-full shadow:lg rounded-md z-100">
+              <ul className="absolute top-[40px] left-0 w-full h-full rounded-md z-1000">
                 {Countries.map((country) => (
                   <li
                     key={country.code}
-                    className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+                    className="flex items-center bg-white gap-2 p-2 cursor-pointer hover:bg-gray-100"
                     onClick={() => {
                       handleSelect(country);
                     }}
@@ -100,7 +103,7 @@ const TopRIghtComponent = () => {
       <div className="flex items-center gap-4">
         {/* Facebook Icon */}
         <a
-          href="#" 
+          href="#"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 hover:text-white transform hover:scale-125 transition duration-300 ease-in-out
@@ -137,7 +140,7 @@ const TopRIghtComponent = () => {
           <FaLinkedin className="text-2xl" />
         </a>
       </div>
-    </div>
+    </div >
   );
 };
 

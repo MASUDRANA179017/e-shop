@@ -1,7 +1,10 @@
 import React from "react";
 import BannerProduct from "./BannerProduct";
+import BannerFreeShipping from "./BannerFreeShipping";
+import BannerBlackFriday from "./BannerBlackFriday";
+import Container from "../commonLayouts/Container";
 
-const Banner = () => {
+export const Banner = () => {
   return (
     <>
       <BannerProduct />
@@ -9,4 +12,22 @@ const Banner = () => {
   );
 };
 
-export default Banner;
+export const Banner2 = () => {
+  return (
+    <>
+      <Container>
+        <div className=" flex justify-between ">
+          <div className="m-2 w-full">
+            <BannerFreeShipping />
+          </div>
+          <div className="m-2 w-full">
+
+            <BannerBlackFriday />
+          </div>
+        </div>
+      </Container>
+    </>
+  )
+}
+
+
