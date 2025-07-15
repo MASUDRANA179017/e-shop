@@ -7,7 +7,7 @@ const ProductLayout = ({ percentTag, roundTag, category, title, rating, totalRat
     return (
         <div style={{ background: bg }} className="border-2 border-gray-200 rounded-lg w-full flex-row justify-center group p-4 hover:shadow-lg hover:shadow-[#FF624C] transition-shadow duration-300 ">
             <div className="relative mb-4">
-                <img className="object-cover w-full h-[350px]" src="frontend/products/product01.png" alt="product" />
+                <img className="object-cover w-full h-[300px]" src="frontend/products/product01.png" alt="product" />
                 {percentTag && (
                     <div className="absolute top-0 right-0 text-white bg-[#FF624C] text-[14px] font-semibold px-2 py-1 rounded-[5px]">
                         10%
@@ -32,7 +32,7 @@ const ProductLayout = ({ percentTag, roundTag, category, title, rating, totalRat
                 </div>
             </div>
             <div className="div cursor-pointer">
-                <p className="text-sm font-['Montserrat'] leading-5 uppercase tracking-[5px] font-semibold mt-[46px] mb-4">{category}</p>
+                <p className="text-sm font-['Montserrat'] leading-5 uppercase tracking-[5px] font-semibold mt-[4px] mb-4">{category}</p>
                 <h3 className="text-lg font-['Poppins'] font-semibold text-5 leading-[30px] hover:underline">{title}</h3>
                 <div className="flex items-center gap-2">
                     {ratingValue.map((_, index) => (

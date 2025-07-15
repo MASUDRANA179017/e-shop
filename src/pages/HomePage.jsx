@@ -2,11 +2,10 @@ import React from "react";
 import QuackService from "../components/quackService/QuackService";
 import NewProductLazyLoad from "../components/product/NewProductLazyLoad";
 import {Banner, Banner2 } from "../components/banner/Banner";
-import BannerFreeShipping from "../components/banner/BannerFreeShipping";
-import BannerTwo from "../components/banner/BannerTwo";
-import BannerBlackFriday from "../components/banner/BannerBlackFriday";
 import ProductSlider from "../components/product/ProductSlide";
-import ProductLayout from "../components/commonLayouts/ProductLayout";
+import Bestseller from "../components/bestSeler/bestseller";
+import FAQ from "../components/faq/FAQ";
+
 
 
 const HomePage = () => {
@@ -17,7 +16,8 @@ const HomePage = () => {
       <ProductSlider />
       <Banner2 />
       <NewProductLazyLoad />
-      
+      <Bestseller />
+      <FAQ />
     </div>
   );
 };
