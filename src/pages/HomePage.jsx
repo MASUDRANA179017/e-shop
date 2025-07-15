@@ -6,6 +6,7 @@ import BannerFreeShipping from "../components/banner/BannerFreeShipping";
 import BannerTwo from "../components/banner/BannerTwo";
 import BannerBlackFriday from "../components/banner/BannerBlackFriday";
 import ProductSlider from "../components/product/ProductSlide";
+import ProductLayout from "../components/commonLayouts/ProductLayout";
 
 
 const HomePage = () => {
@@ -16,6 +17,7 @@ const HomePage = () => {
       <ProductSlider />
       <Banner2 />
       <NewProductLazyLoad />
+      
     </div>
   );
 };

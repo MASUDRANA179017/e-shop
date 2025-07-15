@@ -22,6 +22,9 @@ const ButtonBar = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleDropdownToggle = () => {
@@ -69,12 +72,12 @@ const ButtonBar = () => {
               )}
             </li>
             <li>
-              <Link to={'/product'} className="flex items-center">
+              <Link to={'/blog'} className="flex items-center">
                 <span>Blog</span>
               </Link>
             </li>
             <li>
-              <Link to={'/product'} className="flex items-center">
+              <Link to={'/contact'} className="flex items-center">
                 <span>Contact</span>
               </Link>
             </li>
