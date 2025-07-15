@@ -9,7 +9,7 @@ const ProductSingle = ({ product }) => {
   return (
     <Link to={`/product/${product.id}`} className="block">
 
-      <div className="border border-gray-200 p-4 rounded shadow hover:shadow-lg transition-shadow duration-300">
+      <div className="border bg-white border-gray-200 p-4 rounded shadow hover:shadow-lg transition-shadow duration-300">
         <img
           src={product.image}
           alt={product.title}

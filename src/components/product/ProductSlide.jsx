@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductSingle from "./ProductSingle";
 import Slider from "react-slick";
+import { Link } from "react-router-dom";
 
 
 
@@ -98,13 +99,13 @@ const ProductSlider = () => {
         {/* Section Header */}
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold">Featured Products</h2>
-          <a
-            href="#"
+          <Link
+            to="/product"
             className="flex items-center text-red-500 hover:text-red-400 transition-colors duration-200 font-semibold"
           >
             View All
             <span className="ml-2">→</span>
-          </a>
+          </Link>
         </div>
 
         {/* Product Slider */}
