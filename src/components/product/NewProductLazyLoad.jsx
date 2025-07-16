@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductSingle from "./ProductSingle";
+import ProductLayout from "../commonLayouts/ProductLayout";
 
 const PRODUCTS_PER_LOAD = 8;
 
@@ -55,12 +56,17 @@ const NewProductLazyLoad = () => {
     );
   }
 
+
+  // console.log(products);
+  
+
   return (
     <section className="bg-white py-16">
       <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
         {visibleItems.map((product) => (
           <div key={product.id} className="px-3">
-            <ProductSingle product={product} />
+            {/* <ProductSingle product={product} /> */}
+            <ProductLayout id={product.id} percentTag={true} roundTag={false} category={product.category.category} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
           </div>
         ))}
       </div>
@@ -69,7 +75,7 @@ const NewProductLazyLoad = () => {
         <div className="text-center mt-8">
           <button
             onClick={handleLoadMore}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            className="bg-[#FF624C] hover:bg-[#FF3B2F] text-white font-semibold py-2 px-4 rounded"
           >
             {buttonText}
           </button>

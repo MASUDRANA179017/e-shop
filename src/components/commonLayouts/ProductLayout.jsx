@@ -1,8 +1,9 @@
 import React from "react";
 import { FaCartPlus, FaStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 
-const ProductLayout = ({ percentTag, roundTag, category, title, rating, totalRating, price, border, bg, stock, stockAmount }) => {
+const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, totalRating, price, border, bg, stock, stockAmount }) => {
     let [ratingValue, setRatingValue] = React.useState(new Array(+rating).fill(rating));
     return (
         <div style={{ background: bg }} className="border-2 border-gray-200 rounded-lg w-full flex-row justify-center group p-4 hover:shadow-lg hover:shadow-[#FF624C] transition-shadow duration-300 ">
@@ -23,22 +24,25 @@ const ProductLayout = ({ percentTag, roundTag, category, title, rating, totalRat
                         <FaCartPlus />
                     </div>
                     <div className="w-[50px] h-[50px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[25px]">
-                        <FaCartPlus/>
+                        <FaCartPlus />
                     </div>
                     <div className="w-[50px] h-[50px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[25px]">
-                        <FaCartPlus/>
+                        <FaCartPlus />
                     </div>
-                    
+
                 </div>
             </div>
-            <div className="div cursor-pointer">
+
+            {/* <div className="div cursor-pointer"> */}
+            <Link to={`/product/${id}`} className="block">
+
                 <p className="text-sm font-['Montserrat'] leading-5 uppercase tracking-[5px] font-semibold mt-[4px] mb-4">{category}</p>
                 <h3 className="text-lg font-['Poppins'] font-semibold text-5 leading-[30px] hover:underline">{title}</h3>
                 <div className="flex items-center gap-2">
                     {ratingValue.map((_, index) => (
                         <FaStar key={index} className="text-yellow-500" />
                     ))}
-                    
+
                     <span className="text-gray-500">({totalRating})</span>
                 </div>
                 <p className="text-lg font-['Montserrat'] font-semibold">${price}</p>
@@ -48,8 +52,9 @@ const ProductLayout = ({ percentTag, roundTag, category, title, rating, totalRat
                         {stockAmount} in stock
                     </div>
                 </div>}
+            </Link>
 
-            </div>
+            {/* </div> */}
         </div>
     );
 }

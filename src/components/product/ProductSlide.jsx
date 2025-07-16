@@ -5,6 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductSingle from "./ProductSingle";
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
+import ProductLayout from "../commonLayouts/ProductLayout";
 
 
 
@@ -112,7 +113,8 @@ const ProductSlider = () => {
         <Slider {...settings}>
           {products.map((product) => (
             <div key={product.id} className="px-3">
-              <ProductSingle product={product} />
+              {/* <ProductSingle product={product} /> */}
+              <ProductLayout id={product.id} percentTag={true} roundTag={false} category={product.category.category} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
             </div>
           ))}
         </Slider>

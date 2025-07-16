@@ -1,8 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Container from '../commonLayouts/Container'
 import ProductLayout from '../commonLayouts/ProductLayout'
 
 const Bestseller = () => {
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/product/getAll")
+            .then((res) => res.json())
+            .then((data) => {
+                const formatted = data.map((item) => ({
+                    id: item.id,
+                    title: item.name,
+                    description: item.description,
+                    currentPrice: item.price / 100,
+                    oldPrice: item.old_price ? item.old_price / 100 : null,
+                    image: item.image || "/frontend/products/product01.png", // fallback
+                    rating: item.rating || 4,
+                    reviews: item.reviews || 100,
+                    category: item.category || "Laptop",
+                    discount: item.discount || null,
+                }));
+                setProducts(formatted);
+            })
+            .catch((err) => console.error("Failed to fetch products:", err));
+    }, []);
     return (
         <div>
             <Container>
@@ -10,12 +32,24 @@ const Bestseller = () => {
                 <div className="grid grid-cols-3 gap-4">
                     <div className="bg-transparent p-4 rounded col-span-2">
                         <div className="grid grid-cols-3 gap-4 p-0">
-                            <ProductLayout percentTag={true} roundTag={false} category="LAPTOP" stock={false} stockAmount="50" title="S21 Laptop Ultra HD LED Screen Feature 2025 ......" rating="5" totalRating="100" price="1070" border="true" bg="transparent" />
-                            <ProductLayout percentTag={false} roundTag={true} category="SMARTPHONE" stock={false} stockAmount="30" title="S21 Smartphone Ultra HD LED Screen Feature 2025 ......" rating="4" totalRating="10" price="870" border="true" bg="transparent" />
-                            <ProductLayout percentTag={false} roundTag={false} category="TABLET" stock={false} stockAmount="20" title="S21 Tablet Ultra HD LED Screen Feature 2025 ......" rating="5" totalRating="50" price="670" border="true" bg="transparent" />
-                            <ProductLayout percentTag={true} roundTag={false} category="LAPTOP" stock={false} stockAmount="25" title="S21 Laptop Pro HD LED Screen Feature 2025 ......" rating="4" totalRating="75" price="970" border="true" bg="transparent" />
-                            <ProductLayout percentTag={true} roundTag={false} category="SMARTPHONE" stock={false} stockAmount="15" title="S21 Smartphone Plus HD LED Screen 2025 ......" rating="5" totalRating="60" price="770" border="true" bg="transparent" />
-                            <ProductLayout percentTag={false} roundTag={true} category="TABLET" stock={false} stockAmount="40" title="S21 Tablet Pro Ultra HD Screen 2025 ......" rating="4" totalRating="40" price="570" border="true" bg="transparent" />
+                            {products.slice(0, 6).map((product) => (
+                                <div key={product.id} className="px-3">
+                                    <ProductLayout 
+                                        id={product.id} 
+                                        percentTag={true} 
+                                        roundTag={false} 
+                                        category={product.category.category} 
+                                        stock={false} 
+                                        stockAmount="50" 
+                                        title={product.title} 
+                                        rating={product.rating} 
+                                        totalRating={product.reviews.length} 
+                                        price={product.currentPrice} 
+                                        border="true" 
+                                        bg="transparent" 
+                                    />
+                                </div>
+                            ))}
                         </div>
                     </div>
                     <div className="bg-gray-200 p-4 rounded col-span-1 w-full cover-fill">
