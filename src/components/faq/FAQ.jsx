@@ -46,20 +46,20 @@ const FAQ = () => {
                             {faqs.map((faq, index) => (
                                 <div key={index} className='bg-white p-4 h-auto mb-6 shadow'>
                                     <div
-                                        className='flex justify-between items-center cursor-pointer p-0 m-0 '
+                                        className='flex justify-start items-center cursor-pointer p-0 m-0 '
                                         onClick={() => toggleAnswer(index)}
                                     >
-                                        <h3 className='font-semibold text-[20px] '>{faq.question}</h3>
                                         <svg
-                                            className={`w-10 h-10 bg-[#FF624C] rounded-full p-3 transition-transform duration-300 ${openIndex === index ? 'rotate-180 bg-white border border-[#FF624C]' : ''}`}
+                                            className={`w-10 h-10 bg-[#FF624C] rounded-full p-3 mr-[20px] transition-transform duration-300 ${openIndex === index ? 'rotate-180 bg-white border border-[#FF624C]' : ''}`}
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 10 10"
                                         >
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 4.5l-4 4-4-4" />
                                         </svg>
+                                        <h3 className='font-semibold text-[20px] '>{faq.question}</h3>
                                     </div>
-                                    <p className={`text-lg mt-2 overflow-hidden transition-all duration-300 pr-[40px] ${openIndex === index ? 'opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <p className={`text-lg mt-2 overflow-hidden transition-all duration-300 pl-[60px] pr-[40px] ${openIndex === index ? 'opacity-100' : 'max-h-0 opacity-0'}`}>
                                         {faq.answer}
                                     </p>
                                 </div>
