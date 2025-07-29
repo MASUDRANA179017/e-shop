@@ -1,5 +1,5 @@
 import React from 'react'
-import Container from '../commonLayouts/Container';
+import Container from './commonLayouts/Container';
 
 const FAQ = () => {
     // Sample FAQ data

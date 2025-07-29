@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Container from '../commonLayouts/Container'
-import ProductLayout from '../commonLayouts/ProductLayout'
+import Container from './commonLayouts/Container'
+import ProductLayout from './commonLayouts/ProductLayout'
 
 const Bestseller = () => {
     const [products, setProducts] = useState([]);
-
+    // console.log(products);
+    
     useEffect(() => {
         fetch("http://localhost:3000/product/getAll")
             .then((res) => res.json())
@@ -38,7 +39,7 @@ const Bestseller = () => {
                                         id={product.id} 
                                         percentTag={true} 
                                         roundTag={false} 
-                                        category={product.category.category} 
+                                        category={product.category.name} 
                                         stock={false} 
                                         stockAmount="50" 
                                         title={product.title} 

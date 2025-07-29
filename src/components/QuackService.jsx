@@ -1,7 +1,7 @@
 import React from "react";
 import { FaSyncAlt, FaShippingFast, FaRecycle } from "react-icons/fa";
 import { GrSecure } from "react-icons/gr";
-import Container from "../commonLayouts/Container";
+import Container from "./commonLayouts/Container";
 
 // Data structure for the service items
 const serviceData = [

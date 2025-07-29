@@ -37,7 +37,7 @@ const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, tota
             <Link to={`/product/${id}`} className="block">
 
                 <p className="text-sm font-['Montserrat'] leading-5 uppercase tracking-[5px] font-semibold mt-[4px] mb-4">{category}</p>
-                <h3 className="text-lg font-['Poppins'] font-semibold text-5 leading-[30px] hover:underline">{title}</h3>
+                <h3 className="text-lg font-['Montserrat'] font-semibold text-5 leading-[30px] hover:underline">{title}</h3>
                 <div className="flex items-center gap-2">
                     {ratingValue.map((_, index) => (
                         <FaStar key={index} className="text-yellow-500" />

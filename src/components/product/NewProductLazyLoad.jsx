@@ -66,7 +66,7 @@ const NewProductLazyLoad = () => {
         {visibleItems.map((product) => (
           <div key={product.id} className="px-3">
             {/* <ProductSingle product={product} /> */}
-            <ProductLayout id={product.id} percentTag={true} roundTag={false} category={product.category.category} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+            <ProductLayout id={product.id} percentTag={true} roundTag={false} category={product.category.name} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
           </div>
         ))}
       </div>
