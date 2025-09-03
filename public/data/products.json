@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "sku": "PRD-1001",
+    "title": "Wireless Bluetooth Headphones",
+    "description": "High-quality over-ear Bluetooth headphones with noise cancellation and 20 hours battery life.",
+    "category": { "id": 1, "name": "Electronics" },
+    "brand": "Sony",
+    "currentPrice": 99.99,
+    "old_price": 129.99,
+    "discount": 23,
+    "stock": true,
+    "stockAmount": 120,
+    "rating": 4.5,
+    "reviews": [
+      { "user": "Alice", "comment": "Great sound quality!", "rating": 5 },
+      { "user": "Bob", "comment": "Comfortable to wear for long periods.", "rating": 4 },
+      { "user": "Charlie", "comment": "Excellent noise cancellation.", "rating": 5 }
+    ],
+    "images": [
+      "/frontend/products/headphones01.png",
+      "/frontend/products/headphones02.png"
+    ],
+    "tags": ["wireless", "bluetooth", "headphones"],
+    "createdAt": "2025-09-01"
+  },
+  {
+    "id": 2,
+    "sku": "PRD-1002",
+    "title": "Men's Running Shoes",
+    "description": "Lightweight and comfortable running shoes designed for maximum performance and support.",
+    "category": { "id": 2, "name": "Fashion" },
+    "brand": "Nike",
+    "currentPrice": 59.99,
+    "old_price": 89.99,
+    "discount": 33,
+    "stock": true,
+    "stockAmount": 75,
+    "rating": 4.2,
+    "reviews": [
+      { "user": "David", "comment": "Very comfortable for running.", "rating": 4 },
+      { "user": "Eva", "comment": "Good grip and support.", "rating": 5 },
+      { "user": "Frank", "comment": "Stylish design.", "rating": 4 }
+    ],
+    "tags": ["shoes", "men", "running"],
+    "createdAt": "2025-08-20"
+  },
+  {
+    "id": 3,
+    "sku": "PRD-1003",
+    "title": "Smartwatch Series 5",
+    "description": "Track your fitness, health, and notifications with the latest smartwatch technology.",
+    "category": { "id": 1, "name": "Electronics" },
+    "brand": "Apple",
+    "currentPrice": 299.99,
+    "old_price": 349.99,
+    "discount": 14,
+    "stock": false,
+    "stockAmount": 0,
+    "rating": 4.8,
+    "reviews": [
+      { "user": "Alice", "comment": "Amazing features!", "rating": 5 },
+      { "user": "Bob", "comment": "Very useful for fitness tracking.", "rating": 4 },
+      { "user": "Charlie", "comment": "Love the design and functionality.", "rating": 5 }
+    ],
+    "tags": ["smartwatch", "wearable", "apple"],
+    "createdAt": "2025-07-15"
+  },
+  {
+    "id": 4,
+    "sku": "PRD-1004",
+    "title": "Modern Office Chair",
+    "description": "Ergonomic office chair with lumbar support, breathable mesh, and adjustable height.",
+    "category": { "id": 3, "name": "Furniture" },
+    "brand": "Ikea",
+    "currentPrice": 149.99,
+    "old_price": 199.99,
+    "discount": 25,
+    "stock": true,
+    "stockAmount": 40,
+    "rating": 4.6,
+    "reviews": [
+      { "user": "Alice", "comment": "Very comfortable chair.", "rating": 5 },
+      { "user": "Bob", "comment": "Good support for long hours.", "rating": 4 },
+      { "user": "Charlie", "comment": "Stylish and functional.", "rating": 5 }
+    ],
+    "tags": ["office", "chair", "furniture"],
+    "createdAt": "2025-06-10"
+  }
+]

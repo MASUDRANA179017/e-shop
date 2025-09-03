@@ -10,7 +10,7 @@ const NewProductLazyLoad = () => {
   const [selectedCategory, setSelectedCategory] = useState("Featured Products");
 
   useEffect(() => {
-    fetch("http://localhost:3000/product/getAll")
+    fetch("/data/products.json")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({

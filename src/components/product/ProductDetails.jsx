@@ -8,10 +8,11 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/product/getById/${id}`)
+    fetch(`/data/products.json`)
       .then((res) => res.json())
       .then((data) => {
-        setProduct(data);
+        const foundProduct = data.find((item) => item.id === parseInt(id));
+        setProduct(foundProduct || null);
         setLoading(false);
       })
       .catch((err) => {
@@ -41,9 +42,10 @@ const ProductDetails = () => {
 
         <div className="mb-4">
           <strong className="text-xl text-red-600">
-            ${product.price.toFixed(2)}
+            ${product.price}
           </strong>
         </div>
+
 
         <p className="text-sm text-gray-500 mb-2">
           Category: {product.category?.name || "Uncategorized"}

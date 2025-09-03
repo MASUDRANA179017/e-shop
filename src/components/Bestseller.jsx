@@ -7,7 +7,7 @@ const Bestseller = () => {
     // console.log(products);
     
     useEffect(() => {
-        fetch("http://localhost:3000/product/getAll")
+        fetch("/data/products.json")
             .then((res) => res.json())
             .then((data) => {
                 const formatted = data.map((item) => ({

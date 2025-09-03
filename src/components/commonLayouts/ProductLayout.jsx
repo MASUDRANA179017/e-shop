@@ -1,10 +1,12 @@
 import React from "react";
-import { FaCartPlus, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
+import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, totalRating, price, border, bg, stock, stockAmount }) => {
-    let [ratingValue, setRatingValue] = React.useState(new Array(+rating).fill(rating));
+    const intRating = Math.floor(rating);
+    const hasHalf = rating % 1 !== 0;
+    const emptyStars = 5 - intRating - (hasHalf ? 1 : 0);
     return (
         <div style={{ background: bg }} className="border-2 border-gray-200 rounded-lg w-full flex-row justify-center group p-4 hover:shadow-lg hover:shadow-[#FF624C] transition-shadow duration-300 ">
             <div className="relative mb-4">
@@ -34,13 +36,22 @@ const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, tota
             </div>
 
             {/* <div className="div cursor-pointer"> */}
-            <Link to={`/product/${id}`} className="block">
+            <a href={`/product/${id}`} className="block">
 
                 <p className="text-sm font-['Montserrat'] leading-5 uppercase tracking-[5px] font-semibold mt-[4px] mb-4">{category}</p>
                 <h3 className="text-lg font-['Montserrat'] font-semibold text-5 leading-[30px] hover:underline">{title}</h3>
                 <div className="flex items-center gap-2">
-                    {ratingValue.map((_, index) => (
-                        <FaStar key={index} className="text-yellow-500" />
+                    {/* Full stars */}
+                    {Array.from({ length: intRating }).map((_, i) => (
+                        <FaStar key={i} className="text-yellow-500" />
+                    ))}
+
+                    {/* Half star */}
+                    {hasHalf && <FaStarHalfAlt className="text-yellow-500" />}
+
+                    {/* Empty stars */}
+                    {Array.from({ length: emptyStars }).map((_, i) => (
+                        <FaRegStar key={i} className="text-gray-400" />
                     ))}
 
                     <span className="text-gray-500">({totalRating})</span>
@@ -52,7 +63,7 @@ const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, tota
                         {stockAmount} in stock
                     </div>
                 </div>}
-            </Link>
+            </a>
 
             {/* </div> */}
         </div>

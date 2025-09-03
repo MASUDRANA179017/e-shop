@@ -66,7 +66,7 @@ const SpringSale = () => {
     })
 
     useEffect(() => {
-        fetch("http://localhost:3000/product/getAll")
+        fetch("/data/products.json")
             .then((res) => res.json())
             .then((data) => {
                 const formatted = data.map((item) => ({
@@ -122,26 +122,6 @@ const SpringSale = () => {
         ],
     };
 
-    useEffect(() => {
-        fetch("http://localhost:3000/product/getAll")
-            .then((res) => res.json())
-            .then((data) => {
-                const formatted = data.map((item) => ({
-                    id: item.id,
-                    title: item.name,
-                    description: item.description,
-                    currentPrice: item.price / 100,
-                    oldPrice: item.old_price ? item.old_price / 100 : null,
-                    image: item.image || "/frontend/products/product01.png", // fallback
-                    rating: item.rating || 4,
-                    reviews: item.reviews || 100,
-                    category: item.category || "Laptop",
-                    discount: item.discount || null,
-                }));
-                setProducts(formatted);
-            })
-            .catch((err) => console.error("Failed to fetch products:", err));
-    }, []);
     return (
         <div className='mb-[50px]'>
             <Container>
