@@ -62,7 +62,7 @@ const NewProductLazyLoad = () => {
 
   return (
     <section className="bg-white py-16">
-      <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-x-0 gap-y-3 sm:gap-6 lg:gap-8">
         {visibleItems.map((product) => (
           <div key={product.id} className="px-3">
             {/* <ProductSingle product={product} /> */}

@@ -38,40 +38,55 @@ const FAQ = () => {
     return (
         <>
             <Container>
+                <h2 className="text-xl sm:text-2xl font-bold mt-10 mb-4">Frequently Asked Questions</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-3 bg-gray-100 rounded-lg gap-4">
 
-                <h2 className="text-2xl font-bold mt-[40px] mb-4">Frequently Asked Questions</h2>
-                <div className=" grid grid-cols-3 bg-gray-100 rounded-lg">
-                    <div className='grid grid-cols-1 col-span-2 row-span-1 gap-4 p-4 pb-[-20px]'>
-                        <div className="faq">
-                            {faqs.map((faq, index) => (
-                                <div key={index} className='bg-white p-4 h-auto mb-6 shadow'>
-                                    <div
-                                        className='flex justify-start items-center cursor-pointer p-0 m-0 '
-                                        onClick={() => toggleAnswer(index)}
+                    {/* FAQ List */}
+                    <div className="col-span-1 lg:col-span-2 p-2 sm:p-4">
+                        {faqs.map((faq, index) => (
+                            <div key={index} className="bg-white p-4 mb-4 shadow rounded-lg">
+                                <div
+                                    className="flex justify-start items-center cursor-pointer"
+                                    onClick={() => toggleAnswer(index)}
+                                >
+                                    <svg
+                                        className={`w-10 h-10 bg-[#FF624C] rounded-full p-3 mr-4 transition-transform duration-300 ${openIndex === index ? "rotate-180 bg-white border border-[#FF624C]" : ""
+                                            }`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 10 10"
                                     >
-                                        <svg
-                                            className={`w-10 h-10 bg-[#FF624C] rounded-full p-3 mr-[20px] transition-transform duration-300 ${openIndex === index ? 'rotate-180 bg-white border border-[#FF624C]' : ''}`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 10 10"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 4.5l-4 4-4-4" />
-                                        </svg>
-                                        <h3 className='font-semibold text-[20px] '>{faq.question}</h3>
-                                    </div>
-                                    <p className={`text-lg mt-2 overflow-hidden transition-all duration-300 pl-[60px] pr-[40px] ${openIndex === index ? 'opacity-100' : 'max-h-0 opacity-0'}`}>
-                                        {faq.answer}
-                                    </p>
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 4.5l-4 4-4-4"
+                                        />
+                                    </svg>
+                                    <h3 className="font-semibold text-base sm:text-lg">{faq.question}</h3>
                                 </div>
-                            ))}
-                        </div>
+                                <p
+                                    className={`text-sm sm:text-base mt-2 pl-14 pr-4 overflow-hidden transition-all duration-300 ${openIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                                        }`}
+                                >
+                                    {faq.answer}
+                                </p>
+                            </div>
+                        ))}
                     </div>
-                    <div className="grid grid-cols-1 gap-4 p-4">
-                        <img src="frontend/banner/faq.png" alt="FAQ Image" className="w-full h-auto rounded-lg" />
+
+                    {/* FAQ Image */}
+                    <div className="col-span-1 p-2 sm:p-4">
+                        <img
+                            src="frontend/banner/faq.png"
+                            alt="FAQ Image"
+                            className="w-full h-auto rounded-lg object-cover"
+                        />
                     </div>
                 </div>
             </Container>
         </>
+
     )
 }
 

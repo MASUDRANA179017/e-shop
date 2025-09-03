@@ -9,34 +9,28 @@ import ProductLayout from "../commonLayouts/ProductLayout";
 
 
 
-const NextArrow = (props) => {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={`${className} custom-slick-arrow next-arrow`}
-      style={{ ...style, display: "block", right: "-40px", zIndex: 10 }}
-      onClick={onClick}
-    >
-      <FaChevronRight className="text-white text-3xl bg-gray-700 hover:bg-gray-600 rounded-full p-2" />
-    </div>
-  );
-};
+const NextArrow = ({ className, style, onClick }) => (
+  <div
+    className={className}
+    style={{ ...style, display: "block", right: "-25px", zIndex: 10 }}
+    onClick={onClick}
+  >
+    <FaChevronRight className="text-white text-3xl bg-gray-700 hover:bg-gray-600 rounded-full p-2" />
+  </div>
+);
 
-const PrevArrow = (props) => {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={`${className} custom-slick-arrow prev-arrow`}
-      style={{ ...style, display: "block", left: "-40px", zIndex: 10 }}
-      onClick={onClick}
-    >
-      <FaChevronLeft className="text-white text-3xl bg-gray-700 hover:bg-gray-600 rounded-full p-2" />
-    </div>
-  );
-};
+const PrevArrow = ({ className, style, onClick }) => (
+  <div
+    className={className}
+    style={{ ...style, display: "block", left: "-25px", zIndex: 10 }}
+    onClick={onClick}
+  >
+    <FaChevronLeft className="text-white text-3xl bg-gray-700 hover:bg-gray-600 rounded-full p-2" />
+  </div>
+);
 
 const ProductSlider = () => {
-   const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     fetch("/data/products.json")
@@ -71,6 +65,13 @@ const ProductSlider = () => {
     prevArrow: <PrevArrow />,
     responsive: [
       {
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
         breakpoint: 1200,
         settings: {
           slidesToShow: 3,
@@ -85,10 +86,11 @@ const ProductSlider = () => {
         },
       },
       {
-        breakpoint: 768,
+        breakpoint: 640,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
     ],

@@ -1,63 +1,64 @@
 // components/ButtonBar.jsx
-import React, { use, useEffect, useRef, useState } from "react";
-import { FaBars, FaChevronDown, FaFire } from "react-icons/fa";
-import Container from "../commonLayouts/Container";
+import React, { useEffect, useRef, useState } from "react";
+import { FaBars, FaFire, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
-
+import Container from "../commonLayouts/Container";
 
 const ButtonBar = () => {
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLimitedSaleDropdownOpen, setIsLimitedSaleDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [isLimitedSaleDropdownOpen, setIsLimitedSaleDropdownOpen] =
+    useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const productRef = useRef(null);
+  const saleRef = useRef(null);
+
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (productRef.current && !productRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (saleRef.current && !saleRef.current.contains(event.target)) {
         setIsLimitedSaleDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleDropdownToggle = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-  const handleLimitedSaleDropdownToggle = () => {
-    setIsLimitedSaleDropdownOpen(!isLimitedSaleDropdownOpen);
-  };
-
 
   return (
     <div className="w-full bg-[#FF624C] text-white sticky top-0 z-50">
       <Container>
         <div className="p-4 flex items-center justify-between">
-          {/* Left Nav Items */}
-          <ul className="flex items-center space-x-8">
+          {/* Left Section */}
+          <div className="flex items-center gap-6">
+            <button
+              className="md:hidden text-2xl"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+            <Link
+              to={"/"}
+              className="hidden md:flex items-center gap-2 font-semibold"
+            >
+              <FaBars /> <span>All Categories</span>
+            </Link>
+          </div>
 
-            <li>
-              <Link to={'/'} className="flex items-center">
-                <FaBars className="mr-2" />
-                <span>All Categories</span>
-              </Link>
-            </li>
-            <li className="relative group" ref={dropdownRef}>
+          {/* Desktop Menu */}
+          <ul className="hidden md:flex items-center space-x-8 font-medium">
+            <li ref={productRef} className="relative">
               <button
-                onClick={handleDropdownToggle}
-                className="flex items-center"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center hover:underline"
               >
                 Product
               </button>
               {isDropdownOpen && (
-                <div ref={dropdownRef} className="absolute top-[50px] left-0 bg-white text-black shadow-lg rounded-md w-48">
-                  <ul className='py-2 font-["Montserrat"] text-base leading-6 text-black'>
+                <div className="absolute top-[45px] left-0 bg-white text-black shadow-lg rounded-md w-48 animate-fadeIn">
+                  <ul className='py-2 font-["Montserrat"] text-base leading-6'>
                     <li className="px-4 py-2 hover:bg-gray-100">
                       <Link to="#">Submenu Item 1</Link>
                     </li>
@@ -72,69 +73,117 @@ const ButtonBar = () => {
               )}
             </li>
             <li>
-              <Link to={'/blog'} className="flex items-center">
-                <span>Blog</span>
+              <Link to={"/blog"} className="hover:underline">
+                Blog
               </Link>
             </li>
             <li>
-              <Link to={'/contact'} className="flex items-center">
-                <span>Contact</span>
+              <Link to={"/contact"} className="hover:underline">
+                Contact
               </Link>
             </li>
-
           </ul>
 
-          {/* Right Nav Items */}
-          <ul className="flex items-center space-x-8">
-
-            <li className="relative group" ref={dropdownRef}>
-              <button onClick={handleLimitedSaleDropdownToggle} className="flex items-center">
-                LIMITED SALE
-                <FaFire className="mr-2" />
+          {/* Right Section */}
+          <ul className="hidden md:flex items-center space-x-8 font-medium">
+            <li ref={saleRef} className="relative">
+              <button
+                onClick={() =>
+                  setIsLimitedSaleDropdownOpen(!isLimitedSaleDropdownOpen)
+                }
+                className="flex items-center gap-2 font-bold text-yellow-200"
+              >
+                <FaFire /> LIMITED SALE
               </button>
               {isLimitedSaleDropdownOpen && (
-                <div ref={dropdownRef} className="absolute top-[50px] left-0 bg-white text-black shadow-lg rounded-md w-48">
-                  <ul className='py-2 font-["Montserrat"] text-base leading-6 text-black'>
+                <div className="absolute top-[45px] right-0 bg-white text-black shadow-lg rounded-md w-48 animate-fadeIn">
+                  <ul className='py-2 font-["Montserrat"] text-base leading-6'>
                     <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link to="#">Submenu Item 1</Link>
+                      <Link to="#">Deal 1</Link>
                     </li>
                     <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link to="#">Submenu Item 2</Link>
+                      <Link to="#">Deal 2</Link>
                     </li>
                     <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link to="#">Submenu Item 3</Link>
+                      <Link to="#">Deal 3</Link>
                     </li>
                   </ul>
                 </div>
               )}
             </li>
             <li>
-              <Link to={'/product'} className="flex items-center gap-2">
-                <span>Best Seller</span>
+              <Link to={"/product"} className="hover:underline">
+                Best Seller
               </Link>
             </li>
             <li>
-              <Link to={'/product'} className="flex items-center">
-                <span>New Arrival</span>
+              <Link to={"/product"} className="hover:underline">
+                New Arrival
               </Link>
             </li>
-
-            <div className="absolute top-[20px] left-0 hidden group-hover:block bg-white text-black shadow-lg rounded-md w-48">
-              <ul className="py-2">
-                <li className="px-4 py-2 hover:bg-gray-100">
-                  <Link to="#">Submenu Item 1</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100">
-                  <Link to="#">Submenu Item 2</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100">
-                  <Link to="#">Submenu Item 3</Link>
-                </li>
-              </ul>
-            </div>
-
           </ul>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-[#FF624C] p-4 space-y-4 animate-fadeIn">
+            <Link to={"/"} className="block hover:underline">
+              All Categories
+            </Link>
+            <button
+              className="block w-full text-left hover:underline"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              Product
+            </button>
+            {isDropdownOpen && (
+              <div className="bg-white text-black rounded-md shadow-md p-2">
+                <Link to="#" className="block px-2 py-1 hover:bg-gray-100">
+                  Submenu Item 1
+                </Link>
+                <Link to="#" className="block px-2 py-1 hover:bg-gray-100">
+                  Submenu Item 2
+                </Link>
+                <Link to="#" className="block px-2 py-1 hover:bg-gray-100">
+                  Submenu Item 3
+                </Link>
+              </div>
+            )}
+            <Link to={"/blog"} className="block hover:underline">
+              Blog
+            </Link>
+            <Link to={"/contact"} className="block hover:underline">
+              Contact
+            </Link>
+            <button
+              className="block w-full text-left text-yellow-200 font-bold hover:underline"
+              onClick={() =>
+                setIsLimitedSaleDropdownOpen(!isLimitedSaleDropdownOpen)
+              }
+            >
+              LIMITED SALE
+            </button>
+            {isLimitedSaleDropdownOpen && (
+              <div className="bg-white text-black rounded-md shadow-md p-2">
+                <Link to="#" className="block px-2 py-1 hover:bg-gray-100">
+                  Deal 1
+                </Link>
+                <Link to="#" className="block px-2 py-1 hover:bg-gray-100">
+                  Deal 2
+                </Link>
+                <Link to="#" className="block px-2 py-1 hover:bg-gray-100">
+                  Deal 3
+                </Link>
+              </div>
+            )}
+            <Link to={"/product"} className="block hover:underline">
+              Best Seller
+            </Link>
+            <Link to={"/product"} className="block hover:underline">
+              New Arrival
+            </Link>
+          </div>
+        )}
       </Container>
     </div>
   );

@@ -97,36 +97,44 @@ const SpringSale = () => {
         nextArrow: <NextArrow />,
         // prevArrow: <PrevArrow />,
 
-        responsive: [
-            {
-                breakpoint: 1200,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                },
-            },
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                },
-            },
-        ],
+       responsive: [
+      {
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1200,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 992,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false,
+        },
+      },
+    ],
     };
 
     return (
         <div className='mb-[50px]'>
             <Container>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="w-full h-auto flex flex-col justify-center align-middle ">
                         <h3 className="font-['Montserrat'] text-[56px] font-bold">Spring Sale</h3>
                         <div className='flex flex-row justify-start align-middle'>
