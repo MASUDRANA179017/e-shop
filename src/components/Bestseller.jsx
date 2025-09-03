@@ -16,7 +16,7 @@ const Bestseller = () => {
                     description: item.description,
                     currentPrice: item.price / 100,
                     oldPrice: item.old_price ? item.old_price / 100 : null,
-                    image: item.image || "/frontend/products/product01.png", // fallback
+                    image: item.image || "/frontend/products/product01.png",
                     rating: item.rating || 4,
                     reviews: item.reviews || 100,
                     category: item.category || "Laptop",

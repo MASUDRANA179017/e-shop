@@ -7,6 +7,7 @@ import Bestseller from "../components/Bestseller.jsx";
 
 import SpringSale from "../components/SpringSale.jsx";
 import FAQ from "../components/FAQ.jsx";
+import Blog from "../components/blog/index.jsx";
 
 
 
@@ -22,6 +23,7 @@ const HomePage = () => {
       <SpringSale />
       <Bestseller />
       <FAQ />
+      <Blog />
     </div>
   );
 };

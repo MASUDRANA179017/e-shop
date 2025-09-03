@@ -40,7 +40,7 @@ const SpringSale = () => {
     const [products, setProducts] = useState([]);
     const [timerLeft, setTimerLeft] = useState(calculateTimeLeft())
     function calculateTimeLeft() {
-        const saleEndDate = new Date("July 31, 2025 10:00 AM +06").getTime()
+        const saleEndDate = new Date("December 1, 2025 10:00 AM +06").getTime()
         const now = new Date().getTime()
         const difference = saleEndDate - now;
 

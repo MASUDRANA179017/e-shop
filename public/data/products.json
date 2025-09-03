@@ -3,6 +3,7 @@
     "id": 1,
     "sku": "PRD-1001",
     "title": "Wireless Bluetooth Headphones",
+    "price": 999,
     "description": "High-quality over-ear Bluetooth headphones with noise cancellation and 20 hours battery life.",
     "category": { "id": 1, "name": "Electronics" },
     "brand": "Sony",
@@ -27,6 +28,7 @@
   {
     "id": 2,
     "sku": "PRD-1002",
+    "price": 999,
     "title": "Men's Running Shoes",
     "description": "Lightweight and comfortable running shoes designed for maximum performance and support.",
     "category": { "id": 2, "name": "Fashion" },
@@ -49,6 +51,7 @@
     "id": 3,
     "sku": "PRD-1003",
     "title": "Smartwatch Series 5",
+    "price": 999,
     "description": "Track your fitness, health, and notifications with the latest smartwatch technology.",
     "category": { "id": 1, "name": "Electronics" },
     "brand": "Apple",
@@ -70,6 +73,7 @@
     "id": 4,
     "sku": "PRD-1004",
     "title": "Modern Office Chair",
+    "price": 999,
     "description": "Ergonomic office chair with lumbar support, breathable mesh, and adjustable height.",
     "category": { "id": 3, "name": "Furniture" },
     "brand": "Ikea",
@@ -86,5 +90,288 @@
     ],
     "tags": ["office", "chair", "furniture"],
     "createdAt": "2025-06-10"
+  },
+  {
+    "id": 9,
+    "name": "Laptop",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [
+      {
+        "id": 1,
+        "rating": 5,
+        "comment": "Great product test final update!",
+        "createdAt": "2025-06-25T09:21:57.536Z"
+      }
+    ],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Laptop baba",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [
+      {
+        "id": 3,
+        "rating": 5,
+        "comment": "Great product!",
+        "createdAt": "2025-07-05T03:57:21.075Z"
+      },
+      {
+        "id": 4,
+        "rating": 4,
+        "comment": "Great product ljkljhkljhk!",
+        "createdAt": "2025-07-05T03:58:11.123Z"
+      }
+    ],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 20,
+    "name": "Laptop for test 6",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 17,
+    "name": "Laptop for test 2",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 18,
+    "name": "Laptop for test 3",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 15,
+    "name": "mechanical keyboard",
+    "description": "A high-performance keyboard",
+    "price": 2800,
+    "stock": 10,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 21,
+    "name": "Laptop for test 7",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 19,
+    "name": "Laptop for test 5",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
+  },
+  {
+    "id": 16,
+    "name": "Laptop for test",
+    "description": "A high-performance laptop",
+    "price": 999,
+    "stock": 100,
+    "vendor": {
+      "id": 2,
+      "email": "user@gmail.com",
+      "password": "$2b$10$yfYb2oFuthudBAf917IAb.0nY/KzLAlF.yX4zpFmhwVroC6dCg7ZS",
+      "firstName": "Masud",
+      "lastName": "Rana",
+      "username": "masudrana",
+      "role": "user",
+      "refreshToken": "76db9911-b2aa-420d-bac8-b38af58dab7d"
+    },
+    "store": {
+      "id": 1,
+      "name": "My Updated Store",
+      "description": "This store now sells even more awesome products.",
+      "createdAt": "2025-05-28T09:51:07.422Z"
+    },
+    "reviews": [],
+    "category": {
+      "id": 1,
+      "name": "new category",
+      "description": "Devices and gadgets"
+    }
   }
+
+
 ]

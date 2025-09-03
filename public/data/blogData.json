@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "The Future of Technology in 2025",
+    "slug": "future-of-technology-2025",
+    "content": "Technology is evolving faster than ever. AI, robotics, and automation are shaping the future of industries...",
+    "image": "/frontend/blogs/tech01.jpg",
+    "author": "Masud Rana",
+    "createdAt": "2025-08-20"
+  },
+  {
+    "id": 2,
+    "title": "Healthy Living: Tips for a Balanced Life",
+    "slug": "healthy-living-tips",
+    "content": "Living a balanced life requires focusing on physical, mental, and emotional health. Here are some daily practices...",
+    "image": "/frontend/blogs/health01.jpg",
+    "author": "Sumaiya",
+    "createdAt": "2025-08-15"
+  },
+  {
+    "id": 3,
+    "title": "Top 10 Travel Destinations in 2025",
+    "slug": "top-travel-destinations-2025",
+    "content": "From Bali to Paris, explore the best travel spots for 2025. Discover hidden gems and famous landmarks...",
+    "image": "/frontend/blogs/travel01.jpg",
+    "author": "Rima",
+    "createdAt": "2025-07-30"
+  }
+]
