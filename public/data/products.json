@@ -2,7 +2,7 @@
   {
     "id": 1,
     "sku": "PRD-1001",
-    "title": "Wireless Bluetooth Headphones",
+    "name": "Wireless Bluetooth Headphones",
     "price": 999,
     "description": "High-quality over-ear Bluetooth headphones with noise cancellation and 20 hours battery life.",
     "category": { "id": 1, "name": "Electronics" },
@@ -29,7 +29,7 @@
     "id": 2,
     "sku": "PRD-1002",
     "price": 999,
-    "title": "Men's Running Shoes",
+    "name": "Men's Running Shoes",
     "description": "Lightweight and comfortable running shoes designed for maximum performance and support.",
     "category": { "id": 2, "name": "Fashion" },
     "brand": "Nike",
@@ -50,7 +50,7 @@
   {
     "id": 3,
     "sku": "PRD-1003",
-    "title": "Smartwatch Series 5",
+    "name": "Smartwatch Series 5",
     "price": 999,
     "description": "Track your fitness, health, and notifications with the latest smartwatch technology.",
     "category": { "id": 1, "name": "Electronics" },
@@ -72,7 +72,7 @@
   {
     "id": 4,
     "sku": "PRD-1004",
-    "title": "Modern Office Chair",
+    "name": "Modern Office Chair",
     "price": 999,
     "description": "Ergonomic office chair with lumbar support, breathable mesh, and adjustable height.",
     "category": { "id": 3, "name": "Furniture" },
