@@ -7,9 +7,12 @@ const MiddleBar = () => {
     <Container>
       <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow-sm border-b border-gray-200 gap-4 md:gap-0 z-0">
         {/* Left Section: Logo */}
-        <div className="text-2xl font-bold text-gray-800">
-          e-<span className="text-red-500">shop</span>
-        </div>
+        <a href="/" className="flex items-center">
+          {/* <img src="/logo.png" alt="Logo" className="h-8 mr-2" /> */}
+          <div className="text-2xl font-bold text-gray-800">
+            e-<span className="text-red-500">shop</span>
+          </div>
+        </a>
 
         {/* Middle Section: Search Bar */}
         <div className="w-full md:w-[350px] relative">
