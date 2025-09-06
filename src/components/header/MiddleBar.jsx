@@ -5,7 +5,7 @@ import { FaShoppingCart, FaUser, FaSearch } from "react-icons/fa";
 const MiddleBar = () => {
   return (
     <Container>
-      <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow-sm border-b border-gray-200 gap-4 md:gap-0">
+      <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow-sm border-b border-gray-200 gap-4 md:gap-0 z-0">
         {/* Left Section: Logo */}
         <div className="text-2xl font-bold text-gray-800">
           e-<span className="text-red-500">shop</span>
@@ -16,7 +16,7 @@ const MiddleBar = () => {
           <input
             type="text"
             placeholder="Search Products..."
-            className="w-full border border-[#cccccc] py-2 md:py-[18px] px-4 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-red-400"
+            className="w-full border border-[#cccccc] py-2 md:py-[10px] px-4 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-red-400"
           />
           <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 transition-colors duration-200">
             <FaSearch className="w-5 h-5" />

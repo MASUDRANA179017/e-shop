@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { FaAngleDown, FaFacebook, FaLinkedin } from "react-icons/fa";
 
@@ -16,8 +16,21 @@ const TopRightComponent = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  useEffect(() => {
+    const storedCountry = localStorage.getItem("selectedCountry");
+    if (storedCountry) {
+      setSelectedCountry(JSON.parse(storedCountry));
+    } else {
+      // Set default country here
+      const defaultCountry = Countries[0];
+      setSelectedCountry(defaultCountry);
+      localStorage.setItem("selectedCountry", JSON.stringify(defaultCountry));
+    }
+  }, []);
+
   const handleSelect = (country) => {
     setSelectedCountry(country);
+    localStorage.setItem("selectedCountry", JSON.stringify(country));
     setIsDropdownOpen(false);
   };
 
@@ -31,7 +44,7 @@ const TopRightComponent = () => {
       </div>
 
       {/* Country Dropdown */}
-      <div className="flex relative w-[180px]">
+      <div className="flex relative w-[180px] z-30">
         <div className="relative w-full">
           {/* Custom Dropdown Trigger */}
           <div
@@ -51,7 +64,7 @@ const TopRightComponent = () => {
 
           {/* Dropdown List */}
           {isDropdownOpen && (
-            <ul className="absolute top-[42px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-[200px] overflow-y-auto z-50">
+            <ul className="absolute top-[42px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-[200px] overflow-y-auto z-5">
               {Countries.map((country) => (
                 <li
                   key={country.code}
