@@ -28,7 +28,7 @@ const ButtonBar = () => {
   }, []);
 
   return (
-    <div className="w-full bg-[#FF624C] text-white sticky top-0 z-50">
+    <div className="w-full bg-[#FF624C] text-white sticky top-0 z-40">
       <Container>
         <div className="p-4 flex items-center justify-between">
           {/* Left Section */}
