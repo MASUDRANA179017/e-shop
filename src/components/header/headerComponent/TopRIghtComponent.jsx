@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { FaAngleDown, FaFacebook, FaLinkedin } from "react-icons/fa";
+import { MdDarkMode } from "react-icons/md";
 
 const TopRightComponent = () => {
   const Countries = [
@@ -15,9 +16,45 @@ const TopRightComponent = () => {
 
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Load saved theme from localStorage
+  // useEffect(() => {
+  //   const savedTheme = localStorage.getItem("theme");
+  //   if (savedTheme === "dark") {
+  //     setIsDarkMode(true);
+  //     document.documentElement.classList.add("dark");
+  //   } else {
+  //     document.documentElement.classList.remove("dark");
+  //   }
+  // }, []);
+
+  // const toggleDarkMode = () => {
+  //   setIsDarkMode(!isDarkMode);
+  //   if (!isDarkMode) {
+  //     document.documentElement.classList.add("dark");
+  //     localStorage.setItem("theme", "dark");
+  //   } else {
+  //     document.documentElement.classList.remove("dark");
+  //     localStorage.setItem("theme", "light");
+  //   }
+  // };
+
+  useEffect(() => {
+    const storedCountry = localStorage.getItem("selectedCountry");
+    if (storedCountry) {
+      setSelectedCountry(JSON.parse(storedCountry));
+    } else {
+      // Set default country here
+      const defaultCountry = Countries[0];
+      setSelectedCountry(defaultCountry);
+      localStorage.setItem("selectedCountry", JSON.stringify(defaultCountry));
+    }
+  }, []);
 
   const handleSelect = (country) => {
     setSelectedCountry(country);
+    localStorage.setItem("selectedCountry", JSON.stringify(country));
     setIsDropdownOpen(false);
   };
 
@@ -31,7 +68,7 @@ const TopRightComponent = () => {
       </div>
 
       {/* Country Dropdown */}
-      <div className="flex relative w-[180px]">
+      <div className="flex relative w-[180px] z-60">
         <div className="relative w-full">
           {/* Custom Dropdown Trigger */}
           <div
@@ -51,7 +88,7 @@ const TopRightComponent = () => {
 
           {/* Dropdown List */}
           {isDropdownOpen && (
-            <ul className="absolute top-[42px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-[200px] overflow-y-auto z-50">
+            <ul className="absolute top-[42px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-[200px] overflow-y-auto z-5">
               {Countries.map((country) => (
                 <li
                   key={country.code}
@@ -93,6 +130,14 @@ const TopRightComponent = () => {
         >
           <FaLinkedin className="text-lg md:text-2xl" />
         </a>
+        {/* <button
+          onClick={toggleDarkMode}
+          className={`p-2 rounded-full transition-transform duration-300 transform 
+          ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-800"} 
+          hover:scale-110`}
+        >
+          <MdDarkMode className="text-lg md:text-2xl" />
+        </button> */}
       </div>
     </div>
   );

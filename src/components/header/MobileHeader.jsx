@@ -7,6 +7,7 @@ import {
   FaSearch,
   FaTimes,
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const categories = [
   "Electronics",
@@ -39,9 +40,36 @@ const MobileHeader = () => {
       {menuOpen && (
         <div className="bg-white text-gray-800 shadow-md">
           <ul className="flex flex-col divide-y divide-gray-200">
-            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">Home</li>
-            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">Profile</li>
-            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">Cart</li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/"} className="hover:underline">
+                Home
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/product"} className="hover:underline">
+                Product
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/blog"} className="hover:underline">
+                Blog
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/contact"} className="hover:underline">
+                Contact
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/profile"} className="hover:underline">
+                Profile
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/cart"} className="hover:underline">
+                Cart
+              </Link>
+            </li>
             <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
               Categories
               <ul className="mt-2 ml-2">
@@ -86,6 +114,7 @@ const MobileBottomMenu = () => {
           <FaThList className="text-xl" />
           Categories
         </button>
+
         <button
           onClick={() => setActive("cart")}
           className={`flex flex-col items-center text-sm ${
