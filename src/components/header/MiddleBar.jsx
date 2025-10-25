@@ -1,8 +1,13 @@
 import React from "react";
 import Container from "../commonLayouts/Container";
 import { FaShoppingCart, FaUser, FaSearch } from "react-icons/fa";
+import { isAuthenticated, loginUser } from "../../@Services/authService";
 
 const MiddleBar = () => {
+
+  const { user } = loginUser();
+  console.log("user data :" + user);
+
   return (
     <Container>
       <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-white shadow-sm border-b border-gray-200 gap-4 md:gap-0 z-0">
@@ -41,13 +46,27 @@ const MiddleBar = () => {
           <div className="hidden sm:block w-px h-8 bg-gray-300"></div>
 
           {/* User Account */}
-          <div className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200">
+          <div
+            className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200"
+            onClick={() => window.location.href = '/login'}
+          >
             <FaUser className="w-6 h-6 mr-2" />
             <div className="hidden sm:block">
-              <div className="text-sm">User</div>
-              <div className="text-md font-semibold text-gray-800">
-                Account
-              </div>
+              {user ? (
+                <>
+                  <div className="text-sm">{user?.name || 'User'}</div>
+                  <div className="text-md font-semibold text-gray-800">
+                    My Account
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm">Welcome</div>
+                  <div className="text-md font-semibold text-gray-800">
+                    Login/Register
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -33,7 +33,8 @@ const ProductSlider = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch("/data/products.json")
+    // fetch("/data/products.json")
+    fetch("http://localhost:8000/product/getAll")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({
