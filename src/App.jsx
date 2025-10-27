@@ -1,25 +1,27 @@
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
+
+// Public Pages
 import HomePage from "./pages/HomePage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import { BlogPage } from "./pages/BlogPage";
-import CommonLayout from "./components/commonLayouts/CommonLayout";
 import { ProductListPage } from "./pages/ProductListPage";
 import ContactPage from "./pages/ContactPage";
-// newly added 
+import CommonLayout from "./components/commonLayouts/CommonLayout";
+
+// Auth Pages
 import Login from "./pages/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterPage from "./pages/Register";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import Dashboard from "./pages/Dashboard";
-import UserDashboard from "./components/dashbord/user";
 
-
+// Role-based Route Groups
+import { AdminRoutes } from "./routes/AdminRoutes";
+import { VendorRoutes } from "./routes/VendorRoutes";
+import { UserRoutes } from "./routes/UserRoutes";
 
 function App() {
   return (
     <Routes>
-      {/* 🔹 Public routes inside CommonLayout */}
+      {/* 🔹 Public Routes (wrapped inside CommonLayout) */}
       <Route path="/" element={<CommonLayout />}>
         <Route index element={<HomePage />} />
         <Route path="product" element={<ProductListPage />} />
@@ -28,45 +30,16 @@ function App() {
         <Route path="blog" element={<BlogPage />} />
       </Route>
 
-      {/* 🔹 Auth routes (outside CommonLayout) */}
+      {/* 🔹 Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* 🔹 Protected routes */}
+      {/* 🔹 Role-Based Routes */}
+      {AdminRoutes}
+      {VendorRoutes}
+      {UserRoutes}
 
-    // Admin route
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-    // Vendor route
-      <Route
-        path="/vendor/dashboard"
-        element={
-          <ProtectedRoute allowedRoles={["vendor"]}>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-
-    // User route
-      <Route
-        path="/dashboard/user"
-        element={
-          <ProtectedRoute allowedRoles={["user"]}>
-            <UserDashboard />
-          </ProtectedRoute>
-        }
-      />
-      
-
-
-      {/* Optional fallback route */}
+      {/* 🔹 Fallback */}
       <Route path="*" element={<Login />} />
     </Routes>
   );

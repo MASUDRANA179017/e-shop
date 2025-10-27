@@ -1,12 +1,13 @@
 import React from "react";
 import Container from "../commonLayouts/Container";
 import { FaShoppingCart, FaUser, FaSearch } from "react-icons/fa";
-import { isAuthenticated, loginUser } from "../../@Services/authService";
+
 
 const MiddleBar = () => {
 
-  const { user } = loginUser();
-  console.log("user data :" + user);
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
 
   return (
     <Container>
@@ -54,7 +55,7 @@ const MiddleBar = () => {
             <div className="hidden sm:block">
               {user ? (
                 <>
-                  <div className="text-sm">{user?.name || 'User'}</div>
+                  <div className="text-sm">{user.firstName}</div>
                   <div className="text-md font-semibold text-gray-800">
                     My Account
                   </div>

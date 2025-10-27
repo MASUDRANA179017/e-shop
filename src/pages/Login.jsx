@@ -21,7 +21,11 @@ const Login = () => {
   
       // If not logged in → redirect to login
       if (token || user) {
-        navigate("/dashboard/user", { replace: true });
+        if (user.role === "admin") {
+          navigate("/dashboard/admin", { replace: true });
+        } else if (user.role === "user") {
+          navigate("/dashboard/user", { replace: true });
+        }
       }
     }, [navigate]);
 

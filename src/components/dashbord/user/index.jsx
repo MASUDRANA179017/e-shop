@@ -1,4 +1,5 @@
 import React from "react";
+import Dashboard from "../../../pages/Dashboard";
 
 const UserDashboard = () => {
   const user = {
@@ -64,6 +65,8 @@ const UserDashboard = () => {
             </div>
           ))}
         </div>
+
+        <Dashboard />
 
         {/* Recent Activity */}
         <div className="bg-white rounded-2xl shadow-md p-6">

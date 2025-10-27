@@ -1,20 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../@Services/authService";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userJson = localStorage.getItem("user");
-    const user = userJson ? JSON.parse(userJson) : null;
 
-    // If not logged in → redirect to login
-    if (!token || !user) {
-      navigate("/login", { replace: true });
-    }
-  }, [navigate]);
 
   const handleLogout = () => {
     logoutUser(); 
@@ -22,7 +13,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+    <div className="flex flex-col items-center justify-center bg-gray-50">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
         Welcome to Dashboard 🎉
       </h1>
