@@ -11,7 +11,7 @@ export const loginUser = async (email, password) => {
         });
         const data = response.data;
 
-        
+
         // Save both token and user to localStorage so they're stored consistently
         if (data) {
             if (data.token) {
@@ -31,7 +31,8 @@ export const loginUser = async (email, password) => {
 
 
 export const logoutUser = () => {
-  localStorage.removeItem("token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 };
 
 export const isAuthenticated = () => {

@@ -9,8 +9,10 @@ import ContactPage from "./pages/ContactPage";
 // newly added 
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
 import RegisterPage from "./pages/Register";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import Dashboard from "./pages/Dashboard";
+import UserDashboard from "./components/dashbord/user";
 
 
 
@@ -31,14 +33,38 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
 
       {/* 🔹 Protected routes */}
+
+    // Admin route
       <Route
-        path="/dashboard"
+        path="/admin/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+    // Vendor route
+      <Route
+        path="/vendor/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["vendor"]}>
             <Dashboard />
           </ProtectedRoute>
         }
       />
+
+    // User route
+      <Route
+        path="/dashboard/user"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <UserDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+
 
       {/* Optional fallback route */}
       <Route path="*" element={<Login />} />
