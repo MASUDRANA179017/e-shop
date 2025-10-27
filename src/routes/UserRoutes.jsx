@@ -1,27 +1,27 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
-import UserDashboard from "../components/dashbord/user";
+import UserLayout from "../components/dashbord/user/UserLayout";
+
+import UserDashboard from "../components/dashbord/user/index";
+import Dashboard from "../pages/Dashboard";
+
 
 export const UserRoutes = (
-  <>
-    <Route
-      path="/dashboard/user"
-      element={
-        <ProtectedRoute allowedRoles={["user"]}>
-          <UserDashboard />
-        </ProtectedRoute>
-      }
-    />
-
-    {/* You can easily add more user pages later */}
-    <Route
-      path="/dashboard/user/profile"
-      element={
-        <ProtectedRoute allowedRoles={["user"]}>
-          <div className="p-10 text-center text-xl">User Profile Page</div>
-        </ProtectedRoute>
-      }
-    />
-  </>
+  <Route
+    path="/dashboard/user"
+    element={
+      <ProtectedRoute allowedRoles={["user"]}>
+        <UserLayout />
+      </ProtectedRoute>
+    }
+  >
+    {/* Nested Pages */}
+    <Route index element={<UserDashboard />} />
+    <Route path="bookings" element={<div className="p-10 text-center">
+      <Dashboard/>
+    </div>} />
+    <Route path="profile" element={<div className="p-10 text-center">Profile Page</div>} />
+    <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
+  </Route>
 );

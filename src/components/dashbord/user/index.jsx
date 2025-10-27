@@ -1,14 +1,6 @@
 import React from "react";
-import Dashboard from "../../../pages/Dashboard";
 
 const UserDashboard = () => {
-  const user = {
-    name: "Masud Rana",
-    email: "rana@example.com",
-    role: "User",
-    joined: "Jan 2024",
-  };
-
   const stats = [
     { label: "Total Bookings", value: 12 },
     { label: "Completed", value: 9 },
@@ -23,66 +15,30 @@ const UserDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Header */}
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          User Dashboard
-        </h1>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Dashboard Overview</h2>
 
-        {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-md p-6 flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <img
-              src="/user-avatar.png"
-              alt="User Avatar"
-              className="w-20 h-20 rounded-full border-2 border-blue-500"
-            />
-            <div>
-              <h2 className="text-xl font-semibold">{user.name}</h2>
-              <p className="text-gray-600">{user.email}</p>
-              <span className="text-sm text-gray-500">
-                Joined: {user.joined}
-              </span>
-            </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((item, i) => (
+          <div key={i} className="bg-white rounded-xl shadow p-5">
+            <p className="text-gray-500 text-sm">{item.label}</p>
+            <h3 className="text-2xl font-semibold text-gray-800 mt-2">{item.value}</h3>
           </div>
-          <button className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-            Edit Profile
-          </button>
-        </div>
+        ))}
+      </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          {stats.map((item, i) => (
-            <div
-              key={i}
-              className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition"
-            >
-              <h3 className="text-gray-600 text-sm">{item.label}</h3>
-              <p className="text-2xl font-bold text-blue-600 mt-2">
-                {item.value}
-              </p>
-            </div>
+      {/* Recent Activities */}
+      <div className="bg-white shadow rounded-xl p-6">
+        <h3 className="text-xl font-semibold mb-4">Recent Activities</h3>
+        <ul className="space-y-3">
+          {recentActivities.map((act) => (
+            <li key={act.id} className="flex justify-between items-center border-b pb-2">
+              <span className="text-gray-700">{act.text}</span>
+              <span className="text-sm text-gray-500">{act.time}</span>
+            </li>
           ))}
-        </div>
-
-        <Dashboard />
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">Recent Activities</h3>
-          <ul className="space-y-3">
-            {recentActivities.map((activity) => (
-              <li
-                key={activity.id}
-                className="flex justify-between items-center border-b pb-2"
-              >
-                <span className="text-gray-700">{activity.text}</span>
-                <span className="text-sm text-gray-500">{activity.time}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        </ul>
       </div>
     </div>
   );
