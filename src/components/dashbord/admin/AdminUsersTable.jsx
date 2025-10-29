@@ -56,7 +56,7 @@ export default function AdminUsersTable() {
                 setError("No authentication token found. Please log in.");
                 return;
             }
-            
+
             const res = await axios.get(apiEndpoint, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ export default function AdminUsersTable() {
             setUsers(res.data || []);
         } catch (err) {
             if (err.response?.status === 401) {
-                localStorage.removeItem("token"); 
+                localStorage.removeItem("token");
                 setError("Session expired. Please log in again.");
             } else {
                 setError(err?.response?.data?.message || err.message || "Failed to load users");
@@ -104,20 +104,58 @@ export default function AdminUsersTable() {
         setForm((s) => ({ ...s, [name]: value }));
     }
 
+    // async function submitEdit() {
+    //     if (!activeUser) return;
+    //     const apiEndpoint = `${baseURL}/auth/edit-profile`;
+    //     try {
+    //         const res = await axios.post(`${apiEndpoint}/${activeUser.id}`, form);
+    //         const updated = res.data || { ...activeUser, ...form };
+    //         setUsers((list) => list.map((u) => (u.id === activeUser.id ? updated : u)));
+    //         setSnack({ open: true, message: "User updated", severity: "success" });
+    //         setEditOpen(false);
+    //         setActiveUser(null);
+    //     } catch (err) {
+    //         setSnack({ open: true, message: err?.response?.data?.message || "Update failed", severity: "error" });
+    //     }
+    // }
+
     async function submitEdit() {
         if (!activeUser) return;
+
         const apiEndpoint = `${baseURL}/auth/edit-profile`;
+        const token = localStorage.getItem("token");
+
+        const payload = { id: activeUser.id, ...form };
+
+        // remove password if it's empty
+        if (!form.password || form.password.trim() === "") {
+            delete payload.password;
+        }
+
         try {
-            const res = await axios.put(`${apiEndpoint}/${activeUser.id}`, form);
+            const res = await axios.post(apiEndpoint, payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
             const updated = res.data || { ...activeUser, ...form };
             setUsers((list) => list.map((u) => (u.id === activeUser.id ? updated : u)));
-            setSnack({ open: true, message: "User updated", severity: "success" });
+
+            setSnack({ open: true, message: "User updated successfully", severity: "success" });
             setEditOpen(false);
             setActiveUser(null);
         } catch (err) {
-            setSnack({ open: true, message: err?.response?.data?.message || "Update failed", severity: "error" });
+            setSnack({
+                open: true,
+                message: err?.response?.data?.message || "Update failed",
+                severity: "error",
+            });
         }
     }
+
+
+
+
+
 
     async function confirmDelete() {
         if (!activeUser) return;

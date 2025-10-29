@@ -52,9 +52,10 @@ const Login = () => {
 
       // Save token and user to localStorage
       localStorage.setItem("token", data.access_Token);
+      localStorage.setItem("r-token", data.refresh_Token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${data.access_Token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${data.refresh_Token}`;
 
       // Optional: if you use a central axios instance, set it there too
       // import api from "../api"; → api.defaults.headers.common["Authorization"] = `Bearer ${data.refresh_Token}`;
