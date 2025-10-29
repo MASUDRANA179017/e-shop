@@ -21,8 +21,9 @@ import {
     Alert,
     CircularProgress,
     Tooltip,
+    InputAdornment,
 } from "@mui/material";
-import { FaEye, FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
 
 export default function AdminUsersTable() {
     const baseURL = "http://localhost:8000";
@@ -38,12 +39,27 @@ export default function AdminUsersTable() {
     const [activeUser, setActiveUser] = useState(null);
     const [form, setForm] = useState({});
     const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
-
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredUsers, setFilteredUsers] = useState([]);
     useEffect(() => {
         fetchUsers();
     }, []);
 
-    console.log(users);
+    // Filter users when typing
+    useEffect(() => {
+        const term = searchTerm.toLowerCase();
+        const filtered = users.filter(
+            (u) =>
+                u.firstName.toLowerCase().includes(term) ||
+                u.lastName.toLowerCase().includes(term) ||
+                u.username.toLowerCase().includes(term) ||
+                u.email.toLowerCase().includes(term) ||
+                u.role.toLowerCase().includes(term)
+        );
+        setFilteredUsers(filtered);
+    }, [searchTerm, users]);
+
+    // console.log(users);
 
 
     async function fetchUsers() {
@@ -174,8 +190,25 @@ export default function AdminUsersTable() {
     return (
         <Box>
             <Typography variant="h6" sx={{ mb: 2 }}>
-                Admin — Users
+                All Users List
             </Typography>
+
+            {/* Search Bar */}
+            <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search by name, username, email, or role..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{ mb: 2 }}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <FaSearch />
+                        </InputAdornment>
+                    ),
+                }}
+            />
 
             <Paper>
                 <TableContainer>
@@ -204,34 +237,35 @@ export default function AdminUsersTable() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {users.map((user) => (
-                                    <TableRow key={user.id} hover>
-                                        <TableCell>{user.id}</TableCell>
-                                        <TableCell>{user.firstName}</TableCell>
-                                        <TableCell>{user.lastName}</TableCell>
-                                        <TableCell>{user.username}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{user.role}</TableCell>
-                                        <TableCell align="center">
-                                            <Tooltip title="View">
-                                                <IconButton size="small" onClick={() => openView(user)}>
-                                                    <FaEye />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Edit">
-                                                <IconButton size="small" onClick={() => openEdit(user)}>
-                                                    <FaEdit />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Delete">
-                                                <IconButton size="small" onClick={() => openDelete(user)}>
-                                                    <FaTrashAlt />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {users.length === 0 && (
+                                {filteredUsers.length > 0 ? (
+                                    filteredUsers.map((user) => (
+                                        <TableRow key={user.id} hover>
+                                            <TableCell>{user.id}</TableCell>
+                                            <TableCell>{user.firstName}</TableCell>
+                                            <TableCell>{user.lastName}</TableCell>
+                                            <TableCell>{user.username}</TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>{user.role}</TableCell>
+                                            <TableCell align="center">
+                                                <Tooltip title="View">
+                                                    <IconButton size="small" onClick={() => openView(user)}>
+                                                        <FaEye />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Edit">
+                                                    <IconButton size="small" onClick={() => openEdit(user)}>
+                                                        <FaEdit />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Delete">
+                                                    <IconButton size="small" onClick={() => openDelete(user)}>
+                                                        <FaTrashAlt />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
                                     <TableRow>
                                         <TableCell colSpan={7} align="center">
                                             No users found
@@ -244,16 +278,27 @@ export default function AdminUsersTable() {
                 </TableContainer>
             </Paper>
 
+            {/* View Dialog */}
             <Dialog open={viewOpen} onClose={() => setViewOpen(false)} fullWidth maxWidth="sm">
-                <DialogTitle>User details</DialogTitle>
+                <DialogTitle>User Details</DialogTitle>
                 <DialogContent>
                     {activeUser ? (
                         <Box sx={{ display: "grid", gap: 1 }}>
-                            <Typography><strong>ID:</strong> {activeUser.id}</Typography>
-                            <Typography><strong>Name:</strong> {activeUser.firstName} {activeUser.lastName}</Typography>
-                            <Typography><strong>Username:</strong> {activeUser.username}</Typography>
-                            <Typography><strong>Email:</strong> {activeUser.email}</Typography>
-                            <Typography><strong>Role:</strong> {activeUser.role}</Typography>
+                            <Typography>
+                                <strong>ID:</strong> {activeUser.id}
+                            </Typography>
+                            <Typography>
+                                <strong>Name:</strong> {activeUser.firstName} {activeUser.lastName}
+                            </Typography>
+                            <Typography>
+                                <strong>Username:</strong> {activeUser.username}
+                            </Typography>
+                            <Typography>
+                                <strong>Email:</strong> {activeUser.email}
+                            </Typography>
+                            <Typography>
+                                <strong>Role:</strong> {activeUser.role}
+                            </Typography>
                         </Box>
                     ) : (
                         <Typography>Loading...</Typography>
@@ -264,41 +309,52 @@ export default function AdminUsersTable() {
                 </DialogActions>
             </Dialog>
 
+            {/* Edit Dialog */}
             <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
-                <DialogTitle>Edit user</DialogTitle>
+                <DialogTitle>Edit User</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
                         <TextField label="First name" name="firstName" value={form.firstName || ""} onChange={handleFormChange} />
                         <TextField label="Last name" name="lastName" value={form.lastName || ""} onChange={handleFormChange} />
                         <TextField label="Username" name="username" value={form.username || ""} onChange={handleFormChange} />
                         <TextField label="Email" name="email" value={form.email || ""} onChange={handleFormChange} />
-                        <TextField label="Role" name="role" value={form.role || "user"} onChange={handleFormChange} />
+                        <TextField label="Role" name="role" value={form.role || ""} onChange={handleFormChange} />
                     </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={submitEdit}>Save</Button>
+                    <Button variant="contained" onClick={submitEdit}>
+                        Save
+                    </Button>
                 </DialogActions>
             </Dialog>
 
+            {/* Delete Dialog */}
             <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-                <DialogTitle>Delete user</DialogTitle>
+                <DialogTitle>Delete User</DialogTitle>
                 <DialogContent>
-                    <Typography>Are you sure you want to delete user {activeUser?.username} (ID: {activeUser?.id})?</Typography>
+                    <Typography>
+                        Are you sure you want to delete user {activeUser?.username} (ID: {activeUser?.id})?
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-                    <Button color="error" variant="contained" onClick={confirmDelete}>Delete</Button>
+                    <Button color="error" variant="contained" onClick={confirmDelete}>
+                        Delete
+                    </Button>
                 </DialogActions>
             </Dialog>
 
+            {/* Snackbar */}
             <Snackbar
                 open={snack.open}
                 autoHideDuration={4000}
                 onClose={() => setSnack((s) => ({ ...s, open: false }))}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
-                <Alert severity={snack.severity} variant="filled">{snack.message}</Alert>
+                <Alert severity={snack.severity} variant="filled">
+                    {snack.message}
+                </Alert>
             </Snackbar>
         </Box>
     );
