@@ -20,6 +20,7 @@ const UserLayout = () => {
   const navItems = [
     { to: "/dashboard/admin", label: "Home", icon: <BiHome size={18} /> },
     {to: "/dashboard/admin/users", label: "Users List", icon: <BiUser size={18} /> },
+    {to: "/dashboard/admin/products", label: "Products List", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/admin/bookings", label: "My Bookings", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/admin/profile", label: "Profile", icon: <BiUser size={18} /> },
     { to: "/dashboard/admin/settings", label: "Settings", icon: <CiSettings size={18} /> },

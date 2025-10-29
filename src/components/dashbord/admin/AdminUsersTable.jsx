@@ -22,6 +22,7 @@ import {
     CircularProgress,
     Tooltip,
     InputAdornment,
+    RadioGroup, FormControlLabel, Radio, FormLabel
 } from "@mui/material";
 import { FaEye, FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
 
@@ -54,7 +55,8 @@ export default function AdminUsersTable() {
                 u.lastName.toLowerCase().includes(term) ||
                 u.username.toLowerCase().includes(term) ||
                 u.email.toLowerCase().includes(term) ||
-                u.role.toLowerCase().includes(term)
+                u.role.toLowerCase().includes(term) ||
+                (u.isActive ? "active" : "inactive").includes(term)
         );
         setFilteredUsers(filtered);
     }, [searchTerm, users]);
@@ -233,6 +235,7 @@ export default function AdminUsersTable() {
                                     <TableCell>Username</TableCell>
                                     <TableCell>Email</TableCell>
                                     <TableCell>Role</TableCell>
+                                    <TableCell>Status</TableCell>
                                     <TableCell align="center">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -246,6 +249,7 @@ export default function AdminUsersTable() {
                                             <TableCell>{user.username}</TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>{user.role}</TableCell>
+                                            <TableCell>{user.isActive ? "Active" : "Inactive"}</TableCell>
                                             <TableCell align="center">
                                                 <Tooltip title="View">
                                                     <IconButton size="small" onClick={() => openView(user)}>
@@ -299,6 +303,9 @@ export default function AdminUsersTable() {
                             <Typography>
                                 <strong>Role:</strong> {activeUser.role}
                             </Typography>
+                            <Typography>
+                                <strong>Active:</strong> {activeUser.isActive ? "Yes" : "No"}
+                            </Typography>
                         </Box>
                     ) : (
                         <Typography>Loading...</Typography>
@@ -319,6 +326,19 @@ export default function AdminUsersTable() {
                         <TextField label="Username" name="username" value={form.username || ""} onChange={handleFormChange} />
                         <TextField label="Email" name="email" value={form.email || ""} onChange={handleFormChange} />
                         <TextField label="Role" name="role" value={form.role || ""} onChange={handleFormChange} />
+                        {/* isActive Radio */}
+                        <Box>
+                            <FormLabel>Active Status</FormLabel>
+                            <RadioGroup
+                                row
+                                name="isActive"
+                                value={form.isActive !== undefined ? form.isActive.toString() : "true"}
+                                onChange={(e) => setForm({ ...form, isActive: e.target.value === "true" })}
+                            >
+                                <FormControlLabel value="true" control={<Radio />} label="Active" />
+                                <FormControlLabel value="false" control={<Radio />} label="Inactive" />
+                            </RadioGroup>
+                        </Box>
                     </Box>
                 </DialogContent>
                 <DialogActions>
