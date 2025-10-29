@@ -18,6 +18,14 @@ import { AdminRoutes } from "./routes/AdminRoutes";
 import { VendorRoutes } from "./routes/VendorRoutes";
 import { UserRoutes } from "./routes/UserRoutes";
 
+import axios from "axios";
+
+const token = localStorage.getItem("token");
+if (token) {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+}
+
+
 function App() {
   return (
     <Routes>

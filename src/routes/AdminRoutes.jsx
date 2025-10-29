@@ -1,26 +1,31 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
+import AdminLayout from "../components/dashbord/admin/AdminLayout";
+import UserDashboard from "../components/dashbord/user";
 import Dashboard from "../pages/Dashboard";
+import AdminUsersTable from "../components/dashbord/admin/AdminUsersTable";
 
 export const AdminRoutes = (
   <>
     <Route
-      path="/admin/dashboard"
+      path="/dashboard/admin"
       element={
         <ProtectedRoute allowedRoles={["admin"]}>
-          <Dashboard />
+          <AdminLayout/>
         </ProtectedRoute>
       }
-    />
-    {/* You can easily add more admin pages later */}
-    <Route
-      path="/admin/users"
-      element={
-        <ProtectedRoute allowedRoles={["admin"]}>
-          <div className="p-10 text-center text-xl">Admin Users Management Page</div>
-        </ProtectedRoute>
-      }
-    />
+    >
+      {/* Nested Pages */}
+    <Route index element={<UserDashboard />} />
+    <Route path="bookings" element={<div className="p-10 text-center">
+      <Dashboard/>
+    </div>} />
+    <Route path="users" element={<div className="p-10 text-center">
+      <AdminUsersTable />
+    </div>} />
+    <Route path="profile" element={<div className="p-10 text-center">Profile Page</div>} />
+    <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
+    </Route>
   </>
 );

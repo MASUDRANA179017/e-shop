@@ -13,5 +13,21 @@ export const VendorRoutes = (
         </ProtectedRoute>
       }
     />
+    <Route
+      path="/vendor/orders"
+      element={
+        <ProtectedRoute allowedRoles={["vendor"]}>
+          <div className="p-10 text-center text-xl">Vendor Orders Page</div>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/vendor/products"
+      element={
+        <ProtectedRoute allowedRoles={["vendor"]}>
+          <div className="p-10 text-center text-xl">Vendor Products Page</div>
+        </ProtectedRoute>
+      }
+    />
   </>
 );

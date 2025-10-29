@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { loginUser } from "../@Services/authService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+
 
 const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-  
-  //login user redirect to dashboard
-  useEffect(() => {
-      const token = localStorage.getItem("token");
-      const userJson = localStorage.getItem("user");
-      const user = userJson ? JSON.parse(userJson) : null;
-  
-      // If not logged in → redirect to login
-      if (token || user) {
-        if (user.role === "admin") {
-          navigate("/dashboard/admin", { replace: true });
-        } else if (user.role === "user") {
-          navigate("/dashboard/user", { replace: true });
-        }
-      }
-    }, [navigate]);
 
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userJson = localStorage.getItem("user");
+    const user = userJson ? JSON.parse(userJson) : null;
+
+    if (token && user) {
+      if (user.role === "admin") {
+        navigate("/dashboard/admin", { replace: true });
+      } else if (user.role === "user") {
+        navigate("/dashboard/user", { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,26 +44,35 @@ const Login = () => {
         body: JSON.stringify(form),
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid credentials");
-      }
+      if (!response.ok) throw new Error("Invalid credentials");
+
+      // Parse response
+      const data = await response.json();
+      // console.log("Login response:", data);
+
+      // Save token and user to localStorage
+      localStorage.setItem("token", data.access_Token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${data.access_Token}`;
+
+      // Optional: if you use a central axios instance, set it there too
+      // import api from "../api"; → api.defaults.headers.common["Authorization"] = `Bearer ${data.refresh_Token}`;
 
       await loginUser(form.email, form.password);
+
       toast.success("Login successful! Redirecting...", {
         position: "top-center",
         autoClose: 2000,
       });
 
-      // Save token and user info to localStorage
-      const data = await response.json();
-      // console.log(data);
-      
-      localStorage.setItem("token", data.refresh_Token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Redirect after 2 seconds
+      // Redirect by user role
       setTimeout(() => {
-        navigate("/dashboard");
+        if (data.user.role === "admin") {
+          navigate("/dashboard/admin");
+        } else {
+          navigate("/dashboard/user");
+        }
       }, 2000);
     } catch (err) {
       toast.error("Invalid credentials, please try again.", {
@@ -71,7 +82,6 @@ const Login = () => {
       console.error(err);
     } finally {
       setLoading(false);
-
     }
   };
 

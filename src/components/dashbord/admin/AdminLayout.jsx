@@ -1,8 +1,11 @@
 import React from "react";
+import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
+import { CiSettings } from "react-icons/ci";
+import { FaShoppingCart } from "react-icons/fa";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LogOut, LayoutDashboard, Users, Settings } from "lucide-react";
 
-const AdminLayout = () => {
+
+const UserLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -11,10 +14,15 @@ const AdminLayout = () => {
     navigate("/login");
   };
 
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  // console.log(user);
+  
   const navItems = [
-    { to: "/admin/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
-    { to: "/admin/users", label: "Users", icon: <Users size={18} /> },
-    { to: "/admin/settings", label: "Settings", icon: <Settings size={18} /> },
+    { to: "/dashboard/admin", label: "Home", icon: <BiHome size={18} /> },
+    {to: "/dashboard/admin/users", label: "Users List", icon: <BiUser size={18} /> },
+    { to: "/dashboard/admin/bookings", label: "My Bookings", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/admin/profile", label: "Profile", icon: <BiUser size={18} /> },
+    { to: "/dashboard/admin/settings", label: "Settings", icon: <CiSettings size={18} /> },
   ];
 
   return (
@@ -22,7 +30,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg fixed h-full flex flex-col">
         <div className="p-5 text-center font-bold text-2xl border-b border-gray-200 text-blue-600">
-          Admin Panel
+          Admin Dashboard
         </div>
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => (
@@ -46,7 +54,7 @@ const AdminLayout = () => {
           onClick={handleLogout}
           className="m-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 flex items-center justify-center gap-2"
         >
-          <LogOut size={18} />
+          <BiLogOut size={18} />
           Logout
         </button>
       </aside>
@@ -55,11 +63,9 @@ const AdminLayout = () => {
       <main className="flex-1 ml-64">
         {/* Top Header */}
         <header className="bg-white shadow p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-gray-700">
-            Admin Dashboard
-          </h1>
+          <h1 className="text-xl font-semibold text-gray-700">{user.role} Dashboard</h1>
           <div className="text-gray-600 text-sm">
-            Welcome, <span className="font-medium">Admin</span>
+            Welcome, <span className="font-medium">{user.firstName}</span>
           </div>
         </header>
 
@@ -72,4 +78,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default UserLayout;
