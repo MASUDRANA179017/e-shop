@@ -6,7 +6,7 @@ import {
     TextField, Button, Box, Typography, Snackbar, Alert, CircularProgress,
     Tooltip, InputAdornment
 } from "@mui/material";
-import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
+import { FaEdit, FaTrashAlt, FaSearch, FaRegEye } from "react-icons/fa";
 
 export default function AdminProductsTable() {
     const baseURL = "http://localhost:8000/product";
@@ -21,6 +21,10 @@ export default function AdminProductsTable() {
     const [form, setForm] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+
+    const [addOpen, setAddOpen] = useState(false);
+    const [viewOpen, setViewOpen] = useState(false);
+
 
     // Fetch products on mount
     useEffect(() => {
@@ -84,6 +88,29 @@ export default function AdminProductsTable() {
         setEditOpen(true);
     };
 
+    // Open Add dialog
+    const openAdd = () => {
+        setForm({
+            name: "",
+            description: "",
+            price: 0,
+            stock: 0,
+            image: "",
+            categoryName: "",
+            vendorEmail: "",
+            storeName: "",
+        });
+        setAddOpen(true);
+    };
+
+
+    const openView = (product) => {
+        setActiveProduct(product);
+        setViewOpen(true);
+    };
+
+
+
     // Open Delete dialog
     const openDelete = (product) => {
         setActiveProduct(product);
@@ -98,6 +125,27 @@ export default function AdminProductsTable() {
             [name]: type === "number" ? (value === "" ? 0 : Number(value)) : value,
         }));
     };
+
+    //add product submit 
+    const submitAdd = async () => {
+        const payload = {
+            ...form,
+            category: { name: form.categoryName },
+            vendor: { email: form.vendorEmail },
+            store: { name: form.storeName },
+        };
+
+        try {
+            const res = await axios.post(`${baseURL}/create`, payload);
+            const newProduct = res.data || payload;
+            setProducts((list) => [...list, newProduct]);
+            setSnack({ open: true, message: "Product added", severity: "success" });
+            setAddOpen(false);
+        } catch (err) {
+            setSnack({ open: true, message: err?.response?.data?.message || "Add failed", severity: "error" });
+        }
+    };
+
 
     // Submit Edit
     const submitEdit = async () => {
@@ -137,7 +185,11 @@ export default function AdminProductsTable() {
 
     return (
         <Box>
-            <Typography variant="h6" sx={{ mb: 2 }}>Products List</Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+                <Typography variant="h6">Products List</Typography>
+                <Button variant="contained" onClick={() => openAdd()}>Add New Product</Button>
+            </Box>
+
 
             <TextField
                 fullWidth
@@ -196,12 +248,17 @@ export default function AdminProductsTable() {
                                         <TableCell>${product.price}</TableCell>
                                         <TableCell>{product.stock}</TableCell>
                                         <TableCell align="center">
+                                            <Tooltip title="View">
+                                                <IconButton size="small" onClick={() => openView(product)}><FaRegEye /></IconButton>
+                                            </Tooltip>
+
                                             <Tooltip title="Edit">
                                                 <IconButton size="small" onClick={() => openEdit(product)}><FaEdit /></IconButton>
                                             </Tooltip>
                                             <Tooltip title="Delete">
                                                 <IconButton size="small" onClick={() => openDelete(product)}><FaTrashAlt /></IconButton>
                                             </Tooltip>
+
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -210,6 +267,52 @@ export default function AdminProductsTable() {
                     )}
                 </TableContainer>
             </Paper>
+
+            {/* Add Product Dialog */}
+            <Dialog open={addOpen} onClose={() => setAddOpen(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Add New Product</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
+                        <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} />
+                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} />
+                        <TextField label="Category" name="categoryName" value={form.categoryName} onChange={handleFormChange} />
+                        <TextField label="Vendor Email" name="vendorEmail" value={form.vendorEmail} onChange={handleFormChange} />
+                        <TextField label="Store Name" name="storeName" value={form.storeName} onChange={handleFormChange} />
+                        <TextField label="Price" name="price" type="number" value={form.price} onChange={handleFormChange} />
+                        <TextField label="Stock" name="stock" type="number" value={form.stock} onChange={handleFormChange} />
+                        <TextField label="Image URL" name="image" value={form.image} onChange={handleFormChange} />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setAddOpen(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={submitAdd}>Add</Button>
+                </DialogActions>
+            </Dialog>
+
+
+            {/* View Product Dialog */}
+            <Dialog open={viewOpen} onClose={() => setViewOpen(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Product Details</DialogTitle>
+                <DialogContent>
+                    {activeProduct && (
+                        <Box sx={{ display: "grid", gap: 1 }}>
+                            <img src={activeProduct.image || "/frontend/products/product01.png"} alt={activeProduct.name} style={{ width: "100%", borderRadius: 4 }} />
+                            <Typography><strong>Name:</strong> {activeProduct.name}</Typography>
+                            <Typography><strong>Description:</strong> {activeProduct.description}</Typography>
+                            <Typography><strong>Category:</strong> {activeProduct.category?.name}</Typography>
+                            <Typography><strong>Vendor:</strong> {activeProduct.vendor?.email}</Typography>
+                            <Typography><strong>Store:</strong> {activeProduct.store?.name}</Typography>
+                            <Typography><strong>Price:</strong> ${activeProduct.price}</Typography>
+                            <Typography><strong>Stock:</strong> {activeProduct.stock}</Typography>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setViewOpen(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
+
 
             {/* Edit Dialog */}
             <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
