@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const ProductSingle = ({ product }) => {
   if (!product) return null;
 
-  console.log("PRODUCT DEBUG:", product);
+  // console.log("PRODUCT DEBUG:", product);
 
   return (
     <Link to={`/product/${product.id}`} className="block">

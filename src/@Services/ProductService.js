@@ -1,7 +1,9 @@
 // services/productService.js
 import axios from "axios";
+import process from "process";
 
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL = process.env.API_BASE_URL;
+console.log("api base url :" + API_BASE_URL);
 
 // Get all products
 export const getProducts = async () => {
@@ -24,3 +26,5 @@ export const getProductById = async (id) => {
     throw error;
   }
 };
+
+
