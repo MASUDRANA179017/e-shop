@@ -1,7 +1,7 @@
 import React from "react";
-import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
+import { BiHome, BiLogOut, BiSolidCategory, BiUser } from "react-icons/bi";
 import { CiSettings } from "react-icons/ci";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaStore } from "react-icons/fa";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 
@@ -20,6 +20,8 @@ const UserLayout = () => {
   const navItems = [
     { to: "/dashboard/admin", label: "Home", icon: <BiHome size={18} /> },
     {to: "/dashboard/admin/users", label: "Users List", icon: <BiUser size={18} /> },
+    {to: "/dashboard/admin/category", label: "Category List", icon: <BiSolidCategory size={18} /> },
+    {to: "/dashboard/admin/stores", label: "Stores List", icon: <FaStore size={18} /> },
     {to: "/dashboard/admin/products", label: "Products List", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/admin/bookings", label: "My Bookings", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/admin/profile", label: "Profile", icon: <BiUser size={18} /> },

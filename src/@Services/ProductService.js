@@ -1,30 +1,32 @@
-// services/productService.js
-import axios from "axios";
-import process from "process";
-
-const API_BASE_URL = process.env.API_BASE_URL;
-console.log("api base url :" + API_BASE_URL);
+// src/@Services/productService.js
+import api from "../api/axiosInstance";
 
 // Get all products
-export const getProducts = async () => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/products`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    throw error;
-  }
+export const getAllProducts = async () => {
+  const res = await api.get("/product/getAll");
+  return res.data;
 };
 
-// Get single product
+// Get single product by ID
 export const getProductById = async (id) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/products/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching product ${id}:`, error);
-    throw error;
-  }
+  const res = await api.get(`/product/getById/${id}`);
+  return res.data;
 };
 
+//Create new product
+export const createProduct = async (data) => {
+  const res = await api.post("/product/create", data);
+  return res.data;
+};
 
+// Update product by ID
+export const updateProduct = async (id, data) => {
+  const res = await api.put(`/product/update/${id}`, data);
+  return res.data;
+};
+
+// Delete product by ID
+export const deleteProduct = async (id) => {
+  const res = await api.delete(`/product/delete/${id}`);
+  return res.data;
+};

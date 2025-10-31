@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
-    Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper,
-    IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
-    TextField, Button, Box, Typography, Snackbar, Alert, CircularProgress,
-    Tooltip, InputAdornment
+    Table, TableHead, TableBody, TableRow, TableCell,
+    TableContainer, Paper, IconButton, Dialog, DialogTitle,
+    DialogContent, DialogActions, TextField, Button, Box,
+    Typography, Snackbar, Alert, CircularProgress, Tooltip,
+    InputAdornment
 } from "@mui/material";
+
 import { FaEdit, FaTrashAlt, FaSearch, FaRegEye } from "react-icons/fa";
+import {
+    getAllProducts,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+} from "../../../@Services/ProductService";
+import { getAllStores } from "../../../@Services/StoreService";
+import { getAllCategory } from "../../../@Services/CategoryService";
 
 export default function AdminProductsTable() {
-    const baseURL = "http://localhost:8000/product";
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,61 +26,94 @@ export default function AdminProductsTable() {
     const [activeProduct, setActiveProduct] = useState(null);
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [addOpen, setAddOpen] = useState(false);
+    const [viewOpen, setViewOpen] = useState(false);
+
     const [form, setForm] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
-    const [addOpen, setAddOpen] = useState(false);
-    const [viewOpen, setViewOpen] = useState(false);
-
-
-    // Fetch products on mount
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    // Filter products on search
-    useEffect(() => {
-        const term = searchTerm.toLowerCase();
-        const filtered = products.filter((p) =>
-            p.name.toLowerCase().includes(term) ||
-            (p.category?.name || "").toLowerCase().includes(term) ||
-            p.price.toString().includes(term) ||
-            (p.vendor?.email || "").toLowerCase().includes(term)
-        );
-        setFilteredProducts(filtered);
-    }, [searchTerm, products]);
+    const [categories, setCategories] = useState([]);
+    const [stores, setStores] = useState([]);
 
     // Fetch all products
     const fetchProducts = async () => {
         setLoading(true);
-        setError(null);
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-            setError("No authentication token found. Please log in.");
-            setLoading(false);
-            return;
-        }
-
         try {
-            const res = await axios.get(`${baseURL}/getAll`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setProducts(res.data || []);
+            const data = await getAllProducts();
+            setProducts(data || []);
         } catch (err) {
-            if (err.response?.status === 401) {
-                localStorage.removeItem("token");
-                setError("Session expired. Please log in again.");
-            } else {
-                setError(err?.response?.data?.message || err.message || "Failed to load products");
-            }
+            setError(err?.response?.data?.message || "Failed to load products");
         } finally {
             setLoading(false);
         }
     };
 
-    // Open Edit dialog
+    const fetchStores = async () => {
+        try {
+            const data = await getAllStores();
+            setStores(data || []);
+        } catch (err) {
+            console.error("Failed to fetch Stores", err);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const data = await getAllCategory();
+            setCategories(data || []);
+        } catch (err) {
+            console.error("Failed to fetch Categories", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+        fetchCategories();
+        fetchStores();
+    }, []);
+
+
+    // Search filter
+    useEffect(() => {
+        const term = searchTerm.toLowerCase();
+        const filtered = products.filter((p) =>
+            p.name?.toLowerCase().includes(term) ||
+            String(p.price)?.includes(term) ||
+            p.category.name?.toLowerCase().includes(term) ||
+            p.vendor.FirstName?.toLowerCase().includes(term) ||
+            p.store.name?.toLowerCase().includes(term)
+            
+        );
+        setFilteredProducts(filtered);
+    }, [searchTerm, products]);
+    // console.log(products);
+    
+
+    // Handle form changes
+    const handleFormChange = (e) => {
+        const { name, value, type } = e.target;
+
+        setForm((s) => ({
+            ...s,
+            [name]: (name === "storeId" || name === "categoryId") ? Number(value) : type === "number" ? Number(value) : value,
+        }));
+    };
+
+    const openAdd = () => {
+        setForm({
+            name: "",
+            description: "",
+            price: 0,
+            stock: 0,
+            image: "",
+            categoryId: "",
+            storeId: "",
+            vendor:[]
+        });
+        setAddOpen(true);
+    };
+
     const openEdit = (product) => {
         setActiveProduct(product);
         setForm({
@@ -81,105 +122,57 @@ export default function AdminProductsTable() {
             price: product.price || 0,
             stock: product.stock || 0,
             image: product.image || "",
-            categoryName: product.category?.name || "",
-            vendorEmail: product.vendor?.email || "",
-            storeName: product.store?.name || "",
+            categoryId: product.category?.id || "",
+            storeId: product.store?.id || "",
         });
         setEditOpen(true);
     };
-
-    // Open Add dialog
-    const openAdd = () => {
-        setForm({
-            name: "",
-            description: "",
-            price: 0,
-            stock: 0,
-            image: "",
-            categoryName: "",
-            vendorEmail: "",
-            storeName: "",
-        });
-        setAddOpen(true);
-    };
-
 
     const openView = (product) => {
         setActiveProduct(product);
         setViewOpen(true);
     };
 
-
-
-    // Open Delete dialog
     const openDelete = (product) => {
         setActiveProduct(product);
         setDeleteOpen(true);
     };
 
-    // Handle form changes
-    const handleFormChange = (e) => {
-        const { name, value, type } = e.target;
-        setForm((s) => ({
-            ...s,
-            [name]: type === "number" ? (value === "" ? 0 : Number(value)) : value,
-        }));
-    };
-
-    //add product submit 
+    // Add product
     const submitAdd = async () => {
-        const payload = {
-            ...form,
-            category: { name: form.categoryName },
-            vendor: { email: form.vendorEmail },
-            store: { name: form.storeName },
-        };
-
         try {
-            const res = await axios.post(`${baseURL}/create`, payload);
-            const newProduct = res.data || payload;
-            setProducts((list) => [...list, newProduct]);
-            setSnack({ open: true, message: "Product added", severity: "success" });
+            const newProduct = await createProduct(form, { categoryId: form.categoryId, storeId: form.storeId });
+            setProducts((prev) => [...prev, newProduct]);
+            setSnack({ open: true, message: "Product added successfully", severity: "success" });
             setAddOpen(false);
         } catch (err) {
-            setSnack({ open: true, message: err?.response?.data?.message || "Add failed", severity: "error" });
+            setSnack({ open: true, message: err?.response?.data?.message || "Failed to add product", severity: "error" });
         }
     };
 
-
-    // Submit Edit
+    // Update product
     const submitEdit = async () => {
-        if (!activeProduct) return;
-
-        const payload = {
-            ...form,
-            category: { name: form.categoryName },
-            vendor: { email: form.vendorEmail },
-            store: { name: form.storeName },
-        };
-
         try {
-            const res = await axios.put(`${baseURL}/update/${activeProduct.id}`, payload);
-            const updated = res.data || { ...activeProduct, ...payload };
-            setProducts((list) => list.map((p) => (p.id === activeProduct.id ? updated : p)));
-            setSnack({ open: true, message: "Product updated", severity: "success" });
+            const updated = await updateProduct(activeProduct.id, form);
+            setProducts((prev) =>
+                prev.map((p) => (p.id === activeProduct.id ? updated : p))
+            );
+            setSnack({ open: true, message: "Product updated successfully", severity: "success" });
             setEditOpen(false);
         } catch (err) {
-            setSnack({ open: true, message: err?.response?.data?.message || "Update failed", severity: "error" });
+            setSnack({ open: true, message: err?.response?.data?.message || "Failed to update product", severity: "error" });
         }
     };
 
-    // Confirm Delete
+    // Delete product
     const confirmDelete = async () => {
-        if (!activeProduct) return;
-
         try {
-            await axios.delete(`${baseURL}/delete/${activeProduct.id}`);
-            setProducts((list) => list.filter((p) => p.id !== activeProduct.id));
-            setSnack({ open: true, message: "Product deleted", severity: "info" });
+            await deleteProduct(activeProduct.id);
+            setProducts((prev) => prev.filter((p) => p.id !== activeProduct.id));
+            setSnack({ open: true, message: "Product deleted successfully", severity: "info" });
             setDeleteOpen(false);
         } catch (err) {
-            setSnack({ open: true, message: err?.response?.data?.message || "Delete failed", severity: "error" });
+            setSnack({ open: true, message: err?.response?.data?.message || "Failed to delete", severity: "error" });
         }
     };
 
@@ -187,29 +180,26 @@ export default function AdminProductsTable() {
         <Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
                 <Typography variant="h6">Products List</Typography>
-                <Button variant="contained" onClick={() => openAdd()}>Add New Product</Button>
+                <Button variant="contained" onClick={openAdd}>Add Product</Button>
             </Box>
-
 
             <TextField
                 fullWidth
-                variant="outlined"
-                placeholder="Search by name, category, price, or vendor..."
+                placeholder="Search by name or price"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ mb: 2 }}
                 InputProps={{ startAdornment: <InputAdornment position="start"><FaSearch /></InputAdornment> }}
+                sx={{ mb: 2 }}
             />
 
             <Paper>
                 <TableContainer>
                     {loading ? (
-                        <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}><CircularProgress /></Box>
-                    ) : error ? (
-                        <Box sx={{ p: 3 }}>
-                            <Typography color="error">{error}</Typography>
-                            <Button onClick={fetchProducts} sx={{ mt: 1 }}>Retry</Button>
+                        <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+                            <CircularProgress />
                         </Box>
+                    ) : error ? (
+                        <Typography color="error" sx={{ p: 3 }}>{error}</Typography>
                     ) : (
                         <Table>
                             <TableHead>
@@ -217,51 +207,52 @@ export default function AdminProductsTable() {
                                     <TableCell>ID</TableCell>
                                     <TableCell>Image</TableCell>
                                     <TableCell>Name</TableCell>
-                                    <TableCell>Category</TableCell>
-                                    <TableCell>Vendor</TableCell>
-                                    <TableCell>Store</TableCell>
                                     <TableCell>Price</TableCell>
                                     <TableCell>Stock</TableCell>
+                                    <TableCell>Category</TableCell>
+                                    <TableCell>Store Name</TableCell>
+                                    <TableCell>Vendor Name</TableCell>
+                                    <TableCell>Vendor Email</TableCell>
                                     <TableCell align="center">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredProducts.length === 0 && (
+                                {filteredProducts.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={9} align="center">No products found</TableCell>
+                                        <TableCell colSpan={6} align="center">No products found</TableCell>
                                     </TableRow>
+                                ) : (
+                                    filteredProducts.map((product) => (
+                                        <TableRow key={product.id} hover>
+                                            <TableCell>{product.id}</TableCell>
+                                            <TableCell>
+                                                <img
+                                                    src={product.image || "/frontend/products/product01.png"}
+                                                    alt={product.name}
+                                                    style={{ width: 60, height: 60, borderRadius: 6 }}
+                                                />
+                                            </TableCell>
+                                            <TableCell>{product.name}</TableCell>
+                                            <TableCell>${product.price}</TableCell>
+                                            <TableCell>{product.stock}</TableCell>
+                                            <TableCell>{product.category.name}</TableCell>
+                                            <TableCell>{product.store.name}</TableCell>
+                                            <TableCell>{product.vendor.firstName} {product.vendor.lastName}</TableCell>
+                                            <TableCell>{product.vendor.email}</TableCell>
+                                            <TableCell align="center">
+                                                <Tooltip title="View">
+                                                    <IconButton onClick={() => openView(product)}><FaRegEye /></IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Edit">
+                                                    <IconButton onClick={() => openEdit(product)}><FaEdit /></IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Delete">
+                                                    <IconButton onClick={() => openDelete(product)}><FaTrashAlt /></IconButton>
+                                                </Tooltip>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
                                 )}
-                                {filteredProducts.map((product) => (
-                                    <TableRow key={product.id} hover>
-                                        <TableCell>{product.id}</TableCell>
-                                        <TableCell>
-                                            <img
-                                                src={product.image || "/frontend/products/product01.png"}
-                                                alt={product.name}
-                                                style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 4 }}
-                                            />
-                                        </TableCell>
-                                        <TableCell>{product.name}</TableCell>
-                                        <TableCell>{product.category?.name}</TableCell>
-                                        <TableCell>{product.vendor?.email}</TableCell>
-                                        <TableCell>{product.store?.name}</TableCell>
-                                        <TableCell>${product.price}</TableCell>
-                                        <TableCell>{product.stock}</TableCell>
-                                        <TableCell align="center">
-                                            <Tooltip title="View">
-                                                <IconButton size="small" onClick={() => openView(product)}><FaRegEye /></IconButton>
-                                            </Tooltip>
-
-                                            <Tooltip title="Edit">
-                                                <IconButton size="small" onClick={() => openEdit(product)}><FaEdit /></IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Delete">
-                                                <IconButton size="small" onClick={() => openDelete(product)}><FaTrashAlt /></IconButton>
-                                            </Tooltip>
-
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
                             </TableBody>
                         </Table>
                     )}
@@ -269,18 +260,80 @@ export default function AdminProductsTable() {
             </Paper>
 
             {/* Add Product Dialog */}
+
             <Dialog open={addOpen} onClose={() => setAddOpen(false)} fullWidth maxWidth="sm">
-                <DialogTitle>Add New Product</DialogTitle>
+                <DialogTitle>Add Product</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
-                        <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} />
-                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} />
-                        <TextField label="Category" name="categoryName" value={form.categoryName} onChange={handleFormChange} />
-                        <TextField label="Vendor Email" name="vendorEmail" value={form.vendorEmail} onChange={handleFormChange} />
-                        <TextField label="Store Name" name="storeName" value={form.storeName} onChange={handleFormChange} />
-                        <TextField label="Price" name="price" type="number" value={form.price} onChange={handleFormChange} />
-                        <TextField label="Stock" name="stock" type="number" value={form.stock} onChange={handleFormChange} />
-                        <TextField label="Image URL" name="image" value={form.image} onChange={handleFormChange} />
+                        <TextField
+                            label="Name"
+                            name="name"
+                            value={form.name}
+                            onChange={handleFormChange}
+                        />
+                        <TextField
+                            label="Description"
+                            name="description"
+                            value={form.description}
+                            onChange={handleFormChange}
+                        />
+                        <TextField
+                            label="Price"
+                            name="price"
+                            type="number"
+                            value={form.price}
+                            onChange={handleFormChange}
+                        />
+                        <TextField
+                            label="Stock"
+                            name="stock"
+                            type="number"
+                            value={form.stock}
+                            onChange={handleFormChange}
+                        />
+
+                        {/* Category */}
+                        <TextField
+                            select
+                            label="Category"
+                            name="categoryId"
+                            value={form.categoryId}
+                            onChange={handleFormChange}
+                            slotProps={{ select: { native: true } }}
+                            sx={{mb:2}}
+                        >
+                            <option value="">Select a category</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </TextField>
+
+                        {/* Store */}
+                        <TextField
+                            select
+                            label="Store"
+                            name="storeId"
+                            value={form.storeId}
+                            onChange={handleFormChange}
+                            slotProps={{ select: { native: true } }}
+                            sx={{mb:2}}
+                        >
+                            <option value="">Select a store</option>
+                            {stores.map((store) => (
+                                <option key={store.id} value={store.id}>
+                                    {store.name}
+                                </option>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            label="Image URL"
+                            name="image"
+                            value={form.image}
+                            onChange={handleFormChange}
+                        />
                     </Box>
                 </DialogContent>
                 <DialogActions>
@@ -290,20 +343,24 @@ export default function AdminProductsTable() {
             </Dialog>
 
 
-            {/* View Product Dialog */}
+
+            {/* View Dialog */}
             <Dialog open={viewOpen} onClose={() => setViewOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Product Details</DialogTitle>
                 <DialogContent>
                     {activeProduct && (
                         <Box sx={{ display: "grid", gap: 1 }}>
-                            <img src={activeProduct.image || "/frontend/products/product01.png"} alt={activeProduct.name} style={{ width: "100%", borderRadius: 4 }} />
+                            <img
+                                src={activeProduct.image || "/frontend/products/product01.png"}
+                                alt={activeProduct.name}
+                                style={{ width: "100%", borderRadius: 4 }}
+                            />
                             <Typography><strong>Name:</strong> {activeProduct.name}</Typography>
                             <Typography><strong>Description:</strong> {activeProduct.description}</Typography>
-                            <Typography><strong>Category:</strong> {activeProduct.category?.name}</Typography>
-                            <Typography><strong>Vendor:</strong> {activeProduct.vendor?.email}</Typography>
-                            <Typography><strong>Store:</strong> {activeProduct.store?.name}</Typography>
                             <Typography><strong>Price:</strong> ${activeProduct.price}</Typography>
                             <Typography><strong>Stock:</strong> {activeProduct.stock}</Typography>
+                            <Typography><strong>Category:</strong> {activeProduct.category?.name}</Typography>
+                            <Typography><strong>Store:</strong> {activeProduct.store?.name}</Typography>
                         </Box>
                     )}
                 </DialogContent>
@@ -312,21 +369,74 @@ export default function AdminProductsTable() {
                 </DialogActions>
             </Dialog>
 
-
-
             {/* Edit Dialog */}
             <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Edit Product</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
-                        <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} />
-                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} />
-                        <TextField label="Category" name="categoryName" value={form.categoryName} onChange={handleFormChange} />
-                        <TextField label="Vendor Email" name="vendorEmail" value={form.vendorEmail} onChange={handleFormChange} />
-                        <TextField label="Store Name" name="storeName" value={form.storeName} onChange={handleFormChange} />
-                        <TextField label="Price" name="price" type="number" value={form.price} onChange={handleFormChange} />
-                        <TextField label="Stock" name="stock" type="number" value={form.stock} onChange={handleFormChange} />
-                        <TextField label="Image URL" name="image" value={form.image} onChange={handleFormChange} />
+                        <TextField
+                            label="Name"
+                            name="name"
+                            value={form.name}
+                            onChange={handleFormChange}
+                        />
+                        <TextField
+                            label="Description"
+                            name="description"
+                            value={form.description}
+                            onChange={handleFormChange}
+                        />
+                        <TextField
+                            label="Price"
+                            name="price"
+                            type="number"
+                            value={form.price}
+                            onChange={handleFormChange}
+                        />
+                        <TextField
+                            label="Stock"
+                            name="stock"
+                            type="number"
+                            value={form.stock}
+                            onChange={handleFormChange}
+                        />
+
+                        {/* Category Dropdown */}
+                        <TextField
+                            select
+                            label="Category"
+                            name="categoryId"
+                            value={form.categoryId || ""}
+                            onChange={handleFormChange}
+                            slotProps={{ select: { native: true } }}
+                        >
+                            <option value="">Select a category</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                        </TextField>
+
+                        {/* Store Dropdown */}
+                        <TextField
+                            select
+                            label="Store"
+                            name="storeId"
+                            value={form.storeId || ""}
+                            onChange={handleFormChange}
+                            slotProps={{ select: { native: true } }}
+                        >
+                            <option value="">Select a store</option>
+                            {stores.map((store) => (
+                                <option key={store.id} value={store.id}>{store.name}</option>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            label="Image URL"
+                            name="image"
+                            value={form.image}
+                            onChange={handleFormChange}
+                        />
                     </Box>
                 </DialogContent>
                 <DialogActions>
@@ -334,6 +444,7 @@ export default function AdminProductsTable() {
                     <Button variant="contained" onClick={submitEdit}>Save</Button>
                 </DialogActions>
             </Dialog>
+
 
             {/* Delete Dialog */}
             <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
