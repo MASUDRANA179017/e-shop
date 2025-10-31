@@ -108,10 +108,10 @@ const ProductDetails = () => {
           <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-sm">
             <h3 className="text-lg font-bold mb-2">Facilities & Services</h3>
             <ul className="grid grid-cols-2 gap-2 text-gray-700">
-              <li>🚚 Free Delivery</li>
-              <li>🔄 30 Days Return</li>
-              <li>🛡️ 1 Year Warranty</li>
-              <li>📞 24/7 Support</li>
+              <li> Free Delivery</li>
+              <li>30 Days Return</li>
+              <li> 1 Year Warranty</li>
+              <li>24/7 Support</li>
             </ul>
           </div>
 
