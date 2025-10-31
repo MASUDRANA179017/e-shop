@@ -79,10 +79,12 @@ export default function AdminStoreTable() {
         try {
             // Upload to "Stores" folder
             const url = await uploadImage(file, "stores");
-            setForm((f) => ({ ...f, imageUrl:url }));
+            setForm((f) => ({ ...f, imageUrl: url }));
             setSnack({ open: true, message: "Image uploaded successfully", severity: "success" });
         } catch (err) {
             setSnack({ open: true, message: "Failed to upload image", severity: "error" });
+            console.log(err);
+
         } finally {
             setUploading(false);
         }
@@ -242,7 +244,7 @@ export default function AdminStoreTable() {
             <Dialog open={addOpen} onClose={() => setAddOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Add Store</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ mt: 1, display: "grid", gap: 2, mt: 1 }}>
+                    <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Store Name" name="name" value={form.name} onChange={handleFormChange} fullWidth sx={{ mb: 2 }} />
                         <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
                         {/* Upload Image */}
@@ -271,9 +273,10 @@ export default function AdminStoreTable() {
             <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Edit Store</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ mt: 1, display: "grid", gap: 2, mt: 1 }}>
+                    <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Store Name" name="name" value={form.name} onChange={handleFormChange} fullWidth sx={{ mb: 2 }} />
-                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth sx={{mb:2}} />
+                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth sx={{ mb: 2 }} />
+                        
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                             <Button variant="outlined" component="label" startIcon={<FaUpload />}>
                                 Change Image

@@ -10,16 +10,17 @@ const NewProductLazyLoad = () => {
   const [selectedCategory, setSelectedCategory] = useState("Featured Products");
 
   useEffect(() => {
-    fetch("/data/products.json")
+    fetch("http://localhost:8000/product/getAll")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({
           id: item.id,
+          img:item.productThumbnail,
           title: item.name,
           description: item.description,
           currentPrice: item.price / 100,
           oldPrice: item.old_price ? item.old_price / 100 : null,
-          image: item.image || "/frontend/products/product01.png",
+          image: item.productThumbnail || "/frontend/products/product01.png",
           rating: item.rating || 4,
           reviews: item.reviews || 100,
           category: item.category || "Laptop",
@@ -66,7 +67,7 @@ const NewProductLazyLoad = () => {
         {visibleItems.map((product) => (
           <div key={product.id} className="px-3">
             {/* <ProductSingle product={product} /> */}
-            <ProductLayout id={product.id} percentTag={true} roundTag={false} category={product.category.name} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+            <ProductLayout id={product.id} img={product.image} percentTag={true} roundTag={false} category={product.category.name} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
           </div>
         ))}
       </div>

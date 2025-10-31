@@ -86,6 +86,8 @@ export default function AdminUsersTable() {
             setSnack({ open: true, message: "Image uploaded successfully", severity: "success" });
         } catch (err) {
             setSnack({ open: true, message: "Upload failed", severity: "error" });
+            console.log(err);
+
         } finally {
             setUploading(false);
         }
@@ -122,6 +124,19 @@ export default function AdminUsersTable() {
             setSnack({ open: true, message: err?.message || "Status update failed", severity: "error" });
         }
     };
+
+
+      // Delete product
+        const confirmDelete = async () => {
+            try {
+                await toggleUserStatus(activeUser.id);
+                setUsers((prev) => prev.filter((p) => p.id !== activeUser.id));
+                setSnack({ open: true, message: "Product deleted successfully", severity: "info" });
+                setDeleteOpen(false);
+            } catch (err) {
+                setSnack({ open: true, message: err?.response?.data?.message || "Failed to delete", severity: "error" });
+            }
+        };
 
     return (
         <Box>
@@ -195,6 +210,34 @@ export default function AdminUsersTable() {
                 </TableContainer>
             </Paper>
 
+            {/* View Dialog */}
+            <Dialog open={viewOpen} onClose={() => setViewOpen(false)} fullWidth maxWidth="sm">
+                <DialogTitle>User Details</DialogTitle>
+                <DialogContent>
+                    {activeUser && (
+                        <Box sx={{ display: "grid", gap: 1 }}>
+                            <img
+                                src={activeUser.profileImage || "/frontend/products/product01.png"}
+                                alt={activeUser.name}
+                                style={{ width: "100%", borderRadius: 4 }}
+                            />
+                            <Typography><strong>Name:</strong> {activeUser.firstName} {activeUser.lastName}</Typography>
+                            <Typography><strong>User Name:</strong> {activeUser.username}</Typography>
+                            <Typography><strong>Email:</strong> {activeUser.email}</Typography>
+                            <Typography><strong>Role:</strong> {activeUser.role}</Typography>
+                            <TableCell>
+                                <Button size="small" variant="outlined" onClick={() => toggleStatus(activeUser)}>
+                                    {activeUser.isActive ? "Active" : "Inactive"}
+                                </Button>
+                            </TableCell>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setViewOpen(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
             {/* Edit Dialog */}
             <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Edit User</DialogTitle>
@@ -227,6 +270,18 @@ export default function AdminUsersTable() {
                 <DialogActions>
                     <Button onClick={() => setEditOpen(false)}>Cancel</Button>
                     <Button variant="contained" onClick={submitEdit}>Save</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Dialog */}
+            <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+                <DialogTitle>Delete User</DialogTitle>
+                <DialogContent>
+                    <Typography>Are you sure you want to delete {activeUser?.name}?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+                    <Button color="error" variant="contained" onClick={confirmDelete}>Delete</Button>
                 </DialogActions>
             </Dialog>
 

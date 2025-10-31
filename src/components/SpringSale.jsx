@@ -66,16 +66,17 @@ const SpringSale = () => {
     })
 
     useEffect(() => {
-        fetch("/data/products.json")
+        fetch("http://localhost:8000/product/getAll")
             .then((res) => res.json())
             .then((data) => {
                 const formatted = data.map((item) => ({
                     id: item.id,
+                    img:item.image,
                     title: item.name,
                     description: item.description,
                     currentPrice: item.price / 100,
                     oldPrice: item.old_price ? item.old_price / 100 : null,
-                    image: item.image || "/frontend/products/product01.png", // fallback
+                    image: item.productThumbnail || "/frontend/products/product01.png", // fallback
                     rating: item.rating || 4,
                     reviews: item.reviews || 100,
                     category: item.category || "Laptop",
@@ -167,7 +168,7 @@ const SpringSale = () => {
                                 {products.map((product) => (
                                     <div key={product.id} className="px-3 py-6">
                                         {/* <ProductSingle product={product} /> */}
-                                        <ProductLayout id={product.id} percentTag={false} roundTag={true} category={product.category.name} stock={true} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+                                        <ProductLayout id={product.id} img={product.image} percentTag={false} roundTag={true} category={product.category.name} stock={true} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
                                     </div>
                                 ))}
                             </Slider>

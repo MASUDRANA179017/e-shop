@@ -43,7 +43,7 @@ const ProductSlider = () => {
           description: item.description,
           currentPrice: item.price,
           oldPrice: item.old_price ? item.old_price : null,
-          image: item.image || "/frontend/products/product01.png",
+          image: item.productThumbnail || "/frontend/products/product01.png",
           rating: item.rating || 4,
           reviews: item.reviews || 100,
           category: item.category || "Laptop",
@@ -117,7 +117,7 @@ const ProductSlider = () => {
           {products.map((product) => (
             <div key={product.id} className="px-3 py-6">
               {/* <ProductSingle product={product} /> */}
-              <ProductLayout id={product.id} percentTag={true} roundTag={false} category={product.category.name} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+              <ProductLayout id={product.id} img={product.image} percentTag={true} roundTag={false} category={product.category.name} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
             </div>
           ))}
         </Slider>

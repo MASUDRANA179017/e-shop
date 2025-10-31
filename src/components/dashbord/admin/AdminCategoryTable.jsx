@@ -183,7 +183,7 @@ export default function AdminCategoryTable() {
             <Dialog open={addOpen} onClose={() => setAddOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Add Category</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ mt: 1, display: "grid", gap: 2, mt: 1 }}>
+                    <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} fullWidth />
                         <TextField label="description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
                     </Box>
@@ -200,7 +200,7 @@ export default function AdminCategoryTable() {
             <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Edit Category</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ mt: 1, display: "grid", gap: 2, mt: 1 }}>
+                    <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} fullWidth />
                         <TextField label="description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
                     </Box>
