@@ -1,33 +1,25 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
-import Dashboard from "../pages/Dashboard";
+import VendorLayout from "../components/dashboard/vendor/VendorLayout";
+import UpdateProfile from "../components/dashboard/UpdateProfile";
 
 export const VendorRoutes = (
   <>
     <Route
-      path="/vendor/dashboard"
+      path="/dashboard/vendor"
       element={
         <ProtectedRoute allowedRoles={["vendor"]}>
-          <Dashboard />
+          <VendorLayout />
         </ProtectedRoute>
       }
-    />
-    <Route
-      path="/vendor/orders"
-      element={
-        <ProtectedRoute allowedRoles={["vendor"]}>
-          <div className="p-10 text-center text-xl">Vendor Orders Page</div>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/vendor/products"
-      element={
-        <ProtectedRoute allowedRoles={["vendor"]}>
-          <div className="p-10 text-center text-xl">Vendor Products Page</div>
-        </ProtectedRoute>
-      }
-    />
+    >
+      <Route path="profile" element={<div className="p-10 text-center">
+        <UpdateProfile />
+      </div>} />
+      <Route path="my-store" element={<div className="p-10 text-center">my-store Page</div>} />
+      <Route path="my-products" element={<div className="p-10 text-center">my-product Page</div>} />
+      <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
+    </Route>
   </>
 );

@@ -21,6 +21,9 @@ const Login = () => {
 
     if (token && user) {
       if (user.role === "admin") navigate("/dashboard/admin", { replace: true });
+      if (user.role === "vendor") {
+        navigate("/dashboard/vendor")
+      }
       else if (user.role === "user") navigate("/dashboard/user", { replace: true });
     }
   }, [navigate]);

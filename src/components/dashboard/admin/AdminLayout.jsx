@@ -5,7 +5,7 @@ import { FaShoppingCart, FaStore } from "react-icons/fa";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 
-const UserLayout = () => {
+const AdminLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -81,4 +81,4 @@ const UserLayout = () => {
   );
 };
 
-export default UserLayout;
+export default AdminLayout;
