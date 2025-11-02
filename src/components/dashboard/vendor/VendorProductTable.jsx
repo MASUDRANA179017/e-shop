@@ -20,7 +20,7 @@ import { uploadImage } from "../../../@Services/uploadService";
 import { BiLoader } from "react-icons/bi";
 
 
-export default function AdminProductsTable() {
+export default function VendorProductsTable() {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);

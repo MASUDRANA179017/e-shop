@@ -21,9 +21,7 @@ const Login = () => {
 
     if (token && user) {
       if (user.role === "admin") navigate("/dashboard/admin", { replace: true });
-      if (user.role === "vendor") {
-        navigate("/dashboard/vendor")
-      }
+      else if (user.role === "vendor") navigate("/dashboard/vendor" , { replace: true });
       else if (user.role === "user") navigate("/dashboard/user", { replace: true });
     }
   }, [navigate]);
@@ -34,7 +32,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", form); // centralized call
+      const res = await api.post("/auth/login", form);
       const data = res.data;
 
       // Save tokens and user info
@@ -42,20 +40,21 @@ const Login = () => {
       localStorage.setItem("r-token", data.refresh_Token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      toast.success("Login successful! Redirecting...", {
+      if (data) {
+        toast.success("Login successful! Redirecting...", {
         position: "top-center",
-        autoClose: 2000,
-      });
-
+        autoClose: 3000,
+      })} 
       // Redirect by user role
       setTimeout(() => {
         if (data.user.role === "admin") navigate("/dashboard/admin");
+        if (data.user.role === "vendor") navigate("/dashboard/vendor");  
         else navigate("/dashboard/user");
-      }, 2000);
+      }, 5000);
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Invalid credentials, please try again.",
-        { position: "top-center", autoClose: 2500 }
+        { position: "top-center", autoClose: 4000 }
       );
       console.error("Login error:", err);
     } finally {
