@@ -1,7 +1,7 @@
 import React from "react";
 import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
-const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, totalRating, price, bg, stock, stockAmount }) => {
+const ProductLayout = ({ id,img, percentTag, roundTag, category, title, rating, totalRating, price, bg, stock, stockAmount }) => {
     const intRating = Math.floor(rating);
     const hasHalf = rating % 1 !== 0;
     const emptyStars = 5 - intRating - (hasHalf ? 1 : 0);
@@ -14,7 +14,7 @@ const ProductLayout = ({ id, percentTag, roundTag, category, title, rating, tota
             <div className="relative mb-3 sm:mb-4">
                 <img
                     className="object-cover w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px]"
-                    src="frontend/products/product01.png"
+                    src= {img}
                     alt="product"
                 />
                 {percentTag && (

@@ -1,11 +1,14 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
-import AdminLayout from "../components/dashbord/admin/AdminLayout";
-import UserDashboard from "../components/dashbord/user";
+import AdminLayout from "../components/dashboard/admin/AdminLayout";
+import UserDashboard from "../components/dashboard/user";
 import Dashboard from "../pages/Dashboard";
-import AdminUsersTable from "../components/dashbord/admin/AdminUsersTable";
-import AdminProductsTable from "../components/dashbord/admin/AdminProductsTable";
+import AdminUsersTable from "../components/dashboard/admin/AdminUsersTable";
+import AdminProductsTable from "../components/dashboard/admin/AdminProductsTable";
+import AdminCategoryTable from "../components/dashboard/admin/AdminCategoryTable";
+import AdminStoreTable from "../components/dashboard/admin/AdminStoreTable";
+import UpdateProfile from "../components/dashboard/UpdateProfile";
 
 export const AdminRoutes = (
   <>
@@ -25,10 +28,18 @@ export const AdminRoutes = (
       <Route path="users" element={<div className="p-10 text-center">
         <AdminUsersTable />
       </div>} />
+      <Route path="category" element={<div className="p-10 text-center">
+        <AdminCategoryTable />
+      </div>} />
+      <Route path="stores" element={<div className="p-10 text-center">
+        <AdminStoreTable />
+      </div>} />
       <Route path="products" element={<div className="p-10 text-center">
         <AdminProductsTable />
       </div>} />
-      <Route path="profile" element={<div className="p-10 text-center">Profile Page</div>} />
+      <Route path="profile" element={<div className="p-10 text-center">
+        <UpdateProfile/>
+      </div>} />
       <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
     </Route>
   </>

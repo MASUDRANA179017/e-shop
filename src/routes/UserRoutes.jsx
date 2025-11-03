@@ -1,10 +1,11 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
-import UserLayout from "../components/dashbord/user/UserLayout";
+import UserLayout from "../components/dashboard/user/UserLayout";
 
-import UserDashboard from "../components/dashbord/user/index";
+import UserDashboard from "../components/dashboard/user/index";
 import Dashboard from "../pages/Dashboard";
+import UpdateProfile from "../components/dashboard/UpdateProfile";
 
 
 export const UserRoutes = (
@@ -19,9 +20,11 @@ export const UserRoutes = (
     {/* Nested Pages */}
     <Route index element={<UserDashboard />} />
     <Route path="bookings" element={<div className="p-10 text-center">
-      <Dashboard/>
+      <Dashboard />
     </div>} />
-    <Route path="profile" element={<div className="p-10 text-center">Profile Page</div>} />
+    <Route path="profile" element={<div className="p-10 text-center">
+      <UpdateProfile />
+    </div>} />
     <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
   </Route>
 );

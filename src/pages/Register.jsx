@@ -12,7 +12,7 @@ export default function RegisterPage() {
   });
 
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // ✅ Correct navigation hook
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -41,7 +41,7 @@ export default function RegisterPage() {
 
       alert("Registration successful! Please login now.");
 
-      navigate("/login"); // ✅ Redirect to login page
+      navigate("/login");
     } catch (err) {
       console.error(err);
       setError("Something went wrong during registration!");

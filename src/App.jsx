@@ -29,7 +29,7 @@ if (token) {
 function App() {
   return (
     <Routes>
-      {/* 🔹 Public Routes (wrapped inside CommonLayout) */}
+      {/* Public Routes (wrapped inside CommonLayout) */}
       <Route path="/" element={<CommonLayout />}>
         <Route index element={<HomePage />} />
         <Route path="product" element={<ProductListPage />} />
@@ -38,16 +38,16 @@ function App() {
         <Route path="blog" element={<BlogPage />} />
       </Route>
 
-      {/* 🔹 Auth Routes */}
+      {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* 🔹 Role-Based Routes */}
+      {/* Role-Based Routes */}
       {AdminRoutes}
       {VendorRoutes}
       {UserRoutes}
 
-      {/* 🔹 Fallback */}
+      {/* Fallback */}
       <Route path="*" element={<Login />} />
     </Routes>
   );
