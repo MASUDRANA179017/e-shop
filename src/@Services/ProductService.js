@@ -7,6 +7,12 @@ export const getAllProducts = async () => {
   return res.data;
 };
 
+// Get all products
+export const vendorProduct = async () => {
+  const res = await api.get("/product/vendorProduct");
+  return res.data;
+};
+
 // Get single product by ID
 export const getProductById = async (id) => {
   const res = await api.get(`/product/getById/${id}`);

@@ -8,7 +8,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-
+  
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -50,7 +50,7 @@ const Login = () => {
         if (data.user.role === "admin") navigate("/dashboard/admin");
         if (data.user.role === "vendor") navigate("/dashboard/vendor");  
         else navigate("/dashboard/user");
-      }, 5000);
+      }, 3000);
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Invalid credentials, please try again.",

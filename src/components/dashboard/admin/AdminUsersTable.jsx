@@ -126,17 +126,7 @@ export default function AdminUsersTable() {
     };
 
 
-      // Delete product
-        const confirmDelete = async () => {
-            try {
-                await toggleUserStatus(activeUser.id);
-                setUsers((prev) => prev.filter((p) => p.id !== activeUser.id));
-                setSnack({ open: true, message: "Product deleted successfully", severity: "info" });
-                setDeleteOpen(false);
-            } catch (err) {
-                setSnack({ open: true, message: err?.response?.data?.message || "Failed to delete", severity: "error" });
-            }
-        };
+  
 
     return (
         <Box>
@@ -198,7 +188,7 @@ export default function AdminUsersTable() {
                                         <TableCell align="center">
                                             <Tooltip title="View"><IconButton onClick={() => openView(user)}><FaEye /></IconButton></Tooltip>
                                             <Tooltip title="Edit"><IconButton onClick={() => openEdit(user)}><FaEdit /></IconButton></Tooltip>
-                                            <Tooltip title="Delete"><IconButton onClick={() => openDelete(user)}><FaTrashAlt /></IconButton></Tooltip>
+                                            {/* <Tooltip title="Delete"><IconButton onClick={() => openDelete(user)}><FaTrashAlt /></IconButton></Tooltip> */}
                                         </TableCell>
                                     </TableRow>
                                 )) : (
@@ -273,17 +263,7 @@ export default function AdminUsersTable() {
                 </DialogActions>
             </Dialog>
 
-            {/* Delete Dialog */}
-            <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-                <DialogTitle>Delete User</DialogTitle>
-                <DialogContent>
-                    <Typography>Are you sure you want to delete {activeUser?.name}?</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-                    <Button color="error" variant="contained" onClick={confirmDelete}>Delete</Button>
-                </DialogActions>
-            </Dialog>
+         
 
             {/* Snackbar */}
             <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>

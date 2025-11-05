@@ -9,7 +9,7 @@ import {
 
 import { FaEdit, FaTrashAlt, FaSearch, FaRegEye, FaUpload } from "react-icons/fa";
 import {
-    getAllProducts,
+    vendorProduct,
     createProduct,
     updateProduct,
     deleteProduct,
@@ -41,11 +41,11 @@ export default function VendorProductsTable() {
 
     const [uploading, setUploading] = useState(false);
 
-    // Fetch all products
+    // Fetch each vendor products
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            const data = await getAllProducts();
+            const data = await vendorProduct();
             setProducts(data || []);
         } catch (err) {
             setError(err?.response?.data?.message || "Failed to load products");
@@ -131,7 +131,7 @@ export default function VendorProductsTable() {
         } catch (err) {
             setSnack({ open: true, message: "Thumbnail upload failed", severity: "error" });
             console.log(err);
-            
+
         } finally {
             setUploading(false);
         }
@@ -149,7 +149,7 @@ export default function VendorProductsTable() {
         } catch (err) {
             setSnack({ open: true, message: "Gallery upload failed", severity: "error" });
             console.log(err);
-            
+
         } finally {
             setUploading(false);
         }
