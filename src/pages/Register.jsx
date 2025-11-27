@@ -19,10 +19,9 @@ export default function RegisterPage() {
     confirmPassword: "",
     role: "user",
   });
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
 
   const handleProfileUpload = async (e) => {
     const file = e.target.files[0];
@@ -30,111 +29,86 @@ export default function RegisterPage() {
     setUploading(true);
     try {
       const url = await uploadImage(file, "profiles");
-      setForm((f) => ({ ...f, profileImage: url }));
+      setForm((prev) => ({ ...prev, profileImage: url }));
     } catch (err) {
-      console.log(err);
-      setError("Profile upload failed");
+      console.error(err);
+      toast.error("Profile upload failed");
     } finally {
       setUploading(false);
     }
   };
 
   const handleFormChange = (e) => {
-    const { name, value, type } = e.target;
-    setForm((s) => ({
-      ...s,
-      [name]: type === "number" ? Number(value) : value,
-    }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
+    // Validation
     if (!form.firstName || !form.lastName) {
-      toast.error("Name Field required", {
-        position: "top-center",
-        autoClose: 3000,
-      })
+      toast.error("First Name and Last Name are required");
+      return;
+    }
+    if (!form.username || !form.email) {
+      toast.error("Username and Email are required");
       return;
     }
     if (!form.profileImage) {
-      toast.error("Profile picture is required!", {
-        position: "top-center",
-        autoClose: 3000,
-      });
+      toast.error("Profile Image is required");
       return;
     }
-
-    if (!form.email || !form.username) {
-      toast.error("Please fill all required fields!", {
-        position: "top-center",
-        autoClose: 3000,
-      });
-      return;
-    }
-
     if (form.password !== form.confirmPassword) {
-      toast.error("password and confirm password don't macing ", {
-        position: "top-center",
-        autoClose: 3000,
-      })
+      toast.error("Passwords do not match");
       return;
     }
 
     try {
-      const res = await api.post("auth/register", form);
+      const payload = {
+        email: form.email,
+        password: form.password,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        username: form.username,
+        profileImage: form.profileImage,
+        role: form.role,
+      };
+
+      const res = await api.post("auth/register", payload);
       const data = res.data;
+
       if (!data) throw new Error("Registration failed");
 
-      alert("Registration successful! Verification mail sent.");
+      toast.success("Registration successful! Verification email sent.", { autoClose: 3000 });
 
-      // auto login after register
+      // Auto login after register
       const loginRes = await api.post("auth/login", {
         email: form.email,
         password: form.password,
       });
+
       const loginData = loginRes.data;
 
-
-      // Save tokens and user info
+      // Save tokens & user info
       localStorage.setItem("token", loginData.access_Token);
       localStorage.setItem("r-token", loginData.refresh_Token);
       localStorage.setItem("user", JSON.stringify(loginData.user));
 
-      if (loginData) {
-        toast.success("Login successful! Redirecting...", {
-          position: "top-center",
-          autoClose: 3000,
-        })
-      }
+      toast.success("Login successful! Redirecting...", { autoClose: 3000 });
 
-
-      //Redirect by user role
+      // Redirect by role
       setTimeout(() => {
-        if (data.user.role === "admin") navigate("/dashboard/admin");
-        if (data.user.role === "vendor") navigate("/dashboard/vendor");
+        if (loginData.user.role === "admin") navigate("/dashboard/admin");
+        else if (loginData.user.role === "vendor") navigate("/dashboard/vendor");
         else navigate("/dashboard/user");
       }, 3000);
+
     } catch (err) {
-      console.log(err);
-
-      const msg = err?.response?.data?.message?.toLowerCase() || "";
-
-      if (msg.includes("User already exists") || msg.includes("email")) {
-        toast.error("This email already has an account. Please login.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-        return;
-      }
-
-
-      toast.error(err?.response?.data?.message || "Something went wrong!", {
-        position: "top-center"
-      });
+      console.error(err);
+      const msg = err?.response?.data?.message || "Something went wrong!";
+      toast.error(msg, { autoClose: 3000 });
     }
-
   };
 
   return (
@@ -145,30 +119,24 @@ export default function RegisterPage() {
           Create an Account
         </h2>
 
-        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="space-y-2 ">
-          <div className="flex flex-row-l gap-5 items-center justify-center ">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Profile Image */}
+          <div className="flex flex-col items-center gap-2">
             {form.profileImage && (
-              <Box sx={{ textAlign: "center", mt: 2 }}>
-                <img
-                  src={form.profileImage}
-                  alt="Profile Preview"
-                  style={{ width: 250, height: 250, borderRadius: "50%", objectFit: "cover" }}
-                />
-              </Box>
+              <img
+                src={form.profileImage}
+                alt="Profile Preview"
+                className="w-40 h-40 rounded-full object-cover"
+              />
             )}
-
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Button variant="outlined" component="label" startIcon={<FaUpload />}>
-                Upload Profile Picture
-                <input hidden type="file" accept="image/*" onChange={handleProfileUpload} />
-              </Button>
-              {uploading && <BiLoader size={20} />}
-            </Box>
+            <Button variant="outlined" component="label" startIcon={<FaUpload />}>
+              Upload Profile Picture
+              <input hidden type="file" accept="image/*" onChange={handleProfileUpload} />
+            </Button>
+            {uploading && <BiLoader size={24} />}
           </div>
 
-
+          {/* Name Fields */}
           <div className="grid grid-cols-2 gap-3">
             <input
               type="text"
@@ -194,7 +162,6 @@ export default function RegisterPage() {
             placeholder="Username"
             value={form.username}
             onChange={handleFormChange}
-            required
             className="border rounded-lg px-3 py-2 w-full"
           />
 
@@ -204,7 +171,6 @@ export default function RegisterPage() {
             placeholder="Email"
             value={form.email}
             onChange={handleFormChange}
-            required
             className="border rounded-lg px-3 py-2 w-full"
           />
 
@@ -214,7 +180,6 @@ export default function RegisterPage() {
             placeholder="Password"
             value={form.password}
             onChange={handleFormChange}
-            required
             className="border rounded-lg px-3 py-2 w-full"
           />
           <input
@@ -223,7 +188,6 @@ export default function RegisterPage() {
             placeholder="Confirm Password"
             value={form.confirmPassword}
             onChange={handleFormChange}
-            required
             className="border rounded-lg px-3 py-2 w-full"
           />
 

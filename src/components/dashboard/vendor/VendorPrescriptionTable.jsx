@@ -23,6 +23,12 @@ import {
   InputAdornment,
   FormControlLabel,
   Checkbox,
+  InputLabel,
+  Select,
+  MenuItem,
+  Avatar,
+  ListItemText,
+  Autocomplete,
 } from "@mui/material";
 
 import { FaEdit, FaTrashAlt, FaSearch, FaUpload } from "react-icons/fa";
@@ -41,6 +47,7 @@ import { getAllUsers } from "../../../@Services/authService";
 import { getAllProducts } from "../../../@Services/ProductService";
 
 import { uploadImage } from "../../../@Services/uploadService";
+import { getAllStores } from "../../../@Services/StoreService";
 
 export default function VendorPrescriptionTable() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -57,6 +64,26 @@ export default function VendorPrescriptionTable() {
   const [uploading, setUploading] = useState(false);
 
   const [productsList, setProductsList] = useState([]);
+  const [usersList, setUsersList] = useState([]);
+  const [storesList, setStoresList] = useState([]);
+
+  const loggedUser = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    async function fetchStores() {
+      const stores = await getAllStores();
+      setStoresList(stores);
+    }
+    fetchStores();
+  }, []);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      const users = await getAllUsers();
+      setUsersList(users);
+    }
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -170,32 +197,40 @@ export default function VendorPrescriptionTable() {
     }
   };
 
-  // Open Add
+  // OPEN ADD
   const openAdd = () => {
-    const ownersList = getAllUsers();
     setForm({
       title: "",
+      advice: "",
       description: "",
       note: "",
-      advice: "",
+      storeId: null,
+      owner: null,
+      products: [],
       visitingDate: "",
       nextVisitingDate: "",
-      owner: [...ownersList],
-      products: [...productsList],
+      imageUrl: "",
     });
     setAddOpen(true);
   };
 
-  // Open Edit
+  // OPEN EDIT
   const openEdit = (item) => {
     setActiveItem(item);
+
     setForm({
-      patientName: item.patientName,
-      doctorName: item.doctorName,
-      medicine: item.medicine,
-      note: item.note,
-      imageUrl: item.imageUrl,
+      title: item.title || "",
+      advice: item.advice || "",
+      description: item.description || "",
+      note: item.note || "",
+      storeId: item.store?.id || null,
+      owner: item.owner || null,
+      products: item.products || [],
+      visitingDate: item.visitingDate || "",
+      nextVisitingDate: item.nextVisitingDate || "",
+      imageUrl: item.imageUrl || "",
     });
+
     setEditOpen(true);
   };
 
@@ -278,7 +313,7 @@ export default function VendorPrescriptionTable() {
                   <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Advice</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Owner</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Pet Owner</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Products</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Visiting Date</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Next Visit</TableCell>
@@ -464,48 +499,71 @@ export default function VendorPrescriptionTable() {
               multiline
             />
 
-            {/* Owner Info */}
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <TextField
-                label="Owner First Name"
-                name="ownerFirstName"
-                value={form.owner?.firstName || ""}
-                onChange={handleFormChange}
-              />
-              <TextField
-                label="Owner Last Name"
-                name="ownerLastName"
-                value={form.owner?.lastName || ""}
-                onChange={handleFormChange}
-              />
-            </Box>
+            {/* Store id */}
+            <Autocomplete
+              options={storesList.filter(
+                (store) => store.owner?.id === loggedUser.id
+              )}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                storesList.find((store) => store.id === form.storeId) || null
+              }
+              onChange={(event, newValue) =>
+                setForm((prev) => ({ ...prev, storeId: newValue?.id || null }))
+              }
+              isOptionEqualToValue={(option, value) => option?.id === value?.id}
+              renderOption={(props, option) => (
+                <Box
+                  component="li"
+                  {...props}
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <Avatar
+                    src={option.imageUrl}
+                    alt={option.name}
+                    sx={{ width: 30, height: 30 }}
+                  />
+                  <Typography sx={{ color: "black" }}>{option.name}</Typography>
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField {...params} label="Select Your Store" />
+              )}
+            />
 
-            {/* Image Upload */}
-            <Button
-              variant="outlined"
-              component="label"
-              startIcon={<FaUpload />}
-            >
-              Upload Image
-              <input
-                hidden
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </Button>
-            {uploading && <BiLoader size={20} />}
-            {form.imageUrl && (
-              <Box sx={{ textAlign: "center" }}>
-                <img
-                  src={form.imageUrl}
-                  alt="Prescription"
-                  style={{ width: 150, height: 100, borderRadius: 8 }}
-                />
-              </Box>
-            )}
+            {/* Owner Autocomplete */}
+            <Autocomplete
+              options={usersList}
+              getOptionLabel={(option) =>
+                `${option.firstName + " " + option.lastName}` || ""
+              }
+              value={form.owner || null}
+              onChange={(event, newValue) =>
+                setForm((prev) => ({ ...prev, owner: newValue }))
+              }
+              isOptionEqualToValue={(option, value) => option?.id === value?.id}
+              renderOption={(props, option) => (
+                <Box
+                  component="li"
+                  {...props}
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <Avatar
+                    src={option.profileImage}
+                    alt={option.firstName}
+                    sx={{ width: 30, height: 30 }}
+                  />
+                  <Typography sx={{ color: "black" }}>
+                    {option.firstName} {option.lastName || "Unnamed"}
+                  </Typography>
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField {...params} label="Select Owner" />
+              )}
+            />
 
-            {/* Product Selection */}
+            {/* Products */}
             <Typography variant="subtitle2">Select Products</Typography>
             {productsList.map((prod) => (
               <FormControlLabel
@@ -526,15 +584,30 @@ export default function VendorPrescriptionTable() {
             <TextField
               label="Visiting Date"
               type="date"
-              value={form.visitingDate?.slice(0, 10) || ""}
-              onChange={handleFormChange}
+              value={
+                form.visitingDate
+                  ? new Date(form.visitingDate).toISOString().slice(0, 10)
+                  : ""
+              }
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, visitingDate: e.target.value }))
+              }
               InputLabelProps={{ shrink: true }}
             />
             <TextField
               label="Next Visiting Date"
               type="date"
-              value={form.nextVisitingDate?.slice(0, 10) || ""}
-              onChange={handleFormChange}
+              value={
+                form.nextVisitingDate
+                  ? new Date(form.nextVisitingDate).toISOString().slice(0, 10)
+                  : ""
+              }
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  nextVisitingDate: e.target.value,
+                }))
+              }
               InputLabelProps={{ shrink: true }}
             />
           </Box>
@@ -586,45 +659,34 @@ export default function VendorPrescriptionTable() {
               multiline
             />
 
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <TextField
-                label="Owner First Name"
-                name="ownerFirstName"
-                value={form.owner?.firstName || ""}
-                onChange={handleFormChange}
-              />
-              <TextField
-                label="Owner Last Name"
-                name="ownerLastName"
-                value={form.owner?.lastName || ""}
-                onChange={handleFormChange}
-              />
-            </Box>
-
-            {/* Change Image */}
-            <Button
-              variant="outlined"
-              component="label"
-              startIcon={<FaUpload />}
-            >
-              Change Image
-              <input
-                hidden
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </Button>
-            {uploading && <BiLoader size={20} />}
-            {form.imageUrl && (
-              <Box sx={{ textAlign: "center" }}>
-                <img
-                  src={form.imageUrl}
-                  alt="Prescription"
-                  style={{ width: 150, height: 100, borderRadius: 8 }}
-                />
-              </Box>
-            )}
+            <Autocomplete
+              options={usersList}
+              getOptionLabel={(option) => option.name || ""}
+              value={form.owner || null}
+              onChange={(event, newValue) =>
+                setForm((prev) => ({ ...prev, owner: newValue }))
+              }
+              isOptionEqualToValue={(option, value) => option?.id === value?.id}
+              renderOption={(props, option) => (
+                <Box
+                  component="li"
+                  {...props}
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <Avatar
+                    src={option.profileImage}
+                    alt={option.name}
+                    sx={{ width: 30, height: 30 }}
+                  />
+                  <Typography sx={{ color: "black" }}>
+                    {option.firstName + " " + option.lastName || "Unnamed"}
+                  </Typography>
+                </Box>
+              )}
+              renderInput={(params) => (
+                <TextField {...params} label="Select Owner" />
+              )}
+            />
 
             {/* Products */}
             <Typography variant="subtitle2">Select Products</Typography>
@@ -643,19 +705,34 @@ export default function VendorPrescriptionTable() {
               />
             ))}
 
-            {/* Visiting Dates */}
             <TextField
               label="Visiting Date"
               type="date"
-              value={form.visitingDate?.slice(0, 10) || ""}
-              onChange={handleFormChange}
+              value={
+                form.visitingDate
+                  ? new Date(form.visitingDate).toISOString().slice(0, 10)
+                  : ""
+              }
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, visitingDate: e.target.value }))
+              }
               InputLabelProps={{ shrink: true }}
             />
+
             <TextField
               label="Next Visiting Date"
               type="date"
-              value={form.nextVisitingDate?.slice(0, 10) || ""}
-              onChange={handleFormChange}
+              value={
+                form.nextVisitingDate
+                  ? new Date(form.nextVisitingDate).toISOString().slice(0, 10)
+                  : ""
+              }
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  nextVisitingDate: e.target.value,
+                }))
+              }
               InputLabelProps={{ shrink: true }}
             />
           </Box>

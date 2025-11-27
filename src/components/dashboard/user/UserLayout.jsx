@@ -3,7 +3,7 @@ import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
 import { CiSettings } from "react-icons/ci";
 import { FaShoppingCart } from "react-icons/fa";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-
+import { FaShop } from "react-icons/fa6";
 
 const UserLayout = () => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const UserLayout = () => {
     { to: "/dashboard/user", label: "Home", icon: <BiHome size={18} /> },
     { to: "/dashboard/user/bookings", label: "My Bookings", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/user/profile", label: "Profile", icon: <BiUser size={18} /> },
+    { to: "/dashboard/user/shop-create", label: "Sell Account Create", icon: <FaShop size={18} /> },
     { to: "/dashboard/user/settings", label: "Settings", icon: <CiSettings size={18} /> },
   ];
 
