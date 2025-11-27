@@ -6,6 +6,7 @@ import UpdateProfile from "../components/dashboard/UpdateProfile";
 import VendorProductsTable from "../components/dashboard/vendor/VendorProductTable";
 import VendorStoreTable from "../components/dashboard/vendor/VendorStoreTable";
 import UserDashboard from "../components/dashboard/user";
+import VendorPrescriptionTable from "../components/dashboard/vendor/VendorPrescriptionTable";
 
 export const VendorRoutes = (
   <>
@@ -26,6 +27,10 @@ export const VendorRoutes = (
       </div>} />
       <Route path="my-products" element={<div className="p-10 text-center">
         <VendorProductsTable/>
+      </div>} />
+
+      <Route path="prescriptions" element={<div className="p-10 text-center">
+        <VendorPrescriptionTable/>
       </div>} />
       <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
     </Route>

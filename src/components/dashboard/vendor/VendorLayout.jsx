@@ -1,6 +1,6 @@
 import React from "react";
 import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
-import { FaStore, FaShoppingCart } from "react-icons/fa";
+import { FaStore, FaShoppingCart, FaFileInvoice } from "react-icons/fa";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 const VendorLayout = () => {
@@ -18,6 +18,7 @@ const VendorLayout = () => {
     { to: "/dashboard/vendor", label: "Home", icon: <BiHome size={18} /> },
     { to: "/dashboard/vendor/my-store", label: "My Store", icon: <FaStore size={18} /> },
     { to: "/dashboard/vendor/my-products", label: "My Products", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/vendor/prescriptions", label: "Prescription", icon: <FaFileInvoice size={18} /> },
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
   ];
 
@@ -25,7 +26,7 @@ const VendorLayout = () => {
     <div className="flex min-h-screen bg-gray-100">
       <aside className="w-64 bg-white shadow-lg fixed h-full flex flex-col">
         <div className="p-5 text-center font-bold text-2xl border-b border-gray-200 text-green-600">
-          Vendor Dashboard
+          {user.firstName + " " + user.lastName}
         </div>
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => (
