@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Container from "../commonLayouts/Container";
+import Container from "../../commonLayouts/Container";
 import { SiLibreofficewriter } from "react-icons/si";
 
 const BlogGridView = () => {

@@ -1,7 +1,7 @@
 // src/pages/ProductDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import ProductImageSlider from "../commonLayouts/ProductImageSlide";
+import ProductImageSlider from "../../commonLayouts/ProductImageSlide";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const ProductDetails = () => {
 
 
   useEffect(() => {
-    fetch("http://localhost:8000/product/getAll")
+    fetch("http://localhost:3000/product/getAll")
       .then((res) => res.json())
       .then((data) => {
         const foundProduct = data.find((item) => item.id === parseInt(id));

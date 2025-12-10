@@ -1,13 +1,13 @@
 import React from "react";
-import QuackService from "../components/QuackService.jsx";
-import NewProductLazyLoad from "../components/product/NewProductLazyLoad";
-import { Banner, Banner2 } from "../components/banner/Banner";
-import ProductSlider from "../components/product/ProductSlide";
-import Bestseller from "../components/Bestseller.jsx";
+import QuackService from "../components/frontend/QuackService.jsx";
+import NewProductLazyLoad from "../components/frontend/product/NewProductLazyLoad.jsx";
+import { Banner, Banner2 } from "../components/frontend/banner/Banner.jsx";
+import ProductSlider from "../components/frontend/product/ProductSlide";
+import Bestseller from "../components/frontend/Bestseller.jsx";
 
-import SpringSale from "../components/SpringSale.jsx";
-import FAQ from "../components/FAQ.jsx";
-import Blog from "../components/blog/index.jsx";
+import SpringSale from "../components/frontend/SpringSale.jsx";
+import FAQ from "../components/frontend/FAQ.jsx";
+import Blog from "../components/frontend/blog";
 
 
 

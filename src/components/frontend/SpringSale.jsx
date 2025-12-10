@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Container from './commonLayouts/Container'
-import ProductLayout from './commonLayouts/ProductLayout'
+import Container from '../commonLayouts/Container'
+import ProductLayout from '../commonLayouts/ProductLayout'
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";

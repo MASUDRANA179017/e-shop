@@ -2,7 +2,7 @@ import React from "react";
 import BannerProduct from "./BannerProduct";
 import BannerFreeShipping from "./BannerFreeShipping";
 import BannerBlackFriday from "./BannerBlackFriday";
-import Container from "../commonLayouts/Container";
+import Container from "../../commonLayouts/Container";
 
 // Full-width main banner
 export const Banner = () => {

@@ -17,7 +17,7 @@ const VendorLayout = () => {
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const navItems = [
-    { to: "/dashboard/vendor/", label: "Dashboard", icon: <BiHome size={18} /> },
+    { to: "/dashboard/vendor", label: "Dashboard", icon: <BiHome size={18} /> },
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
     { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={18} /> },
     { to: "/dashboard/vendor/my-coupons", label: "My Coupons List", icon: <FaStore size={18} /> },

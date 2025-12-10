@@ -1,7 +1,7 @@
 import React from 'react'
-import NewProductLazyLoad from '../components/product/NewProductLazyLoad'
+import NewProductLazyLoad from '../components/frontend/product/NewProductLazyLoad'
 import Container from '../components/commonLayouts/Container'
-import SidebarFilter from '../components/SidebarFilter'
+import SidebarFilter from '../components/frontend/SidebarFilter'
 
 export const ProductListPage = () => {
   return (

@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductSingle from "./ProductSingle";
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
-import ProductLayout from "../commonLayouts/ProductLayout";
+import ProductLayout from "../../commonLayouts/ProductLayout";
 
 
 
@@ -34,7 +34,7 @@ const ProductSlider = () => {
 
   useEffect(() => {
     // fetch("/data/products.json")
-    fetch("http://localhost:8000/product/getAll")
+    fetch("http://localhost:3000/product/getAll")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({

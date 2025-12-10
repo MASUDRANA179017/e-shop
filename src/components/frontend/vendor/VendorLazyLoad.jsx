@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ProductSingle from "./ProductSingle";
-import ProductLayout from "../commonLayouts/ProductLayout";
+import ProductLayout from "../../commonLayouts/ProductLayout";
 
 const PRODUCTS_PER_LOAD = 8;
 
-const NewProductLazyLoad = () => {
+const VendorLazyLoad = () => {
   const [products, setProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(PRODUCTS_PER_LOAD);
   const [selectedCategory, setSelectedCategory] = useState("Featured Products");
 
+  
+
   useEffect(() => {
-    fetch("http://localhost:8000/product/getAll")
+    fetch("http://localhost:3000/product/getAll")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({
@@ -86,4 +88,4 @@ const NewProductLazyLoad = () => {
   );
 };
 
-export default NewProductLazyLoad;
+export default VendorLazyLoad;
