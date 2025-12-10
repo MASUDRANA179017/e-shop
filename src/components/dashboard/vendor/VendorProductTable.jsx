@@ -688,7 +688,7 @@ export default function VendorProductsTable() {
               ))}
             </TextField>
 
-            {/* User's own store only */}
+            {/* Store (User's own store visible only) */}
             <TextField
               select
               label="Store"
@@ -697,7 +697,6 @@ export default function VendorProductsTable() {
               onChange={handleFormChange}
               slotProps={{ select: { native: true } }}
             >
-              <option value="">Select Your Store</option>
               {stores
                 .filter((s) => s.ownerId === user.id)
                 .map((store) => (

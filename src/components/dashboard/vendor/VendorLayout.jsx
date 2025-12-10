@@ -1,7 +1,9 @@
 import React from "react";
 import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
 import { FaStore, FaShoppingCart, FaFileInvoice } from "react-icons/fa";
+import { CiSettings } from "react-icons/ci";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
 
 const VendorLayout = () => {
   const navigate = useNavigate();
@@ -15,11 +17,25 @@ const VendorLayout = () => {
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const navItems = [
-    { to: "/dashboard/vendor", label: "Home", icon: <BiHome size={18} /> },
-    { to: "/dashboard/vendor/my-store", label: "My Store", icon: <FaStore size={18} /> },
-    { to: "/dashboard/vendor/my-products", label: "My Products", icon: <FaShoppingCart size={18} /> },
-    { to: "/dashboard/vendor/prescriptions", label: "Prescription", icon: <FaFileInvoice size={18} /> },
+    { to: "/dashboard/vendor/", label: "Dashboard", icon: <BiHome size={18} /> },
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
+    { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={18} /> },
+    { to: "/dashboard/vendor/my-coupons", label: "My Coupons List", icon: <FaStore size={18} /> },
+    
+    // coupons table
+    // marketing plan
+    // My Clients / users
+    { to: "/dashboard/vendor/prescriptions", label: "Memo Lists", icon: <FaFileInvoice size={18} /> },
+    // My Memo List
+
+    { to: "/dashboard/vendor/my-products", label: "Service Products", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/vendor/settings", label: "system Settings", icon: <CiSettings size={18} /> },
+     // {/* products  */}
+
+     // {/* Pet Details */}
+     // {/* Accounting  */}
+     // {/* Inventory */}
+     // {/* Note and reminders  */}
   ];
 
   return (
