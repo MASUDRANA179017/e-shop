@@ -1,31 +1,31 @@
-// src/@Services/productService.js
+// src/@Services/CategoryService.js
 import api from "../api/axiosInstance";
 
-// Get all Stores
+// Get all Categories
 export const getAllCategory = async () => {
-  const res = await api.get("/category/All");
+  const res = await api.get("/category/all");
   return res.data;
 };
 
-// Get single Store by ID
+// Get single Category by ID
 export const getCategoryById = async (id) => {
   const res = await api.get(`/category/${id}`);
   return res.data;
 };
 
-//Create new Store
+// Create new Category
 export const createCategory = async (data) => {
   const res = await api.post("/category/create", data);
   return res.data;
 };
 
-// Update Store by ID
+// Update Category by ID
 export const updateCategory = async (id, data) => {
   const res = await api.put(`/category/update/${id}`, data);
   return res.data;
 };
 
-// Delete store by ID
+// Delete Category by ID
 export const deleteCategory = async (id) => {
   const res = await api.delete(`/category/delete/${id}`);
   return res.data;

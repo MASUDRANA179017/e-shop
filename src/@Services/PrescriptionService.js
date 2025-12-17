@@ -1,4 +1,4 @@
-// src/@Services/productService.js
+// src/@Services/PrescriptionService.js
 import api from "../api/axiosInstance";
 
 // Get all prescriptions
