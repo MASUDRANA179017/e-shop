@@ -4,10 +4,12 @@ import Container from "../commonLayouts/Container";
 import { FaShoppingCart, FaUser, FaSearch, FaHeart, FaWallet } from "react-icons/fa";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const MiddleBar = () => {
   const { cartTotal, cartCount } = useCart();
   const { wishlistItems } = useWishlist();
+  const { formatPrice } = useCurrency();
 
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
@@ -74,7 +76,7 @@ const MiddleBar = () => {
             </div>
             <div className="hidden sm:block">
               <div className="text-sm">Cart</div>
-              <div className="text-md font-semibold text-gray-800">${cartTotal.toFixed(2)}</div>
+              <div className="text-md font-semibold text-gray-800">{formatPrice(cartTotal)}</div>
             </div>
           </Link>
 

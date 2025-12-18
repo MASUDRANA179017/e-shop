@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import ProductImageSlider from "../../commonLayouts/ProductImageSlide";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
+import { useCurrency } from "../../../context/CurrencyContext";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const ProductDetails = () => {
@@ -15,9 +16,10 @@ const ProductDetails = () => {
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { selectedCountry, formatPrice } = useCurrency();
 
-  const country = localStorage.getItem("selectedCountry")
-  const { code, currency, flag, name } = country ? JSON.parse(country) : {}; // Added JSON.parse and fallback
+  // Derived from context now
+  const { code, flag, name } = selectedCountry || {};
 
 
 
@@ -107,7 +109,7 @@ const ProductDetails = () => {
             {flag && <img src={flag} alt={name} className="w-6 h-4 rounded" />}
             {code && <span className="text-gray-600 text-sm">{code}</span>}
             <div className="text-3xl text-red-600 font-bold">
-              {currency || "$"} {product.price}
+              {formatPrice(product.price)}
             </div>
           </div>
 
@@ -193,7 +195,7 @@ const ProductDetails = () => {
                   className="w-full h-40 object-cover rounded"
                 />
                 <h4 className="mt-2 text-sm font-semibold">{p.name}</h4>
-                <p className="text-red-600 font-semibold">${p.price}</p>
+                <p className="text-red-600 font-semibold">{formatPrice(p.price)}</p>
                 <Link
                   to={`/product/${p.id}`}
                   className="text-blue-500 text-xs hover:underline"
@@ -254,7 +256,7 @@ const ProductDetails = () => {
                     className="w-full h-40 object-cover rounded"
                   />
                   <h4 className="mt-2 text-sm font-semibold">{p.name}</h4>
-                  <p className="text-red-600 font-semibold">${p.price}</p>
+                  <p className="text-red-600 font-semibold">{formatPrice(p.price)}</p>
                   <Link
                     to={`/product/${p.id}`}
                     className="text-blue-500 text-xs hover:underline"

@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
+import { useCurrency } from "../../../context/CurrencyContext";
 
 const ProductSingle = ({ product }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { formatPrice } = useCurrency();
 
   if (!product) return null;
 
@@ -79,7 +81,7 @@ const ProductSingle = ({ product }) => {
 
         </div>
         <div className="flex justify-between items-center mt-2">
-            <h3 className="text-red-600 font-semibold">${product.currentPrice}</h3>
+            <h3 className="text-red-600 font-semibold">{formatPrice(product.currentPrice)}</h3>
             <button
                 onClick={handleAddToCart}
                 className="bg-gray-100 hover:bg-[#FF624C] hover:text-white text-gray-800 p-2 rounded-full transition-colors duration-300"

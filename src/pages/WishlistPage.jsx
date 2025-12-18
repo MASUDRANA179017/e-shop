@@ -1,6 +1,7 @@
 import React from "react";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
+import { useCurrency } from "../context/CurrencyContext";
 import { Link } from "react-router-dom";
 import Container from "../components/commonLayouts/Container";
 import { FaTrash, FaShoppingCart } from "react-icons/fa";
@@ -8,6 +9,7 @@ import { FaTrash, FaShoppingCart } from "react-icons/fa";
 const WishlistPage = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { formatPrice } = useCurrency();
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -58,7 +60,7 @@ const WishlistPage = () => {
                 <p className="text-sm text-gray-500 mb-3">{item.brand?.name}</p>
                 
                 <div className="flex items-center justify-between mb-4">
-                    <span className="text-lg font-bold text-[#FF624C]">${Number(item.price).toFixed(2)}</span>
+                    <span className="text-lg font-bold text-[#FF624C]">{formatPrice(item.price)}</span>
                 </div>
 
                 <div className="flex gap-2">

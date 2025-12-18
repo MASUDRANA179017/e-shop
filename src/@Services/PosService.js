@@ -58,6 +58,12 @@ export const getSessionTransactions = async (sessionId) => {
   return res.data;
 };
 
+// Get all transactions for a store
+export const getStoreTransactions = async (storeId) => {
+  const res = await api.get(`/pos/transactions/store/${storeId}`);
+  return res.data;
+};
+
 // Refund a transaction
 export const refundTransaction = async (transactionId) => {
   const res = await api.put(`/pos/transaction/refund/${transactionId}`);

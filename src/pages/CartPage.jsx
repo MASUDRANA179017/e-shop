@@ -1,11 +1,13 @@
 import React from "react";
 import { useCart } from "../context/CartContext";
+import { useCurrency } from "../context/CurrencyContext";
 import { Link } from "react-router-dom";
 import Container from "../components/commonLayouts/Container";
 import { FaTrash, FaMinus, FaPlus } from "react-icons/fa";
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+  const { formatPrice } = useCurrency();
 
   if (cartItems.length === 0) {
     return (
@@ -59,7 +61,7 @@ const CartPage = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-gray-800">${Number(item.price).toFixed(2)}</td>
+                      <td className="py-4 px-6 text-gray-800">{formatPrice(item.price)}</td>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2 border border-gray-300 rounded-md w-max px-2 py-1">
                           <button
@@ -79,7 +81,7 @@ const CartPage = () => {
                         </div>
                       </td>
                       <td className="py-4 px-6 font-semibold text-gray-800">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity)}
                       </td>
                       <td className="py-4 px-6">
                         <button
@@ -106,7 +108,7 @@ const CartPage = () => {
               <h2 className="text-xl font-bold mb-4 text-gray-800">Cart Summary</h2>
               <div className="flex justify-between mb-2 text-gray-600">
                 <span>Subtotal</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>{formatPrice(cartTotal)}</span>
               </div>
               <div className="flex justify-between mb-4 text-gray-600">
                 <span>Shipping</span>
@@ -115,7 +117,7 @@ const CartPage = () => {
               <div className="border-t border-gray-200 my-4"></div>
               <div className="flex justify-between mb-6 text-lg font-bold text-gray-800">
                 <span>Total</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>{formatPrice(cartTotal)}</span>
               </div>
               <Link
                 to="/checkout" // You might need to create this route later or point to login

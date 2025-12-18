@@ -1,6 +1,6 @@
 import React from "react";
 import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
-import { FaStore, FaShoppingCart, FaFileInvoice } from "react-icons/fa";
+import { FaStore, FaShoppingCart, FaFileInvoice, FaCashRegister } from "react-icons/fa";
 import { CiSettings } from "react-icons/ci";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
@@ -18,6 +18,8 @@ const VendorLayout = () => {
 
   const navItems = [
     { to: "/dashboard/vendor", label: "Dashboard", icon: <BiHome size={18} /> },
+    { to: "/dashboard/vendor/pos", label: "POS System", icon: <FaCashRegister size={18} /> },
+    { to: "/dashboard/vendor/my-orders", label: "Order History", icon: <FaFileInvoice size={18} /> },
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
     { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={18} /> },
     { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaStore size={18} /> },

@@ -1,20 +1,77 @@
 import React from "react";
-import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar, FaHeart, FaRegHeart, FaEye, FaBolt, FaCalendarCheck } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
+import { useCurrency } from "../../context/CurrencyContext";
 
-const ProductLayout = ({ id,img, percentTag, roundTag, category, title, rating, totalRating, price, bg, stock, stockAmount }) => {
+const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating, totalRating, price, bg, stock, stockAmount }) => {
     const intRating = Math.floor(rating);
     const hasHalf = rating % 1 !== 0;
     const emptyStars = 5 - intRating - (hasHalf ? 1 : 0);
 
+    const { addToCart } = useCart();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const { formatPrice } = useCurrency();
+    const navigate = useNavigate();
+
+    const productObj = {
+        id,
+        name: title,
+        price,
+        image: img,
+        thumbnail: img,
+        category: { name: category }
+    };
+    
+    // ... rest of code
+    
+    // In JSX:
+    // <p className="text-base sm:text-lg font-['Montserrat'] font-semibold mb-1 sm:mb-2">{formatPrice(price)}</p>
+
+    const isWishlisted = isInWishlist(id);
+    const isService = category?.toLowerCase().includes("service") || category?.toLowerCase().includes("booking");
+
+    const handleAddToCart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(productObj);
+    };
+
+    const handleWishlist = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isWishlisted) {
+            removeFromWishlist(id);
+        } else {
+            addToWishlist(productObj);
+        }
+    };
+
+    const handleBuyNow = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(productObj);
+        navigate('/cart');
+    };
+
+    const handleView = (e) => {
+        // Link handles navigation, but we might want a specific view button action
+        // For now, just let it bubble or navigate explicitly
+        e.preventDefault();
+        e.stopPropagation();
+        navigate(`/product/${id}`);
+    }
+
     return (
         <div
             style={{ background: bg }}
-            className="border border-gray-200 rounded-lg w-full flex flex-col justify-center group p-3 sm:p-4 hover:shadow-lg hover:shadow-[#FF624C] transition-shadow duration-300"
+            className="border border-gray-200 rounded-lg w-full flex flex-col justify-center group p-3 sm:p-4 hover:shadow-lg hover:shadow-[#FF624C] transition-shadow duration-300 relative"
         >
             <div className="relative mb-3 sm:mb-4">
                 <img
                     className="object-cover w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px]"
-                    src= {img}
+                    src={img}
                     alt="product"
                 />
                 {percentTag && (
@@ -27,23 +84,52 @@ const ProductLayout = ({ id,img, percentTag, roundTag, category, title, rating, 
                         10%
                     </div>
                 )}
-                <div className="flex items-center justify-center gap-2 sm:gap-3 absolute bottom-1 sm:bottom-2 left-1/2 transform -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform duration-300">
-                    {[...Array(3)].map((_, i) => (
-                        <div
-                            key={i}
-                            className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px]"
-                        >
-                            <FaCartPlus />
-                        </div>
-                    ))}
+                
+                {/* Hover Action Buttons */}
+                <div className="flex items-center justify-center gap-2 sm:gap-3 absolute bottom-1 sm:bottom-2 left-1/2 transform -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform duration-300 w-full px-2">
+                    {/* Wishlist */}
+                    <button
+                        onClick={handleWishlist}
+                        className={`w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border ${isWishlisted ? 'bg-[#FF624C] text-white border-[#FF624C]' : 'bg-white text-[#FF624C] border-[#FF624C]'} hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm`}
+                        title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                    >
+                        {isWishlisted ? <FaHeart /> : <FaRegHeart />}
+                    </button>
+
+                    {/* View Details */}
+                    <button
+                        onClick={handleView}
+                        className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
+                        title="View Details"
+                    >
+                        <FaEye />
+                    </button>
+
+                    {/* Add to Cart */}
+                    <button
+                        onClick={handleAddToCart}
+                        className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
+                        title="Add to Cart"
+                    >
+                        <FaCartPlus />
+                    </button>
+                    
+                     {/* Buy Now / Book Now */}
+                    <button
+                        onClick={handleBuyNow}
+                        className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
+                        title={isService ? "Book Now" : "Buy Now"}
+                    >
+                        {isService ? <FaCalendarCheck /> : <FaBolt />}
+                    </button>
                 </div>
             </div>
 
-            <a href={`/product/${id}`} className="block">
+            <Link to={`/product/${id}`} className="block">
                 <p className="text-xs sm:text-sm font-['Montserrat'] leading-4 uppercase tracking-[1px] sm:tracking-[2px] font-semibold mb-1 sm:mb-2">
                     {category}
                 </p>
-                <h3 className="text-sm sm:text-base md:text-lg font-['Montserrat'] font-semibold leading-[20px] sm:leading-[24px] hover:underline mb-1 sm:mb-2">
+                <h3 className="text-sm sm:text-base md:text-lg font-['Montserrat'] font-semibold leading-[20px] sm:leading-[24px] hover:underline mb-1 sm:mb-2 line-clamp-2">
                     {title}
                 </h3>
                 <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
@@ -56,7 +142,7 @@ const ProductLayout = ({ id,img, percentTag, roundTag, category, title, rating, 
                     ))}
                     <span className="text-gray-500 text-[10px] sm:text-xs">({totalRating})</span>
                 </div>
-                <p className="text-base sm:text-lg font-['Montserrat'] font-semibold mb-1 sm:mb-2">${price}</p>
+                <p className="text-base sm:text-lg font-['Montserrat'] font-semibold mb-1 sm:mb-2">{formatPrice(price)}</p>
                 {stock && (
                     <div className="w-full h-[20px] sm:h-[25px] bg-[#333] rounded-[20px] relative">
                         <div className="w-1/2 h-full bg-[#FF624C] rounded-[20px]"></div>
@@ -65,7 +151,7 @@ const ProductLayout = ({ id,img, percentTag, roundTag, category, title, rating, 
                         </div>
                     </div>
                 )}
-            </a>
+            </Link>
         </div>
     );
 };

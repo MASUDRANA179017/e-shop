@@ -1,69 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { FaAngleDown, FaFacebook, FaLinkedin } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
+import { useCurrency } from "../../../context/CurrencyContext";
 
 const TopRightComponent = () => {
-  const Countries = [
-    { name: "United States", code: "US", flag: "https://flagcdn.com/16x12/us.png", currency: "USD" },
-    { name: "Canada", code: "CA", flag: "https://flagcdn.com/16x12/ca.png", currency: "CAD" },
-    { name: "Australia", code: "AU", flag: "https://flagcdn.com/16x12/au.png", currency: "AUD" },
-    { name: "Germany", code: "DE", flag: "https://flagcdn.com/16x12/de.png", currency: "EUR" },
-    { name: "France", code: "FR", flag: "https://flagcdn.com/16x12/fr.png", currency: "EUR" },
-    { name: "Italy", code: "IT", flag: "https://flagcdn.com/16x12/it.png", currency: "EUR" },
-    { name: "Spain", code: "ES", flag: "https://flagcdn.com/16x12/es.png", currency: "EUR" },
-  ];
-
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const { selectedCountry, updateCountry, countries, currency } = useCurrency();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Load saved theme from localStorage
-  // useEffect(() => {
-  //   const savedTheme = localStorage.getItem("theme");
-  //   if (savedTheme === "dark") {
-  //     setIsDarkMode(true);
-  //     document.documentElement.classList.add("dark");
-  //   } else {
-  //     document.documentElement.classList.remove("dark");
-  //   }
-  // }, []);
-
-  // const toggleDarkMode = () => {
-  //   setIsDarkMode(!isDarkMode);
-  //   if (!isDarkMode) {
-  //     document.documentElement.classList.add("dark");
-  //     localStorage.setItem("theme", "dark");
-  //   } else {
-  //     document.documentElement.classList.remove("dark");
-  //     localStorage.setItem("theme", "light");
-  //   }
-  // };
-
-  useEffect(() => {
-    const storedCountry = localStorage.getItem("selectedCountry");
-    if (storedCountry) {
-      setSelectedCountry(JSON.parse(storedCountry));
-    } else {
-      // Set default country here
-      const defaultCountry = Countries[0];
-      setSelectedCountry(defaultCountry);
-      localStorage.setItem("selectedCountry", JSON.stringify(defaultCountry));
-    }
-  }, []);
 
   const handleSelect = (country) => {
-    setSelectedCountry(country);
-    localStorage.setItem("selectedCountry", JSON.stringify(country));
+    updateCountry(country);
     setIsDropdownOpen(false);
   };
-
-  const currency = selectedCountry ? selectedCountry.currency : "default";
 
   return (
     <div className="flex sm:flex-row gap-3 sm:gap-[30px] md:gap-[50px] items-center">
       {/* Currency */}
-      <div className="flex relative text-sm md:text-base">
+      <div className="flex relative text-sm md:text-base font-bold text-gray-700">
         {currency}
       </div>
 
@@ -72,31 +25,32 @@ const TopRightComponent = () => {
         <div className="relative w-full">
           {/* Custom Dropdown Trigger */}
           <div
-            className="w-full border border-gray-300 rounded-md p-2 flex items-center justify-between cursor-pointer"
+            className="w-full border border-gray-300 rounded-md p-2 flex items-center justify-between cursor-pointer bg-white hover:bg-gray-50 transition-colors"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             {selectedCountry ? (
               <div className="flex items-center gap-2">
-                <img src={selectedCountry.flag} alt={selectedCountry.name} className="w-4 h-4" />
-                <span className="text-sm font-['Montserrat'] truncate">{selectedCountry.name}</span>
+                <img src={selectedCountry.flag} alt={selectedCountry.name} className="w-5 h-4 object-contain" />
+                <span className="text-sm font-['Montserrat'] truncate font-medium">{selectedCountry.name}</span>
               </div>
             ) : (
               <span className="text-gray-500 text-sm">Select a Country</span>
             )}
-            <FaAngleDown />
+            <FaAngleDown className={`transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </div>
 
           {/* Dropdown List */}
           {isDropdownOpen && (
-            <ul className="absolute top-[42px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-[200px] overflow-y-auto z-5">
-              {Countries.map((country) => (
+            <ul className="absolute top-[42px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-[200px] overflow-y-auto z-50">
+              {countries.map((country) => (
                 <li
                   key={country.code}
-                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+                  className={`flex items-center gap-2 p-2 cursor-pointer hover:bg-red-50 transition-colors ${selectedCountry?.code === country.code ? 'bg-red-50' : ''}`}
                   onClick={() => handleSelect(country)}
                 >
-                  <img src={country.flag} alt={country.name} className="w-4 h-4" />
+                  <img src={country.flag} alt={country.name} className="w-5 h-4 object-contain" />
                   <span className="text-sm font-['Montserrat']">{country.name}</span>
+                  <span className="text-xs text-gray-400 ml-auto">{country.currency}</span>
                 </li>
               ))}
             </ul>
@@ -130,14 +84,6 @@ const TopRightComponent = () => {
         >
           <FaLinkedin className="text-lg md:text-2xl" />
         </a>
-        {/* <button
-          onClick={toggleDarkMode}
-          className={`p-2 rounded-full transition-transform duration-300 transform 
-          ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-800"} 
-          hover:scale-110`}
-        >
-          <MdDarkMode className="text-lg md:text-2xl" />
-        </button> */}
       </div>
     </div>
   );

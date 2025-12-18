@@ -29,6 +29,7 @@ import {
   FaSearch,
   FaRegEye,
   FaUpload,
+  FaBarcode
 } from "react-icons/fa";
 import { TiDeleteOutline } from "react-icons/ti";
 import {
@@ -37,6 +38,8 @@ import {
   updateProduct,
   deleteProduct,
 } from "../../../@Services/ProductService";
+import { getProductBarcode } from "../../../@Services/BarcodeService";
+import api from "../../../api/axiosInstance";
 import { getAllStores } from "../../../@Services/StoreService";
 import { getAllCategory } from "../../../@Services/CategoryService";
 import { uploadImage } from "../../../@Services/uploadService";
@@ -55,6 +58,8 @@ export default function VendorProductsTable() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
+  const [barcodeOpen, setBarcodeOpen] = useState(false);
+  const [barcodeData, setBarcodeData] = useState(null);
 
   const [form, setForm] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,6 +77,15 @@ export default function VendorProductsTable() {
   const [uploading, setUploading] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
+
+  const resolveImageUrl = (url) => {
+    if (!url) return null;
+    if (typeof url !== "string") return null;
+    if (url.startsWith("data:")) return url;
+    if (url.startsWith("http")) return url;
+    if (url.startsWith("/")) return `${api.defaults.baseURL}${url}`;
+    return url;
+  };
 
   const fetchBrands = async () => {
     try {
@@ -311,6 +325,47 @@ export default function VendorProductsTable() {
     setDeleteOpen(true);
   };
 
+  const openBarcode = async (product) => {
+    setActiveProduct(product);
+    setLoading(true);
+    try {
+      const data = await getProductBarcode(product.id);
+      let normalized = null;
+      if (typeof data === "string") {
+        if (data.startsWith("data:")) {
+          normalized = data;
+        } else if (data.startsWith("http")) {
+          normalized = data;
+        } else if (data.startsWith("/")) {
+          normalized = `${api.defaults.baseURL}${data}`;
+        } else {
+          normalized = `data:image/png;base64,${data}`;
+        }
+      } else if (data && typeof data === "object") {
+        if (data.url) {
+          normalized = data.url.startsWith("http")
+            ? data.url
+            : `${api.defaults.baseURL}${data.url}`;
+        } else if (data.base64) {
+          normalized = `data:image/png;base64,${data.base64}`;
+        } else if (data.imageBase64) {
+          normalized = `data:image/png;base64,${data.imageBase64}`;
+        }
+      }
+      setBarcodeData(normalized);
+      setBarcodeOpen(true);
+    } catch (error) {
+      console.error("Failed to generate barcode", error);
+      setSnack({
+        open: true,
+        message: "Failed to generate barcode",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const submitAdd = async () => {
     try {
       let thumbnailUrl = form.productThumbnail;
@@ -513,7 +568,7 @@ export default function VendorProductsTable() {
                       <TableCell>
                         <img
                           src={
-                            product.productThumbnail ||
+                            resolveImageUrl(product.productThumbnail) ||
                             "/frontend/products/product01.png"
                           }
                           alt={product.name}
@@ -527,7 +582,7 @@ export default function VendorProductsTable() {
                             product.productGallery.map((img, idx) => (
                               <img
                                 key={idx}
-                                src={img}
+                                src={resolveImageUrl(img)}
                                 alt={`Gallery ${idx + 1}`}
                                 style={{
                                   width: 40,
@@ -558,6 +613,11 @@ export default function VendorProductsTable() {
                         <Tooltip title="View">
                           <IconButton onClick={() => openView(product)}>
                             <FaRegEye />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Barcode">
+                          <IconButton onClick={() => openBarcode(product)}>
+                            <FaBarcode />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Edit">
@@ -793,7 +853,7 @@ export default function VendorProductsTable() {
               <Box>
                 <img
                   src={
-                    activeProduct.productThumbnail ||
+                    resolveImageUrl(activeProduct.productThumbnail) ||
                     "/frontend/products/product01.png"
                   }
                   alt={activeProduct.name}
@@ -830,7 +890,7 @@ export default function VendorProductsTable() {
                         }}
                       >
                         <img
-                          src={img}
+                          src={resolveImageUrl(img)}
                           alt={`Gallery ${index + 1}`}
                           style={{
                             width: "100%",
@@ -876,6 +936,44 @@ export default function VendorProductsTable() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setViewOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Barcode Dialog */}
+      <Dialog
+        open={barcodeOpen}
+        onClose={() => setBarcodeOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Product Barcode</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 4 }}>
+          {barcodeData ? (
+            <>
+              <img src={barcodeData} alt="Barcode" style={{ maxWidth: '100%' }} />
+              <Typography variant="body1" fontWeight="bold">
+                {activeProduct?.name}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                ID: {activeProduct?.id}
+              </Typography>
+            </>
+          ) : (
+            <CircularProgress />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            const link = document.createElement('a');
+            link.href = barcodeData;
+            link.download = `barcode-${activeProduct?.id}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }}>
+            Download
+          </Button>
+          <Button onClick={() => setBarcodeOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 

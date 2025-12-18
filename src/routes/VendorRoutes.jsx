@@ -8,6 +8,8 @@ import VendorStoreTable from "../components/dashboard/vendor/VendorStoreTable";
 import VendorDashboard from "../components/dashboard/vendor/index";
 import VendorPrescriptionTable from "../components/dashboard/vendor/VendorPrescriptionTable";
 import CouponTable from "../components/dashboard/vendor/VendorCouponTable";
+import VendorPos from "../components/dashboard/vendor/pos/VendorPos";
+import VendorOrderTable from "../components/dashboard/vendor/VendorOrderTable";
 
 export const VendorRoutes = (
   <>
@@ -20,6 +22,7 @@ export const VendorRoutes = (
       }
     >
       <Route index element={<VendorDashboard />} />
+      <Route path="pos" element={<VendorPos />} />
       <Route
         path="profile"
         element={
@@ -51,6 +54,14 @@ export const VendorRoutes = (
         element={
           <div className="p-4">
             <CouponTable />
+          </div>
+        }
+      />
+      <Route
+        path="my-orders"
+        element={
+          <div className="p-4">
+            <VendorOrderTable />
           </div>
         }
       />
