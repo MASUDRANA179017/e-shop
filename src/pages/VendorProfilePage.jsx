@@ -82,20 +82,30 @@ const VendorProfilePage = () => {
       {/* Vendor Header / Banner */}
       <div className="bg-white shadow-md relative">
         {/* Banner Background */}
-        <div className="h-64 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
-             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-             {/* Decorative Circles */}
-             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
-             <div className="absolute bottom-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full"></div>
+        <div className="h-64 relative overflow-hidden bg-gray-200">
+            {store.coverImage ? (
+                 <img src={store.coverImage} alt="Cover" className="w-full h-full object-cover" />
+            ) : (
+                <div className="w-full h-full bg-gradient-to-r from-blue-600 to-indigo-700 relative">
+                     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                     {/* Decorative Circles */}
+                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
+                     <div className="absolute bottom-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full"></div>
+                </div>
+            )}
         </div>
 
         <div className="container mx-auto px-4">
              <div className="relative -mt-20 mb-6 flex flex-col md:flex-row items-end md:items-end">
                 {/* Profile Image */}
                 <div className="w-40 h-40 bg-white rounded-2xl shadow-xl p-2 z-10">
-                    <div className="w-full h-full bg-blue-50 rounded-xl flex items-center justify-center text-6xl font-bold text-blue-600 border border-blue-100">
-                        {store.name.charAt(0)}
-                    </div>
+                    {store.imageUrl ? (
+                        <img src={store.imageUrl} alt={store.name} className="w-full h-full object-cover rounded-xl border border-blue-100" />
+                    ) : (
+                        <div className="w-full h-full bg-blue-50 rounded-xl flex items-center justify-center text-6xl font-bold text-blue-600 border border-blue-100">
+                            {store.name.charAt(0)}
+                        </div>
+                    )}
                 </div>
                 
                 {/* Vendor Info */}

@@ -4,12 +4,15 @@ import { getAllStores, updateStore, sendStoreEmail } from "../../../@Services/St
 import { FaCheck } from "react-icons/fa";
 import { BiGlobe } from "react-icons/bi";
 import { CiSettings } from "react-icons/ci";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const VendorSettings = () => {
   const { countries, selectedCountry, updateCountry, currency, formatPrice } = useCurrency();
   const [stores, setStores] = React.useState([]);
   const [smtp, setSmtp] = React.useState({ host: "", port: "", user: "", pass: "", secure: false, from: "" });
   const [emailForm, setEmailForm] = React.useState({ to: "", subject: "Test from Vendor SMTP", text: "Hello!" });
+  const [availability, setAvailability] = React.useState({ openingTime: "09:00", closingTime: "17:00" });
   const [saving, setSaving] = React.useState(false);
   const [sending, setSending] = React.useState(false);
 
@@ -29,13 +32,45 @@ const VendorSettings = () => {
           secure: Boolean(s.smtpSecure),
           from: String(s.smtpFrom || "")
         });
+        setAvailability({
+          openingTime: s.openingTime || "09:00",
+          closingTime: s.closingTime || "17:00"
+        });
       }
     };
     load();
   }, []);
 
+  const handleSaveAvailability = async () => {
+    if (!stores[0]) return;
+    setSaving(true);
+    try {
+      await updateStore(stores[0].id, {
+        openingTime: availability.openingTime,
+        closingTime: availability.closingTime
+      });
+      toast.success("Availability settings saved");
+      const all = await getAllStores();
+      const user = JSON.parse(localStorage.getItem("user"));
+      const mine = (all || []).filter(s => String(s.ownerId || s.owner?.id) === String(user?.id));
+      setStores(mine);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to save availability");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveSmtp = async () => {
     if (!stores[0]) return;
+    if (!smtp.host || !smtp.port || !smtp.user || !smtp.pass || !smtp.from) {
+      toast.error("Please fill Host, Port, User, Password and From");
+      return;
+    }
+    if (isNaN(Number(smtp.port))) {
+      toast.error("Port must be a number");
+      return;
+    }
     setSaving(true);
     try {
       await updateStore(stores[0].id, {
@@ -46,6 +81,24 @@ const VendorSettings = () => {
         smtpSecure: Boolean(smtp.secure),
         smtpFrom: smtp.from || undefined,
       });
+      toast.success("SMTP settings saved");
+      const all = await getAllStores();
+      const user = JSON.parse(localStorage.getItem("user"));
+      const mine = (all || []).filter(s => String(s.ownerId || s.owner?.id) === String(user?.id));
+      setStores(mine);
+      if (mine[0]) {
+        const s = mine[0];
+        setSmtp(prev => ({
+          ...prev,
+          host: String(s.smtpHost || ""),
+          port: String(s.smtpPort || ""),
+          user: String(s.smtpUser || ""),
+          secure: Boolean(s.smtpSecure),
+          from: String(s.smtpFrom || "")
+        }));
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to save SMTP");
     } finally {
       setSaving(false);
     }
@@ -61,6 +114,9 @@ const VendorSettings = () => {
         text: emailForm.text
       });
       setEmailForm({ to: "", subject: "Test from Vendor SMTP", text: "Hello!" });
+      toast.success("Test email sent");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to send email");
     } finally {
       setSending(false);
     }
@@ -68,6 +124,7 @@ const VendorSettings = () => {
 
   return (
     <div className="space-y-6">
+      <ToastContainer />
       <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
         <CiSettings /> Vendor Settings
       </h2>
@@ -100,6 +157,37 @@ const VendorSettings = () => {
             <div className="text-sm text-gray-600">
               Example price: {formatPrice(100)}
             </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Booking Availability</h3>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Opening Time</label>
+              <input 
+                type="time" 
+                className="w-full border rounded p-2" 
+                value={availability.openingTime} 
+                onChange={e => setAvailability(prev => ({ ...prev, openingTime: e.target.value }))} 
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Closing Time</label>
+              <input 
+                type="time" 
+                className="w-full border rounded p-2" 
+                value={availability.closingTime} 
+                onChange={e => setAvailability(prev => ({ ...prev, closingTime: e.target.value }))} 
+              />
+            </div>
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+              onClick={handleSaveAvailability}
+              disabled={saving}
+            >
+              <FaCheck /> {saving ? "Saving..." : "Save Availability"}
+            </button>
           </div>
         </div>
 

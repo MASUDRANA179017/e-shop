@@ -1,5 +1,6 @@
 import React from "react";
 import Container from "../../commonLayouts/Container";
+import { Link } from "react-router-dom";
 
 
 const BannerProduct = () => {
@@ -22,9 +23,9 @@ const BannerProduct = () => {
               Welcome to e-shop, a place where you can buy everything about
               electronics. Sale every day!
             </p>
-            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-md shadow-lg transition-colors duration-300 cursor-pointer">
+            <Link to="/service" className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-md shadow-lg transition-colors duration-300 cursor-pointer inline-block">
               Shop Now
-            </button>
+            </Link>
           </div>
         </section>
        

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { getAllPublicStores } from "../@Services/StoreService";
+import { getProductsByStoreId } from "../@Services/ProductService";
 import { FaSearch, FaStar, FaMapMarkerAlt, FaFilter, FaArrowRight } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 
@@ -11,15 +12,31 @@ const VendorListPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
-    getAllPublicStores()
-      .then((data) => {
-        setStores(data);
+    const fetchData = async () => {
+      try {
+        const storesData = await getAllPublicStores();
+        
+        // Fetch products for each store
+        const storesWithProducts = await Promise.all(
+          storesData.map(async (store) => {
+            try {
+              const products = await getProductsByStoreId(store.id);
+              return { ...store, products };
+            } catch (err) {
+              console.error(`Failed to fetch products for store ${store.id}`, err);
+              return { ...store, products: [] };
+            }
+          })
+        );
+        setStores(storesWithProducts);
+      } catch (err) {
+        console.error("Failed to fetch data", err);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch stores", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Extract unique categories from stores
@@ -126,11 +143,20 @@ const VendorListPage = () => {
                 className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
               >
                 {/* Card Header / Banner */}
-                <div className="h-48 bg-gradient-to-r from-gray-100 to-gray-200 relative overflow-hidden">
-                    {/* Placeholder for banner */}
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-6xl font-bold opacity-30">
-                        {store.name.charAt(0)}
-                    </div>
+                <div className="h-48 bg-gray-200 relative overflow-hidden">
+                    {store.coverImage ? (
+                      <img 
+                        src={store.coverImage} 
+                        alt={store.name} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 relative">
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-6xl font-bold opacity-30">
+                            {store.name.charAt(0)}
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Badge */}
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-600 shadow-sm flex items-center">
@@ -142,9 +168,17 @@ const VendorListPage = () => {
                 <div className="p-6 flex-grow flex flex-col relative">
                   {/* Logo overlapping banner */}
                   <div className="absolute -top-10 left-6 w-16 h-16 bg-white rounded-xl shadow-md p-1">
-                      <div className="w-full h-full bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-2xl font-bold">
-                        {store.name.charAt(0)}
-                      </div>
+                      {store.imageUrl ? (
+                        <img 
+                          src={store.imageUrl} 
+                          alt={store.name} 
+                          className="w-full h-full object-cover rounded-lg" 
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-2xl font-bold">
+                          {store.name.charAt(0)}
+                        </div>
+                      )}
                   </div>
 
                   <div className="mt-6 mb-2">
@@ -170,6 +204,31 @@ const VendorListPage = () => {
                       <FaMapMarkerAlt className="mr-1" />
                       {store.city || "Available Online"}
                   </div>
+
+                  {/* Products Section */}
+                  {store.products && store.products.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="text-sm font-bold text-gray-700 mb-3">Featured Services:</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {store.products.slice(0, 4).map((product) => (
+                          <div key={product.id} className="border rounded-lg p-2 bg-gray-50">
+                            <img 
+                              src={product.productThumbnail || "https://via.placeholder.com/150"} 
+                              alt={product.name} 
+                              className="w-full h-20 object-cover rounded-md mb-2"
+                            />
+                            <p className="text-xs font-semibold text-gray-800 truncate">{product.name}</p>
+                            <p className="text-xs text-blue-600 font-bold">${(product.price / 100).toFixed(2)}</p>
+                          </div>
+                        ))}
+                      </div>
+                      {store.products.length > 4 && (
+                        <p className="text-xs text-center text-gray-500 mt-2">
+                          + {store.products.length - 4} more services
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="mt-auto pt-4 border-t border-gray-100">
                     <Link

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser } from "../@Services/authService";
 import { ToastContainer, toast } from "react-toastify";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -57,11 +58,15 @@ const Login = () => {
           autoClose: 3000,
         });
       }
-      // Redirect by user role
+      // Redirect by user role or back to origin
       setTimeout(() => {
-        if (data.user.role === "admin") navigate("/dashboard/admin");
-        if (data.user.role === "vendor") navigate("/dashboard/vendor");
-        else navigate("/dashboard/user");
+        if (location.state?.from) {
+          navigate(location.state.from, { replace: true });
+        } else {
+          if (data.user.role === "admin") navigate("/dashboard/admin");
+          else if (data.user.role === "vendor") navigate("/dashboard/vendor");
+          else navigate("/dashboard/user");
+        }
       }, 3000);
     } catch (err) {
       toast.error(

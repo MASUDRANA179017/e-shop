@@ -38,10 +38,10 @@ const UserDashboard = () => {
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Dashboard Overview</h2>
-        <p className="text-gray-500">Welcome back, {user?.firstName}!</p>
+    <div className="space-y-8 pb-10">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg">
+        <h2 className="text-2xl font-bold mb-1">Dashboard Overview</h2>
+        <p className="opacity-90">Welcome back, {user?.firstName}!</p>
       </div>
 
       {/* Stats Cards */}

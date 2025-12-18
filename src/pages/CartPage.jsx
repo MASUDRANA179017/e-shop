@@ -16,7 +16,7 @@ const CartPage = () => {
           <h2 className="text-2xl font-bold text-gray-800">Your Cart is Empty</h2>
           <p className="text-gray-500">Looks like you haven't added anything to your cart yet.</p>
           <Link
-            to="/product"
+            to="/service"
             className="bg-[#FF624C] text-white px-6 py-2 rounded-md hover:bg-[#ff4f36] transition-colors"
           >
             Start Shopping
@@ -102,7 +102,7 @@ const CartPage = () => {
               </table>
             </div>
              <div className="mt-4 flex justify-between">
-                <Link to="/product" className="text-[#FF624C] hover:underline">Continue Shopping</Link>
+                <Link to="/service" className="text-[#FF624C] hover:underline">Continue Shopping</Link>
                  <button onClick={clearCart} className="text-red-500 hover:underline">Clear Cart</button>
              </div>
           </div>

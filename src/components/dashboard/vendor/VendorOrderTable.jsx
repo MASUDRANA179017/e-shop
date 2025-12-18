@@ -15,8 +15,8 @@ import { useCurrency } from "../../../context/CurrencyContext";
 
 export default function VendorOrderTable() {
     const { formatPrice } = useCurrency();
-    const [orders, setOrders] = useState([]);
-    const [onlineOrders, setOnlineOrders] = useState([]);
+    const [productOrders, setProductOrders] = useState([]);
+    const [bookingOrders, setBookingOrders] = useState([]);
     const [posOrders, setPosOrders] = useState([]);
     const [tab, setTab] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -49,11 +49,17 @@ export default function VendorOrderTable() {
                     items: o.items,
                     raw: o
                 }));
-                setOnlineOrders(formattedOnline);
             } catch (e) {
                 console.error("Failed to fetch online orders", e);
                 toast.error("Failed to load online orders", { position: "top-center", autoClose: 3000 });
             }
+
+            // Split Online Orders into Products and Bookings
+            const pOrders = formattedOnline.filter(o => !o.items?.some(i => i.serviceDate));
+            const bOrders = formattedOnline.filter(o => o.items?.some(i => i.serviceDate));
+            
+            setProductOrders(pOrders);
+            setBookingOrders(bOrders);
 
             // 2. Fetch POS Transactions
             let formattedPos = [];
@@ -102,10 +108,10 @@ export default function VendorOrderTable() {
                 toast.error("Failed to load POS transactions", { position: "top-center", autoClose: 3000 });
             }
 
-            // Merge and Sort
-            const all = [...formattedOnline, ...formattedPos].sort((a, b) => new Date(b.date) - new Date(a.date));
-            setOrders(all);
-
+            // Merge for "All" (if needed, or just derive it)
+            // No need to setOrders state if we derive it in render, but let's keep consistency if used elsewhere
+            // Actually, let's just use the split states.
+            
         } catch (err) {
             console.error("Error fetching orders:", err);
             toast.error("Error fetching order history", { position: "top-center", autoClose: 3000 });
@@ -156,20 +162,25 @@ export default function VendorOrderTable() {
         }
     };
 
+    const allOrders = [...productOrders, ...bookingOrders, ...posOrders].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const currentList = tab === 0 ? allOrders : tab === 1 ? productOrders : tab === 2 ? bookingOrders : posOrders;
+
     return (
         <Box>
             <Typography variant="h5" sx={{ mb: 2 }}>Order History</Typography>
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3 }}>
-                <Tab label={`All (${orders.length})`} />
-                <Tab label={`Online (${onlineOrders.length})`} />
+                <Tab label={`All (${allOrders.length})`} />
+                <Tab label={`Orders (${productOrders.length})`} />
+                <Tab label={`Bookings (${bookingOrders.length})`} />
                 <Tab label={`POS (${posOrders.length})`} />
             </Tabs>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Order ID</TableCell>
-                            <TableCell>Date</TableCell>
+                            <TableCell>ID</TableCell>
+                            <TableCell>{tab === 2 ? "Booked On" : "Date"}</TableCell>
+                            {tab === 2 && <TableCell>Service Date</TableCell>}
                             <TableCell>Source</TableCell>
                             <TableCell>Customer</TableCell>
                             <TableCell>Total</TableCell>
@@ -180,18 +191,37 @@ export default function VendorOrderTable() {
                     <TableBody>
                         {loading ? (
                             <TableRow>
-                                <TableCell colSpan={7} align="center"><CircularProgress /></TableCell>
+                                <TableCell colSpan={8} align="center"><CircularProgress /></TableCell>
                             </TableRow>
-                        ) : (tab === 0 ? orders : tab === 1 ? onlineOrders : posOrders).length === 0 ? (
+                        ) : currentList.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={7} align="center">No orders found.</TableCell>
+                                <TableCell colSpan={8} align="center">No records found.</TableCell>
                             </TableRow>
-                        ) : (tab === 0 ? orders : tab === 1 ? onlineOrders : posOrders).map((order) => (
+                        ) : currentList.map((order) => {
+                             // Extract service date for booking display
+                             let serviceDateDisplay = "-";
+                             if (tab === 2 || (tab === 0 && order.items?.some(i => i.serviceDate))) {
+                                 const sItem = order.items?.find(i => i.serviceDate);
+                                 if (sItem) {
+                                     serviceDateDisplay = new Date(sItem.serviceDate).toLocaleDateString();
+                                 }
+                             }
+
+                            return (
                             <TableRow key={`${order.source}-${order.id}`}>
                                 <TableCell>{order.displayId}</TableCell>
                                 <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
+                                {tab === 2 && (
+                                    <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                        {serviceDateDisplay}
+                                    </TableCell>
+                                )}
                                 <TableCell>
-                                    <Chip label={order.source} color={order.source === "POS" ? "primary" : "secondary"} size="small" />
+                                    <Chip 
+                                      label={order.items?.some(i => i.serviceDate) ? "Booking" : order.source} 
+                                      color={order.source === "POS" ? "primary" : order.items?.some(i => i.serviceDate) ? "info" : "secondary"} 
+                                      size="small" 
+                                    />
                                 </TableCell>
                             <TableCell>{order.customer}</TableCell>
                             <TableCell>{formatPrice(Number(order.total || 0))}</TableCell>
@@ -203,7 +233,7 @@ export default function VendorOrderTable() {
                                 </Button>
                             </TableCell>
                         </TableRow>
-                        ))}
+                        )})}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -228,6 +258,7 @@ export default function VendorOrderTable() {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Product</TableCell>
+                                            <TableCell align="right">Service Date</TableCell>
                                             <TableCell align="right">Quantity</TableCell>
                                             <TableCell align="right">Price</TableCell>
                                             <TableCell align="right">Total</TableCell>
@@ -237,6 +268,9 @@ export default function VendorOrderTable() {
                                         {selectedOrder.items.map((item, i) => (
                                             <TableRow key={i}>
                                                 <TableCell>{item.productName || item.product?.name || "Item"}</TableCell>
+                                                <TableCell align="right">
+                                                    {item.serviceDate ? new Date(item.serviceDate).toLocaleString() : "-"}
+                                                </TableCell>
                                                 <TableCell align="right">{item.quantity}</TableCell>
                                                 <TableCell align="right">{formatPrice(Number(item.unitPrice || item.product?.price || 0))}</TableCell>
                                                 <TableCell align="right">{formatPrice(Number(item.totalPrice || 0))}</TableCell>

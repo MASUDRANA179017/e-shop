@@ -1,0 +1,141 @@
+import React, { useState } from "react";
+import { useCart } from "../context/CartContext";
+import { useCurrency } from "../context/CurrencyContext";
+import { createOrder } from "../@Services/CheckoutService";
+import { useNavigate, useLocation } from "react-router-dom";
+import Container from "../components/commonLayouts/Container";
+import { toast } from "react-toastify";
+
+const CheckoutPage = () => {
+  const { cartItems, cartTotal, clearCart } = useCart();
+  const { formatPrice } = useCurrency();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [address, setAddress] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Check for direct buy items from navigation state
+  const { checkoutItems: directItems, isDirectBuy } = location.state || {};
+  
+  // Use direct items if available, otherwise fall back to cart items
+  const itemsToCheckout = directItems || cartItems;
+  
+  // Calculate total for direct items
+  const totalToCheckout = directItems 
+     ? directItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+     : cartTotal;
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.info("Please login or create an account to proceed with checkout.");
+      navigate("/login", { state: { from: "/checkout" } });
+    }
+  }, [navigate]);
+
+  if (itemsToCheckout.length === 0) {
+    navigate("/cart");
+    return null;
+  }
+
+  const handlePlaceOrder = async (e) => {
+    e.preventDefault();
+    if (!address) {
+      alert("Please enter a shipping address");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Map items to order items, ensuring bookingDate is mapped to serviceDate
+      const items = itemsToCheckout.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        serviceDate: item.bookingDate || null, // Map bookingDate to serviceDate
+      }));
+
+      const payload = {
+        shippingAddress: address,
+        items: items,
+      };
+
+      await createOrder(payload);
+      
+      // Only clear cart if we are checking out from cart
+      if (!isDirectBuy) {
+        clearCart();
+      }
+      
+      // Determine if this was primarily a booking or product order
+      const hasBooking = items.some(item => item.serviceDate);
+      
+      navigate("/success", { 
+        state: { 
+          isBooking: hasBooking 
+        } 
+      });
+    } catch (err) {
+      console.error("Order creation failed", err);
+      alert(err?.response?.data?.message || "Failed to place order");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Container>
+      <div className="py-10 max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-gray-800 text-center">Checkout</h1>
+        
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+          <h2 className="text-xl font-semibold mb-4 border-b pb-2">
+            {isDirectBuy ? "Booking/Order Summary" : "Cart Summary"}
+          </h2>
+          <div className="space-y-4 mb-6">
+            {itemsToCheckout.map((item) => (
+              <div key={item.id} className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium text-gray-800">{item.name} x {item.quantity}</p>
+                  {item.bookingDate && (
+                    <p className="text-xs text-blue-600 font-bold">
+                      Booking: {new Date(item.bookingDate).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+                <p className="font-semibold text-gray-600">{formatPrice(item.price * item.quantity)}</p>
+              </div>
+            ))}
+            <div className="border-t pt-4 flex justify-between text-lg font-bold text-gray-900">
+              <span>Total</span>
+              <span>{formatPrice(totalToCheckout)}</span>
+            </div>
+          </div>
+
+          <form onSubmit={handlePlaceOrder}>
+            <div className="mb-6">
+              <label className="block text-gray-700 font-bold mb-2">Shipping Address</label>
+              <textarea
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="3"
+                placeholder="Enter your full address..."
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full bg-[#FF624C] text-white font-bold py-3 rounded-lg shadow-md hover:bg-[#ff4f36] transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+            >
+              {loading ? "Placing Order..." : "Confirm Order"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </Container>
+  );
+};
+
+export default CheckoutPage;

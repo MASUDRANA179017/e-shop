@@ -26,6 +26,12 @@ const ProductDetails = () => {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+
+  const timeSlots = [
+    "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
+    "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
+  ];
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -82,6 +88,10 @@ const ProductDetails = () => {
       alert("Please select a date for your service booking.");
       return;
     }
+    if (!bookingTime) {
+      alert("Please select a time for your service booking.");
+      return;
+    }
     addToCart({
       id: product.id,
       name: product.name,
@@ -89,14 +99,36 @@ const ProductDetails = () => {
       image: product.productThumbnail,
       thumbnail: product.productThumbnail,
       brand: product.brand,
-      bookingDate: bookingDate
+      bookingDate: bookingDate,
+      bookingTime: bookingTime
     });
     // Optional: Show toast/notification
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
-    navigate('/cart');
+    if (bookingDate) {
+       // Direct booking flow for services
+       if (!bookingTime) {
+         alert("Please select a time for your service booking.");
+         return;
+       }
+       const item = {
+         id: product.id,
+         name: product.name,
+         price: product.price,
+         image: product.productThumbnail,
+         thumbnail: product.productThumbnail,
+         brand: product.brand,
+         bookingDate: bookingDate,
+         bookingTime: bookingTime,
+         quantity: 1
+       };
+       navigate('/checkout', { state: { checkoutItems: [item], isDirectBuy: true } });
+    } else {
+       // Regular product buy now
+       handleAddToCart();
+       navigate('/cart');
+    }
   };
 
   const handleReviewSubmit = async (e) => {
@@ -250,16 +282,39 @@ const ProductDetails = () => {
                  </div>
              )}
 
-             {/* Booking Date Selection */}
+             {/* Booking Date & Time Selection */}
              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-2">Select Booking Date</label>
-                <input 
-                    type="date" 
-                    className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium shadow-sm"
-                    value={bookingDate}
-                    onChange={(e) => setBookingDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                />
+                <div className="mb-6">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Select Booking Date</label>
+                    <input 
+                        type="date" 
+                        className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium shadow-sm"
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                    />
+                </div>
+
+                {bookingDate && (
+                    <div className="animate-fade-in">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Select Available Time</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            {timeSlots.map(time => (
+                                <button
+                                    key={time}
+                                    onClick={() => setBookingTime(time)}
+                                    className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
+                                        bookingTime === time 
+                                        ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105" 
+                                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
+                                    }`}
+                                >
+                                    {time}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
              </div>
 
              {/* Action Buttons */}

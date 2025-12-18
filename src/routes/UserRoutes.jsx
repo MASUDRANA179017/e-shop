@@ -9,6 +9,8 @@ import UpdateProfile from "../components/dashboard/UpdateProfile";
 import CreateStorePage from "../components/dashboard/user/CreateShop";
 import UserWallet from "../components/dashboard/user/UserWallet";
 import WithdrawalRequests from "../components/dashboard/user/WithdrawalRequests";
+import UserBookings from "../components/dashboard/user/UserBookings";
+import UserOrders from "../components/dashboard/user/UserOrders";
 
 
 export const UserRoutes = (
@@ -22,10 +24,8 @@ export const UserRoutes = (
   >
     {/* Nested Pages */}
     <Route index element={<UserDashboard />} />
-    <Route path="bookings" element={<div className="p-10 text-center">
-      <h2 className="text-xl font-bold">My Bookings</h2>
-      <p className="text-gray-500">Booking history coming soon...</p>
-    </div>} />
+    <Route path="bookings" element={<UserBookings />} />
+    <Route path="orders" element={<UserOrders />} />
     <Route path="wallet" element={<UserWallet />} />
     <Route path="withdrawals" element={<div className="p-4"><WithdrawalRequests /></div>} />
     <Route path="profile" element={<div className="p-10 text-center">

@@ -1,6 +1,6 @@
 import React from "react";
 import { BiBarChart } from "react-icons/bi";
-import { FaBoxOpen, FaClipboardList, FaStore, FaTrash, FaPlus, FaMinus, FaCashRegister } from "react-icons/fa";
+import { FaBoxOpen, FaClipboardList, FaStore, FaTrash, FaPlus, FaMinus, FaCashRegister, FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../../../context/CartContext";
 import { useCurrency } from "../../../context/CurrencyContext";
 import { useNavigate } from "react-router-dom";
@@ -207,14 +207,17 @@ const VendorDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-800">Cart Preview</h3>
             <button
               onClick={() => navigate("/dashboard/vendor/pos")}
-              className="text-sm bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
+              className="text-sm bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 flex items-center gap-2 transition-colors shadow-sm"
             >
-              <FaCashRegister /> Open POS
+              <FaCashRegister /> POS
             </button>
           </div>
-          <div className="max-h-64 overflow-y-auto space-y-3">
+          <div className="max-h-64 overflow-y-auto space-y-3 custom-scrollbar pr-1">
             {cartItems.length === 0 ? (
-              <div className="text-gray-500 text-sm">Your cart is empty.</div>
+              <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+                <FaShoppingCart size={32} className="mb-2 opacity-20" />
+                <p className="text-sm">Your cart is empty.</p>
+              </div>
             ) : (
               cartItems.map((item) => (
                 <div

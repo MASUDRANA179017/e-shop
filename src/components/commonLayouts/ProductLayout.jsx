@@ -51,8 +51,16 @@ const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating,
     const handleBuyNow = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        addToCart(productObj);
-        navigate('/cart');
+        
+        if (isService) {
+             // For services, redirect to details page to force date selection
+             navigate(`/product/${id}`);
+        } else {
+             // For products, standard add to cart + navigate to cart (or direct checkout if preferred)
+             // Keeping it consistent with "Buy Now" for products = Add to Cart + Go to Cart
+             addToCart(productObj);
+             navigate('/cart');
+        }
     };
 
     const handleView = (e) => {

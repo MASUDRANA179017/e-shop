@@ -33,7 +33,7 @@ const NewProductLazyLoad = () => {
 
   const handleLoadMore = () => {
     if (visibleProducts >= products.length) {
-      window.location.href = `/Product`;
+      window.location.href = `/service`;
     } else {
       setVisibleProducts((prev) => prev + PRODUCTS_PER_LOAD);
     }

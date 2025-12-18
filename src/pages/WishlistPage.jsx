@@ -24,7 +24,7 @@ const WishlistPage = () => {
           <h2 className="text-2xl font-bold text-gray-800">Your Wishlist is Empty</h2>
           <p className="text-gray-500">Save items you love to your wishlist.</p>
           <Link
-            to="/product"
+            to="/service"
             className="bg-[#FF624C] text-white px-6 py-2 rounded-md hover:bg-[#ff4f36] transition-colors"
           >
             Explore Products

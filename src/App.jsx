@@ -9,9 +9,12 @@ import { ProductListPage } from "./pages/ProductListPage";
 import ContactPage from "./pages/ContactPage";
 import CommonLayout from "./components/commonLayouts/CommonLayout";
 import VendorListPage from "./pages/VendorListPage";
+import ServicePage from "./pages/ServicePage";
 import VendorProfilePage from "./pages/VendorProfilePage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 import WishlistPage from "./pages/WishlistPage";
+import BookingSuccessPage from "./pages/BookingSuccessPage";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -24,6 +27,8 @@ import { VendorRoutes } from "./routes/VendorRoutes";
 import { UserRoutes } from "./routes/UserRoutes";
 
 import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const token = localStorage.getItem("token");
 if (token) {
@@ -33,11 +38,12 @@ if (token) {
 
 function App() {
   return (
+    <>
     <Routes>
       {/* Public Routes (wrapped inside CommonLayout) */}
       <Route path="/" element={<CommonLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="service" element={<VendorListPage />} />
+        <Route path="service" element={<ServicePage />} />
         {/* <Route path="product" element={<ProductListPage />} /> */}
         <Route path="product/:id" element={<ProductDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
@@ -45,6 +51,8 @@ function App() {
         <Route path="vendors" element={<VendorListPage />} />
         <Route path="vendor/:id" element={<VendorProfilePage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route path="checkout" element={<CheckoutPage />} />
+        <Route path="success" element={<BookingSuccessPage />} />
         <Route path="wishlist" element={<WishlistPage />} />
       </Route>
 
@@ -61,6 +69,8 @@ function App() {
       {/* Fallback */}
       <Route path="*" element={<Login />} />
     </Routes>
+    <ToastContainer position="top-right" autoClose={3000} />
+    </>
   );
 }
 

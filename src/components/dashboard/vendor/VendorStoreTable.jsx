@@ -72,14 +72,14 @@ export default function VendorStoreTable() {
     };
 
     // Handle File Changes
-    const handleFileChange = async (e) => {
+    const handleFileChange = async (e, field) => {
         const file = e.target.files[0];
         if (!file) return;
         setUploading(true);
         try {
             // Upload to "Stores" folder
             const url = await uploadImage(file, "stores");
-            setForm((f) => ({ ...f, imageUrl: url }));
+            setForm((f) => ({ ...f, [field]: url }));
             setSnack({ open: true, message: "Image uploaded successfully", severity: "success" });
         } catch (err) {
             setSnack({ open: true, message: "Failed to upload image", severity: "error" });
@@ -91,13 +91,18 @@ export default function VendorStoreTable() {
     };
 
     const openAdd = () => {
-        setForm({ name: "", description: "", imageUrl: "" });
+        setForm({ name: "", description: "", imageUrl: "", coverImage: "" });
         setAddOpen(true);
     };
 
     const openEdit = (store) => {
         setActiveStore(store);
-        setForm({ name: store.name || "", description: store.description || "", imageUrl: store.imageUrl || "" });
+        setForm({ 
+            name: store.name || "", 
+            description: store.description || "", 
+            imageUrl: store.imageUrl || "",
+            coverImage: store.coverImage || ""
+        });
         setEditOpen(true);
     };
 
@@ -173,7 +178,8 @@ export default function VendorStoreTable() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
-                                    <TableCell>Image</TableCell>
+                                    <TableCell>Logo</TableCell>
+                                    <TableCell>Cover</TableCell>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Description</TableCell>
                                     <TableCell>Owner Name</TableCell>
@@ -185,7 +191,7 @@ export default function VendorStoreTable() {
                             <TableBody>
                                 {filteredStores.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={8} align="center">No stores found</TableCell>
+                                        <TableCell colSpan={9} align="center">No stores found</TableCell>
                                     </TableRow>
                                 ) : (
                                     filteredStores.map((store) => (
@@ -196,6 +202,13 @@ export default function VendorStoreTable() {
                                                     <img src={store.imageUrl} alt={store.name} style={{ width: 60, height: 40, borderRadius: 6, objectFit: "cover" }} />
                                                 ) : (
                                                     <Typography variant="body2" color="text.secondary">No Image</Typography>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                {store.coverImage ? (
+                                                    <img src={store.coverImage} alt="Cover" style={{ width: 80, height: 40, borderRadius: 6, objectFit: "cover" }} />
+                                                ) : (
+                                                    <Typography variant="body2" color="text.secondary">No Cover</Typography>
                                                 )}
                                             </TableCell>
                                             <TableCell>{store.name}</TableCell>
@@ -247,18 +260,32 @@ export default function VendorStoreTable() {
                     <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Store Name" name="name" value={form.name} onChange={handleFormChange} fullWidth sx={{ mb: 2 }} />
                         <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
-                        {/* Upload Image */}
+                        {/* Upload Image (Logo) */}
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                             <Button variant="outlined" component="label" startIcon={<FaUpload />}>
-                                Upload Image
-                                <input hidden type="file" accept="image/*" onChange={handleFileChange} />
+                                Upload Logo
+                                <input hidden type="file" accept="image/*" onChange={(e) => handleFileChange(e, "imageUrl")} />
                             </Button>
                             {uploading && <BiLoader size={20} />}
                         </Box>
 
                         {form.imageUrl && (
                             <Box sx={{ textAlign: "center", mt: 2 }}>
-                                <img src={form.imageUrl} alt="Preview" style={{ width: 150, height: 100, borderRadius: 8, objectFit: "cover" }} />
+                                <img src={form.imageUrl} alt="Logo Preview" style={{ width: 150, height: 100, borderRadius: 8, objectFit: "cover" }} />
+                            </Box>
+                        )}
+
+                        {/* Upload Cover Image */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <Button variant="outlined" component="label" startIcon={<FaUpload />}>
+                                Upload Cover Image
+                                <input hidden type="file" accept="image/*" onChange={(e) => handleFileChange(e, "coverImage")} />
+                            </Button>
+                        </Box>
+
+                        {form.coverImage && (
+                            <Box sx={{ textAlign: "center", mt: 2 }}>
+                                <img src={form.coverImage} alt="Cover Preview" style={{ width: "100%", height: 120, borderRadius: 8, objectFit: "cover" }} />
                             </Box>
                         )}
                     </Box>
@@ -279,15 +306,29 @@ export default function VendorStoreTable() {
                         
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                             <Button variant="outlined" component="label" startIcon={<FaUpload />}>
-                                Change Image
-                                <input hidden type="file" accept="image/*" onChange={handleFileChange} />
+                                Change Logo
+                                <input hidden type="file" accept="image/*" onChange={(e) => handleFileChange(e, "imageUrl")} />
                             </Button>
                             {uploading && <BiLoader size={20} />}
                         </Box>
 
                         {form.imageUrl && (
                             <Box sx={{ textAlign: "center", mt: 2 }}>
-                                <img src={form.imageUrl} alt="Preview" style={{ width: 150, height: 100, borderRadius: 8, objectFit: "cover" }} />
+                                <img src={form.imageUrl} alt="Logo Preview" style={{ width: 150, height: 100, borderRadius: 8, objectFit: "cover" }} />
+                            </Box>
+                        )}
+
+                        {/* Upload Cover Image */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <Button variant="outlined" component="label" startIcon={<FaUpload />}>
+                                Change Cover Image
+                                <input hidden type="file" accept="image/*" onChange={(e) => handleFileChange(e, "coverImage")} />
+                            </Button>
+                        </Box>
+
+                        {form.coverImage && (
+                            <Box sx={{ textAlign: "center", mt: 2 }}>
+                                <img src={form.coverImage} alt="Cover Preview" style={{ width: "100%", height: 120, borderRadius: 8, objectFit: "cover" }} />
                             </Box>
                         )}
                     </Box>

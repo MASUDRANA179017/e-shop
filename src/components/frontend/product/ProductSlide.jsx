@@ -104,7 +104,7 @@ const ProductSlider = () => {
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold">Featured Products</h2>
           <Link
-            to="/product"
+            to="/service"
             className="flex items-center text-red-500 hover:text-red-400 transition-colors duration-200 font-semibold"
           >
             View All

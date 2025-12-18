@@ -46,12 +46,43 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Dummy chart area */}
-      <div className="bg-white shadow rounded-xl p-6 h-64 flex flex-col justify-center items-center">
-        <p className="text-gray-600 mb-2">📊 Analytics Overview</p>
-        <p className="text-gray-400 text-sm">
-          (Chart or stats visualization can go here)
-        </p>
+      {/* Recent Users Table */}
+      <div className="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="text-lg font-bold text-gray-800">Recent Users</h3>
+          <button className="text-blue-600 text-sm font-medium hover:underline">View All</button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                <th className="px-6 py-3 font-medium">User</th>
+                <th className="px-6 py-3 font-medium">Role</th>
+                <th className="px-6 py-3 font-medium">Status</th>
+                <th className="px-6 py-3 font-medium">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {[1, 2, 3, 4, 5].map((_, i) => (
+                <tr key={i} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                        U{i}
+                      </div>
+                      <span className="font-medium text-gray-800 text-sm">User {i + 1}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Customer</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">Active</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-2{i}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

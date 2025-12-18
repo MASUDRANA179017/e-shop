@@ -1,12 +1,13 @@
-import React from "react";
-import { BiHome, BiLogOut, BiUser } from "react-icons/bi";
-import { FaStore, FaShoppingCart, FaFileInvoice, FaCashRegister } from "react-icons/fa";
+import React, { useState } from "react";
+import { BiHome, BiLogOut, BiUser, BiMenu, BiX, BiMoneyWithdraw } from "react-icons/bi";
+import { FaStore, FaFileInvoice, FaCashRegister, FaTicketAlt, FaWallet, FaFileMedical, FaBoxOpen } from "react-icons/fa";
 import { CiSettings } from "react-icons/ci";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 
 const VendorLayout = () => {
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -17,23 +18,23 @@ const VendorLayout = () => {
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const navItems = [
-    { to: "/dashboard/vendor", label: "Dashboard", icon: <BiHome size={18} /> },
-    { to: "/dashboard/vendor/pos", label: "POS System", icon: <FaCashRegister size={18} /> },
-    { to: "/dashboard/vendor/my-orders", label: "Order History", icon: <FaFileInvoice size={18} /> },
-    { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
-    { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={18} /> },
-    { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaStore size={18} /> },
-    { to: "/dashboard/vendor/wallet", label: "Wallet", icon: <FaShoppingCart size={18} /> },
-    { to: "/dashboard/vendor/withdrawals", label: "Withdrawal Requests", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/vendor", label: "Dashboard", icon: <BiHome size={20} /> },
+    { to: "/dashboard/vendor/pos", label: "POS System", icon: <FaCashRegister size={20} /> },
+    { to: "/dashboard/vendor/my-orders", label: "Order History", icon: <FaFileInvoice size={20} /> },
+    { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={20} /> },
+    { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={20} /> },
+    { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaTicketAlt size={20} /> },
+    { to: "/dashboard/vendor/wallet", label: "Wallet", icon: <FaWallet size={20} /> },
+    { to: "/dashboard/vendor/withdrawals", label: "Withdrawal Requests", icon: <BiMoneyWithdraw size={20} /> },
     
     // coupons table
     // marketing plan
     // My Clients / users
-    { to: "/dashboard/vendor/prescriptions", label: "Prescriptions", icon: <FaFileInvoice size={18} /> },
+    { to: "/dashboard/vendor/prescriptions", label: "Prescriptions", icon: <FaFileMedical size={20} /> },
     // My Memo List
 
-    { to: "/dashboard/vendor/my-products", label: "Service Products", icon: <FaShoppingCart size={18} /> },
-    { to: "/dashboard/vendor/settings", label: "Settings", icon: <CiSettings size={18} /> },
+    { to: "/dashboard/vendor/my-products", label: "Service Products", icon: <FaBoxOpen size={20} /> },
+    { to: "/dashboard/vendor/settings", label: "Settings", icon: <CiSettings size={20} /> },
      // {/* products  */}
 
      // {/* Pet Details */}
@@ -43,21 +44,43 @@ const VendorLayout = () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <aside className="w-64 bg-white shadow-lg fixed h-full flex flex-col">
-        <div className="p-5 text-center font-bold text-2xl border-b border-gray-200 text-green-600">
-          {user.firstName + " " + user.lastName}
+    <div className="flex min-h-screen bg-gray-100 relative">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* Sidebar */}
+      <aside 
+        className={`bg-white shadow-lg fixed h-full flex flex-col z-30 transition-transform duration-300 w-64
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+      >
+        <div className="p-5 flex justify-between items-center border-b border-gray-200 text-green-600">
+            <span className="font-bold text-xl truncate pr-2" title={user.firstName + " " + user.lastName}>
+                {user.firstName} {user.lastName}
+            </span>
+            <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="lg:hidden text-gray-500 hover:text-red-500"
+            >
+                <BiX size={24} />
+            </button>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
+        
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setIsSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-md transition ${
+                `flex items-center gap-3 px-4 py-3 rounded-md transition font-medium ${
                   isActive
-                    ? "bg-green-600 text-white"
-                    : "text-gray-700 hover:bg-green-50"
+                    ? "bg-green-600 text-white shadow-md"
+                    : "text-gray-600 hover:bg-green-50 hover:text-green-600"
                 }`
               }
             >
@@ -66,26 +89,47 @@ const VendorLayout = () => {
             </NavLink>
           ))}
         </nav>
-        <button
-          onClick={handleLogout}
-          className="m-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 flex items-center justify-center gap-2"
-        >
-          <BiLogOut size={18} />
-          Logout
-        </button>
+        
+        <div className="p-4 border-t border-gray-100">
+            <button
+            onClick={handleLogout}
+            className="w-full bg-red-50 text-red-500 py-2 rounded-md hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-2 font-medium"
+            >
+            <BiLogOut size={20} />
+            Logout
+            </button>
+        </div>
       </aside>
 
-      <main className="flex-1 ml-64">
-        <header className="bg-white shadow p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-gray-700">{user.role} Dashboard</h1>
-          <div className="text-gray-600 text-sm">
-            Welcome, <span className="font-medium">{user.firstName}</span>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-w-0 lg:ml-64 transition-all duration-300">
+        {/* Top Header */}
+        <header className="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+             <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden text-gray-600 hover:text-green-600 p-1 rounded-md hover:bg-gray-100"
+             >
+                <BiMenu size={28} />
+             </button>
+             <h1 className="text-lg md:text-xl font-bold text-gray-800 hidden sm:block">Vendor Dashboard</h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
+             <div className="text-right hidden sm:block">
+                 <p className="text-sm font-bold text-gray-800">{user.firstName}</p>
+                 <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+             </div>
+             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold border-2 border-white shadow-sm">
+                {user.firstName?.charAt(0) || "V"}
+             </div>
           </div>
         </header>
 
-        <section className="p-6">
+        {/* Page Content */}
+        <div className="p-4 md:p-6 overflow-x-hidden">
           <Outlet />
-        </section>
+        </div>
       </main>
     </div>
   );

@@ -34,23 +34,55 @@ const FeaturedVendors = () => {
             <Link
               to={`/vendor/${store.id}`}
               key={store.id}
-              className="group block border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+              className="group block border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 relative bg-white"
             >
-              <div className="h-32 bg-gray-100 flex items-center justify-center">
-                <span className="text-3xl font-bold text-gray-400 group-hover:text-blue-500 transition-colors">
-                  {store.name.charAt(0)}
-                </span>
+              {/* Cover Image */}
+              <div className="h-32 bg-gray-200 relative overflow-hidden">
+                {store.coverImage ? (
+                  <img 
+                    src={store.coverImage} 
+                    alt={store.name} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative">
+                     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                     <div className="absolute inset-0 flex items-center justify-center text-white text-4xl font-bold opacity-30">
+                        {store.name.charAt(0)}
+                     </div>
+                  </div>
+                )}
               </div>
-              <div className="p-4">
-                <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors mb-1">
+
+              {/* Logo & Content */}
+              <div className="p-4 pt-10 relative">
+                 {/* Floating Logo */}
+                <div className="absolute -top-8 left-4 w-16 h-16 bg-white rounded-lg shadow-md p-1">
+                   {store.imageUrl ? (
+                     <img 
+                       src={store.imageUrl} 
+                       alt={store.name} 
+                       className="w-full h-full object-cover rounded-md" 
+                     />
+                   ) : (
+                     <div className="w-full h-full bg-blue-50 rounded-md flex items-center justify-center text-blue-600 text-xl font-bold">
+                       {store.name.charAt(0)}
+                     </div>
+                   )}
+                </div>
+
+                <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors mb-1 truncate">
                   {store.name}
                 </h3>
-                <p className="text-sm text-gray-500 mb-2">
+                <p className="text-sm text-blue-500 font-medium mb-2 truncate">
                   {store.category?.name || "General"}
                 </p>
-                <div className="flex items-center text-yellow-500 text-sm">
-                  <span className="font-bold mr-1">★</span>
-                  {store.averageRating || "N/A"}
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center text-yellow-400 text-sm">
+                      <span className="font-bold mr-1">★</span>
+                      <span className="text-gray-600 font-semibold">{store.averageRating || "4.8"}</span>
+                   </div>
+                   <span className="text-xs text-gray-400">View Profile</span>
                 </div>
               </div>
             </Link>
