@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axiosInstance";
+import { loginUser } from "../@Services/authService";
 import { ToastContainer, toast } from "react-toastify";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Auto redirect if already logged in
+  // Auto redirect if already logged in & Load remembered email
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userJson = localStorage.getItem("user");
@@ -21,8 +24,15 @@ const Login = () => {
 
     if (token && user) {
       if (user.role === "admin") navigate("/dashboard/admin", { replace: true });
-      else if (user.role === "vendor") navigate("/dashboard/vendor" , { replace: true });
+      else if (user.role === "vendor") navigate("/dashboard/vendor", { replace: true });
       else if (user.role === "user") navigate("/dashboard/user", { replace: true });
+    }
+
+    // Load remembered email
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setForm((prev) => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
     }
   }, [navigate]);
 
@@ -31,24 +41,26 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const res = await api.post("/auth/login", form);
-      const data = res.data;
+    // Handle Remember Me
+    if (rememberMe) {
+      localStorage.setItem("rememberedEmail", form.email);
+    } else {
+      localStorage.removeItem("rememberedEmail");
+    }
 
-      // Save tokens and user info
-      localStorage.setItem("token", data.access_Token);
-      localStorage.setItem("r-token", data.refresh_Token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+    try {
+      const data = await loginUser(form);
 
       if (data) {
         toast.success("Login successful! Redirecting...", {
-        position: "top-center",
-        autoClose: 3000,
-      })} 
+          position: "top-center",
+          autoClose: 3000,
+        });
+      }
       // Redirect by user role
       setTimeout(() => {
         if (data.user.role === "admin") navigate("/dashboard/admin");
-        if (data.user.role === "vendor") navigate("/dashboard/vendor");  
+        if (data.user.role === "vendor") navigate("/dashboard/vendor");
         else navigate("/dashboard/user");
       }, 3000);
     } catch (err) {
@@ -63,56 +75,99 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div
+      className="flex justify-center items-center min-h-screen bg-cover bg-center relative"
+      style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')",
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+
       <ToastContainer />
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-lg p-8 w-96"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-gray-700">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
-          />
+      <div className="relative z-10 bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-96 border border-white/20">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
+          <p className="text-gray-500 text-sm mt-1">Please login to your account</p>
         </div>
 
-        <div className="mb-6">
-          <label className="block mb-1 text-gray-700">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4 relative">
+            <label className="block mb-1 text-gray-700 font-medium">Email</label>
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <FaUser className="text-gray-400 mr-2" />
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                placeholder="Enter your email"
+                className="w-full outline-none text-gray-700 bg-transparent"
+              />
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <div className="mb-4 relative">
+            <label className="block mb-1 text-gray-700 font-medium">Password</label>
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <FaLock className="text-gray-400 mr-2" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                placeholder="Enter your password"
+                className="w-full outline-none text-gray-700 bg-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-500 hover:text-blue-600 focus:outline-none ml-2"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
 
-        <p className="text-center mt-4 text-sm text-gray-600">
-          You don’t have an account?{" "}
-          <span
-            onClick={() => navigate("/register")}
-            className="text-red-500 hover:underline cursor-pointer"
+          <div className="flex items-center justify-between mb-6 text-sm">
+            <label className="flex items-center text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="mr-2 rounded text-blue-600 focus:ring-blue-500"
+              />
+              Remember Me
+            </label>
+            <span 
+              onClick={() => navigate("/forgot-password")}
+              className="text-blue-600 hover:underline cursor-pointer"
+            >
+              Forgot Password?
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-600 transition shadow-md transform hover:scale-[1.02]"
           >
-            Register here
-          </span>
-        </p>
-      </form>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+
+          <p className="text-center mt-6 text-sm text-gray-600">
+            Don’t have an account?{" "}
+            <span
+              onClick={() => navigate("/register")}
+              className="text-blue-600 hover:underline cursor-pointer font-medium"
+            >
+              Register here
+            </span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 };

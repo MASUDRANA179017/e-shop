@@ -16,6 +16,7 @@ import WishlistPage from "./pages/WishlistPage";
 // Auth Pages
 import Login from "./pages/Login";
 import RegisterPage from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 
 // Role-based Route Groups
 import { AdminRoutes } from "./routes/AdminRoutes";
@@ -49,6 +50,7 @@ function App() {
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Role-Based Routes */}
       {AdminRoutes}

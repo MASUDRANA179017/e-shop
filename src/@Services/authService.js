@@ -13,7 +13,10 @@ export const loginUser = async (data) => {
 
   // Save token and user in localStorage
   const responseData = res.data;
-  if (responseData.token) localStorage.setItem("token", responseData.token);
+  if (responseData.access_Token) {
+    localStorage.setItem("token", responseData.access_Token);
+    localStorage.setItem("r-token", responseData.refresh_Token);
+  }
   if (responseData.user) localStorage.setItem("user", JSON.stringify(responseData.user));
 
   return responseData;
@@ -21,9 +24,15 @@ export const loginUser = async (data) => {
 
 // Refresh access token
 export const refreshToken = async () => {
-  const res = await api.post("/auth/refresh");
+  const rToken = localStorage.getItem("r-token");
+  if (!rToken) return null;
+  
+  const res = await api.post("/auth/refresh", { refreshToken: rToken });
   const data = res.data;
-  if (data.token) localStorage.setItem("token", data.token);
+  if (data.access_Token) {
+    localStorage.setItem("token", data.access_Token);
+    localStorage.setItem("r-token", data.refresh_Token);
+  }
   return data;
 };
 
@@ -54,6 +63,7 @@ export const toggleUserStatus = async (id, status) => {
 // Logout user
 export const logoutUser = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("r-token");
   localStorage.removeItem("user");
 };
 

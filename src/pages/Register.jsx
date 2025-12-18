@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axiosInstance";
+import { registerUser } from "../@Services/authService";
 import { BiLoader } from "react-icons/bi";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaUser, FaEnvelope, FaLock, FaIdCard, FaImage } from "react-icons/fa";
 import { Box, Button } from "@mui/material";
 import { uploadImage } from "../@Services/uploadService";
 import { ToastContainer, toast } from "react-toastify";
@@ -75,32 +75,25 @@ export default function RegisterPage() {
         role: form.role,
       };
 
-      const res = await api.post("auth/register", payload);
-      const data = res.data;
+      const data = await registerUser(payload);
 
       if (!data) throw new Error("Registration failed");
 
-      toast.success("Registration successful! Verification email sent.", { autoClose: 3000 });
+      toast.success("Registration successful! Logging in...", { autoClose: 3000 });
 
-      // Auto login after register
-      const loginRes = await api.post("auth/login", {
-        email: form.email,
-        password: form.password,
-      });
-
-      const loginData = loginRes.data;
-
-      // Save tokens & user info
-      localStorage.setItem("token", loginData.access_Token);
-      localStorage.setItem("r-token", loginData.refresh_Token);
-      localStorage.setItem("user", JSON.stringify(loginData.user));
-
-      toast.success("Login successful! Redirecting...", { autoClose: 3000 });
+      // Save tokens & user info (Auto login)
+      if (data.access_Token) {
+        localStorage.setItem("token", data.access_Token);
+        localStorage.setItem("r-token", data.refresh_Token);
+      }
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
 
       // Redirect by role
       setTimeout(() => {
-        if (loginData.user.role === "admin") navigate("/dashboard/admin");
-        else if (loginData.user.role === "vendor") navigate("/dashboard/vendor");
+        if (data.user?.role === "admin") navigate("/dashboard/admin");
+        else if (data.user?.role === "vendor") navigate("/dashboard/vendor");
         else navigate("/dashboard/user");
       }, 3000);
 
@@ -112,114 +105,167 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative p-4"
+      style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')",
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      
       <ToastContainer />
-      <div className="bg-white rounded-lg shadow-md w-full max-w-[800px] p-6">
-        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
+      
+      <div className="relative z-10 bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-full max-w-[800px] border border-white/20">
+        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Create an Account
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Profile Image */}
-          <div className="flex flex-col items-center gap-2">
-            {form.profileImage && (
-              <img
-                src={form.profileImage}
-                alt="Profile Preview"
-                className="w-40 h-40 rounded-full object-cover"
-              />
-            )}
-            <Button variant="outlined" component="label" startIcon={<FaUpload />}>
+          <div className="flex flex-col items-center gap-3 mb-4">
+            <div className="relative">
+              {form.profileImage ? (
+                <img
+                  src={form.profileImage}
+                  alt="Profile Preview"
+                  className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 border-4 border-white shadow-inner">
+                  <FaImage size={40} />
+                </div>
+              )}
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                  <BiLoader className="animate-spin text-white" size={30} />
+                </div>
+              )}
+            </div>
+            
+            <Button 
+              variant="outlined" 
+              component="label" 
+              startIcon={<FaUpload />}
+              sx={{ textTransform: 'none', borderRadius: 2 }}
+            >
               Upload Profile Picture
               <input hidden type="file" accept="image/*" onChange={handleProfileUpload} />
             </Button>
-            {uploading && <BiLoader size={24} />}
           </div>
 
           {/* Name Fields */}
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              value={form.firstName}
-              onChange={handleFormChange}
-              className="border rounded-lg px-3 py-2 w-full"
-            />
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              value={form.lastName}
-              onChange={handleFormChange}
-              className="border rounded-lg px-3 py-2 w-full"
-            />
-          </div>
-
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={form.username}
-            onChange={handleFormChange}
-            className="border rounded-lg px-3 py-2 w-full"
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleFormChange}
-            className="border rounded-lg px-3 py-2 w-full"
-          />
-
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleFormChange}
-            className="border rounded-lg px-3 py-2 w-full"
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={form.confirmPassword}
-            onChange={handleFormChange}
-            className="border rounded-lg px-3 py-2 w-full"
-          />
-          
-          {/* Role Selector */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Account Type</label>
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleFormChange}
-                className="border rounded-lg px-3 py-2 w-full"
-              >
-                <option value="user">User</option>
-                <option value="vendor">Vendor</option>
-              </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">First Name</label>
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+                <FaUser className="text-gray-400 mr-2" />
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={form.firstName}
+                  onChange={handleFormChange}
+                  className="w-full outline-none text-gray-700 bg-transparent"
+                />
+              </div>
+            </div>
+            
+            <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">Last Name</label>
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+                <FaUser className="text-gray-400 mr-2" />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={form.lastName}
+                  onChange={handleFormChange}
+                  className="w-full outline-none text-gray-700 bg-transparent"
+                />
+              </div>
             </div>
           </div>
 
+          {/* Username & Email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">Username</label>
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+                <FaIdCard className="text-gray-400 mr-2" />
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={form.username}
+                  onChange={handleFormChange}
+                  className="w-full outline-none text-gray-700 bg-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+                <FaEnvelope className="text-gray-400 mr-2" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={form.email}
+                  onChange={handleFormChange}
+                  className="w-full outline-none text-gray-700 bg-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Passwords */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+                <FaLock className="text-gray-400 mr-2" />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleFormChange}
+                  className="w-full outline-none text-gray-700 bg-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="relative">
+              <label className="block mb-1 text-sm font-medium text-gray-700">Confirm Password</label>
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+                <FaLock className="text-gray-400 mr-2" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={form.confirmPassword}
+                  onChange={handleFormChange}
+                  className="w-full outline-none text-gray-700 bg-transparent"
+                />
+              </div>
+            </div>
+          </div>
+          
           <button
             type="submit"
-            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 rounded-lg w-full transition"
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-3 rounded-lg hover:from-blue-700 hover:to-blue-600 transition shadow-md transform hover:scale-[1.01] mt-4"
           >
-            Register
+            Create Account
           </button>
         </form>
 
-        <p className="text-center mt-4 text-sm text-gray-600">
+        <p className="text-center mt-6 text-sm text-gray-600">
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-red-500 hover:underline cursor-pointer"
+            className="text-blue-600 hover:underline cursor-pointer font-medium"
           >
             Login here
           </span>
