@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductSingle from "./ProductSingle";
 import ProductLayout from "../../commonLayouts/ProductLayout";
+import { getAllProducts } from "../../../@Services/ProductService";
 
 const PRODUCTS_PER_LOAD = 8;
 
@@ -12,8 +13,7 @@ const VendorLazyLoad = () => {
   
 
   useEffect(() => {
-    fetch("http://localhost:3000/product/getAll")
-      .then((res) => res.json())
+    getAllProducts()
       .then((data) => {
         const formatted = data.map((item) => ({
           id: item.id,

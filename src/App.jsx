@@ -8,6 +8,8 @@ import { BlogPage } from "./pages/BlogPage";
 import { ProductListPage } from "./pages/ProductListPage";
 import ContactPage from "./pages/ContactPage";
 import CommonLayout from "./components/commonLayouts/CommonLayout";
+import VendorListPage from "./pages/VendorListPage";
+import VendorProfilePage from "./pages/VendorProfilePage";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -36,6 +38,8 @@ function App() {
         <Route path="product/:id" element={<ProductDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="blog" element={<BlogPage />} />
+        <Route path="vendors" element={<VendorListPage />} />
+        <Route path="vendor/:id" element={<VendorProfilePage />} />
       </Route>
 
       {/* Auth Routes */}

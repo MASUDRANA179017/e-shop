@@ -8,6 +8,7 @@ import Bestseller from "../components/frontend/Bestseller.jsx";
 import SpringSale from "../components/frontend/SpringSale.jsx";
 import FAQ from "../components/frontend/FAQ.jsx";
 import Blog from "../components/frontend/blog";
+import FeaturedVendors from "../components/frontend/FeaturedVendors.jsx";
 
 
 
@@ -18,6 +19,7 @@ const HomePage = () => {
       <Banner />
       <QuackService />
       <ProductSlider />
+      <FeaturedVendors />
       <Banner2 />
       <NewProductLazyLoad />
       <SpringSale />

@@ -46,6 +46,11 @@ const MobileHeader = () => {
               </Link>
             </li>
             <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/vendors"} className="hover:underline">
+                Vendors
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
               <Link to={"/product"} className="hover:underline">
                 Product
               </Link>

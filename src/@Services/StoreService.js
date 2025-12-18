@@ -1,7 +1,19 @@
 // src/@Services/productService.js
 import api from "../api/axiosInstance";
 
-// Get all Stores
+// Get all Stores (Public)
+export const getAllPublicStores = async () => {
+  const res = await api.get("/store/public/all");
+  return res.data;
+};
+
+// Get single Store by ID (Public)
+export const getPublicStoreById = async (id) => {
+  const res = await api.get(`/store/public/${id}`);
+  return res.data;
+};
+
+// Get all Stores (Protected)
 export const getAllStores = async () => {
   const res = await api.get("/store/getAll");
   return res.data;

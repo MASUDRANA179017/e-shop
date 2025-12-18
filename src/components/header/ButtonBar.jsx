@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaBars, FaFire, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Container from "../commonLayouts/Container";
+import { getAllCategory } from "../../@Services/CategoryService";
 
 const ButtonBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -10,9 +11,19 @@ const ButtonBar = () => {
     useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const productRef = useRef(null);
   const saleRef = useRef(null);
+
+  useEffect(() => {
+    // Fetch categories
+    getAllCategory()
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch(err => console.error("Failed to fetch categories", err));
+  }, []);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -56,6 +67,11 @@ const ButtonBar = () => {
             <li>
               <Link to={"/"} className="hover:underline">
                 Home
+              </Link>
+            </li>
+            <li>
+              <Link to={"/vendors"} className="hover:underline">
+                Vendors
               </Link>
             </li>
             <li ref={productRef} className="relative">
@@ -147,13 +163,31 @@ const ButtonBar = () => {
         </button>
 
         <h2 className="text-lg font-bold mb-4">All Categories</h2>
-        <ul className="space-y-3 font-medium">
-          <li><Link to="#">Electronics</Link></li>
-          <li><Link to="#">Clothing</Link></li>
-          <li><Link to="#">Home & Kitchen</Link></li>
-          <li><Link to="#">Sports</Link></li>
-          <li><Link to="#">Beauty</Link></li>
-          <li><Link to="#">Books</Link></li>
+        <ul className="space-y-4 font-medium h-[calc(100vh-100px)] overflow-y-auto pb-10 scrollbar-hide">
+          {categories.length > 0 ? (
+            categories.map((cat) => (
+              <li key={cat.id}>
+                <div className="font-bold mb-1 text-gray-800 hover:text-[#FF624C] transition-colors">
+                  <Link to={`/product?category=${cat.id}`} onClick={() => setIsCategoryDrawerOpen(false)}>
+                    {cat.name}
+                  </Link>
+                </div>
+                {cat.children && cat.children.length > 0 && (
+                  <ul className="pl-3 space-y-1 text-sm text-gray-600 border-l-2 border-gray-100">
+                    {cat.children.map(sub => (
+                      <li key={sub.id}>
+                        <Link to={`/product?category=${sub.id}`} onClick={() => setIsCategoryDrawerOpen(false)} className="hover:text-[#FF624C] block py-0.5 transition-colors">
+                          {sub.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">Loading categories...</p>
+          )}
         </ul>
       </div>
 
