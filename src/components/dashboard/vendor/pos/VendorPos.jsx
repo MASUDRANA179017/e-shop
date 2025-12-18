@@ -6,6 +6,7 @@ import { getVendorProducts } from '../../../../@Services/ProductService';
 import { getAllStores } from '../../../../@Services/StoreService';
 import { openSession, getActiveSession, createTransaction } from '../../../../@Services/PosService';
 import { getAllUsers, registerUser } from '../../../../@Services/authService';
+import { applyCoupon } from '../../../../@Services/couponService';
 import api from '../../../../api/axiosInstance';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,6 +32,11 @@ const VendorPos = () => {
     const [foundCustomer, setFoundCustomer] = useState(null);
     const [customerLoading, setCustomerLoading] = useState(false);
     
+    // Coupon State
+    const [couponCode, setCouponCode] = useState('');
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+
     // Receipt State
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(null);
@@ -172,22 +178,71 @@ const VendorPos = () => {
         return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     };
 
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) return;
+        if (cart.length === 0) {
+            toast.error("Cart is empty");
+            return;
+        }
+
+        try {
+            const cartItems = cart.map(item => ({
+                productId: item.id,
+                price: Number(item.price),
+                quantity: item.quantity
+            }));
+
+            const result = await applyCoupon({
+                code: couponCode,
+                storeId: storeId,
+                items: cartItems
+            });
+
+            if (result.valid) {
+                setDiscountAmount(result.discount);
+                setAppliedCoupon(couponCode);
+                toast.success(`Coupon applied! Discount: ${formatPrice(result.discount)}`);
+            }
+        } catch (error) {
+            console.error("Coupon error:", error);
+            toast.error(error?.response?.data?.message || "Invalid coupon code");
+            setDiscountAmount(0);
+            setAppliedCoupon(null);
+        }
+    };
+
+    const removeCoupon = () => {
+        setCouponCode('');
+        setDiscountAmount(0);
+        setAppliedCoupon(null);
+    };
+
+    // Reset coupon when cart changes
+    useEffect(() => {
+        if (appliedCoupon) {
+            setDiscountAmount(0);
+            setAppliedCoupon(null);
+            toast.info("Cart updated. Please re-apply coupon.");
+        }
+    }, [cart]);
+
     const handleCheckout = async () => {
         if (cart.length === 0) return;
         setProcessing(true);
         try {
-            const totalAmount = calculateTotal();
+            const subTotal = calculateTotal();
+            const totalAmount = subTotal - discountAmount;
             const paidAmount = Number(amountPaid) || totalAmount;
             
             const transactionData = {
                 sessionId: session?.id,
                 customerId: customerId ? Number(customerId) : foundCustomer?.id || undefined,
                 items: cart.map(item => ({ productId: item.id, quantity: item.quantity })),
-                discountAmount: 0,
+                discountAmount: discountAmount,
                 taxAmount: 0,
                 paymentMethod,
                 amountPaid: paidAmount,
-                notes: undefined,
+                notes: appliedCoupon ? `Coupon Used: ${appliedCoupon}` : undefined,
             };
             const res = await createTransaction(transactionData);
             
@@ -198,6 +253,7 @@ const VendorPos = () => {
                 items: [...cart],
                 store: session?.store,
                 date: new Date(),
+                subTotal: subTotal,
                 total: totalAmount,
                 change: paidAmount - totalAmount,
                 customer: foundCustomer
@@ -206,7 +262,6 @@ const VendorPos = () => {
             setShowReceipt(true);
             toast.success('Transaction completed successfully', { position: 'top-center', autoClose: 3000 });
             
-            // alert(`Transaction Successful! Total: $${calculateTotal().toFixed(2)}`);
             clearCart();
             setAmountPaid(0);
             setFoundCustomer(null);
@@ -214,6 +269,9 @@ const VendorPos = () => {
             setCustomerFirstName('');
             setCustomerLastName('');
             setCustomerId('');
+            setCouponCode('');
+            setDiscountAmount(0);
+            setAppliedCoupon(null);
         } catch (error) {
             console.error("Checkout failed:", error);
             toast.error(error?.response?.data?.message || "Checkout failed. Please try again.", { position: 'top-center', autoClose: 4000 });
@@ -424,18 +482,57 @@ const VendorPos = () => {
 
                 {/* Totals & Actions */}
                 <div className="p-4 bg-gray-50 border-t border-gray-200">
+                    {/* Coupon Input */}
+                    <div className="mb-4">
+                        <label className="text-xs text-gray-500 mb-1 block">Coupon Code</label>
+                        <div className="flex gap-2">
+                            <div className="relative flex-1">
+                                <input
+                                    type="text"
+                                    placeholder="Enter Code"
+                                    className={`w-full border rounded-md px-3 py-2 text-sm ${appliedCoupon ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}
+                                    value={couponCode}
+                                    onChange={(e) => setCouponCode(e.target.value)}
+                                    disabled={!!appliedCoupon}
+                                />
+                                {appliedCoupon && <FaCheck className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600" size={12} />}
+                            </div>
+                            {!appliedCoupon ? (
+                                <button 
+                                    onClick={handleApplyCoupon}
+                                    className="bg-gray-800 text-white px-3 py-2 rounded-md text-sm hover:bg-gray-900"
+                                >
+                                    Apply
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={removeCoupon}
+                                    className="bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:bg-red-600"
+                                >
+                                    <FaTimes />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="space-y-2 mb-4">
                         <div className="flex justify-between text-gray-600">
                             <span>Subtotal</span>
                             <span>{formatPrice(calculateTotal())}</span>
                         </div>
+                        {discountAmount > 0 && (
+                            <div className="flex justify-between text-green-600 font-medium">
+                                <span>Discount</span>
+                                <span>- {formatPrice(discountAmount)}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between text-gray-600">
                             <span>Tax (0%)</span>
                             <span>{formatPrice(0)}</span>
                         </div>
                         <div className="flex justify-between text-xl font-bold text-gray-800 border-t border-gray-300 pt-2">
                             <span>Total</span>
-                            <span>{formatPrice(calculateTotal())}</span>
+                            <span>{formatPrice(calculateTotal() - discountAmount)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 pt-2">
                             <div>

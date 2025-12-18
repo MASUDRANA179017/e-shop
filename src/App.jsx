@@ -37,7 +37,8 @@ function App() {
       {/* Public Routes (wrapped inside CommonLayout) */}
       <Route path="/" element={<CommonLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="product" element={<ProductListPage />} />
+        <Route path="service" element={<VendorListPage />} />
+        {/* <Route path="product" element={<ProductListPage />} /> */}
         <Route path="product/:id" element={<ProductDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="blog" element={<BlogPage />} />

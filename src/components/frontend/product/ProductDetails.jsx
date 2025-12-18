@@ -1,15 +1,18 @@
 // src/pages/ProductDetails.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ProductImageSlider from "../../commonLayouts/ProductImageSlide";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useCurrency } from "../../../context/CurrencyContext";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar, FaStore, FaCheckCircle, FaTruck, FaUndo, FaShieldAlt, FaHeadset } from "react-icons/fa";
+import { MdVerified } from "react-icons/md";
 import { getProductBarcode } from "../../../@Services/BarcodeService";
+import { createReview } from "../../../@Services/ReviewService";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -18,14 +21,18 @@ const ProductDetails = () => {
   const [barcodeLoading, setBarcodeLoading] = useState(false);
   const [barcodeError, setBarcodeError] = useState(null);
 
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [bookingDate, setBookingDate] = useState("");
+
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { selectedCountry, formatPrice } = useCurrency();
 
   // Derived from context now
   const { code, flag, name } = selectedCountry || {};
-
-
 
   useEffect(() => {
     fetch("http://localhost:3000/product/getAll")
@@ -38,13 +45,13 @@ const ProductDetails = () => {
           setRelatedProducts(
             data.filter(
               (p) => p.category?.id === foundProduct.category?.id && p.id !== foundProduct.id
-            )
+            ).slice(0, 4)
           );
 
           setStoreProducts(
             data.filter(
               (p) => p.store?.id === foundProduct.store?.id && p.id !== foundProduct.id
-            )
+            ).slice(0, 4)
           );
         }
         setLoading(false);
@@ -71,15 +78,46 @@ const ProductDetails = () => {
   }, [product?.id]);
 
   const handleAddToCart = () => {
+    if (!bookingDate) {
+      alert("Please select a date for your service booking.");
+      return;
+    }
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.productThumbnail,
       thumbnail: product.productThumbnail,
-      brand: product.brand
+      brand: product.brand,
+      bookingDate: bookingDate
     });
     // Optional: Show toast/notification
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate('/cart');
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewSubmitting(true);
+    try {
+      await createReview({
+        productId: product.id,
+        rating: reviewRating,
+        comment: reviewComment
+      });
+      alert("Review submitted successfully! You earned 5 points.");
+      setShowReviewForm(false);
+      setReviewComment("");
+      // Ideally refresh product reviews here
+    } catch (error) {
+      console.error(error);
+      alert("Failed to submit review. Please ensure you are logged in.");
+    } finally {
+      setReviewSubmitting(false);
+    }
   };
 
   const handleToggleWishlist = () => {
@@ -97,214 +135,303 @@ const ProductDetails = () => {
       }
   };
 
-  if (loading) return <p className="p-6 text-center">Loading product...</p>;
-  if (!product) return <p className="p-6 text-center">Product not found.</p>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+    </div>
+  );
+
+  if (!product) return (
+    <div className="container mx-auto py-16 text-center">
+      <h2 className="text-2xl font-bold text-gray-700">Service not found.</h2>
+      <Link to="/service" className="text-blue-600 hover:underline mt-4 block">Browse Services</Link>
+    </div>
+  );
 
   const isWishlisted = isInWishlist(product.id);
 
   const averageRating =
     product.reviews.length > 0
       ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length
-      : 4;
+      : 4.8; // Default mock rating for better UI if empty
 
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4">
-      <Link to="/" className="text-blue-500 hover:underline mb-6 block">
-        ← Back to Products
-      </Link>
+    <div className="bg-gray-50 min-h-screen pb-20 font-sans">
+      <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <nav className="text-sm text-gray-500 mb-6">
+            <Link to="/" className="hover:text-blue-600">Home</Link> &gt; 
+            <Link to="/service" className="hover:text-blue-600 mx-1">Services</Link> &gt; 
+            <span className="text-gray-800 font-medium ml-1">{product.name}</span>
+        </nav>
 
-      <div className="flex flex-col lg:flex-row gap-10">
-        {/* Product Slider */}
-        <div className="lg:w-1/2 shadow-lg rounded-lg overflow-hidden">
-          <ProductImageSlider product={product} />
-        </div>
-
-        {/* Product Info */}
-        <div className="lg:w-1/2 flex flex-col gap-4">
-          <h1 className="text-4xl font-bold">{product.name}</h1>
-          <p className="text-gray-700 text-lg">{product.description}</p>
-
-          <div className="flex items-center gap-2 mt-2">
-            {flag && <img src={flag} alt={name} className="w-6 h-4 rounded" />}
-            {code && <span className="text-gray-600 text-sm">{code}</span>}
-            <div className="text-3xl text-red-600 font-bold">
-              {formatPrice(product.price)}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 bg-white rounded-2xl shadow-sm p-6 lg:p-10">
+          {/* Left Column: Image Gallery */}
+          <div className="space-y-6">
+            <div className="rounded-2xl overflow-hidden shadow-inner bg-gray-100 border border-gray-100">
+               {/* Assuming ProductImageSlider handles styling internally, wrapping it for control */}
+               <ProductImageSlider product={product} />
             </div>
-          </div>
-
-
-
-          <div className="mt-2 text-gray-600 text-sm space-y-1">
-            <p>
-              Category: <span className="font-medium">{product.category?.name || "Uncategorized"}</span>
-            </p>
-            <p>
-              Vendor: <span className="font-medium">{product.vendor?.firstName} {product.vendor?.lastName}</span>
-            </p>
-          </div>
-
-          <div className="mt-4">
-            <p className="font-semibold">
-              ⭐ Rating: {averageRating.toFixed(1)} ({product.reviews.length} reviews)
-            </p>
-          </div>
-
-          <div className="flex gap-4 mt-4">
-            <button
-              onClick={handleAddToCart}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
-            >
-              Add to Cart
-            </button>
-            <button
-              onClick={handleToggleWishlist}
-              className={`px-4 rounded-lg shadow-md border transition-colors flex items-center justify-center ${isWishlisted ? 'bg-red-50 border-red-200 text-red-500' : 'bg-white border-gray-200 text-gray-500 hover:text-red-500'}`}
-              title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
-            >
-               {isWishlisted ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
-            </button>
-          </div>
-
-          <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-sm">
-            <h3 className="text-lg font-bold mb-2">Product Barcode</h3>
-            {barcodeLoading && <p className="text-gray-500">Loading barcode...</p>}
-            {barcodeError && <p className="text-red-500">{barcodeError}</p>}
+            
+            {/* Barcode Section (Hidden if not available, subtle if is) */}
             {barcode && (
-              <div className="flex items-center gap-4">
-                <img
-                  src={`data:image/png;base64,${barcode}`}
-                  alt="Product Barcode"
-                  className="h-24 object-contain border rounded p-2 bg-white"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Facilities */}
-          <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-sm">
-            <h3 className="text-lg font-bold mb-2">Facilities & Services</h3>
-            <ul className="grid grid-cols-2 gap-2 text-gray-700">
-              <li> Free Delivery</li>
-              <li>30 Days Return</li>
-              <li> 1 Year Warranty</li>
-              <li>24/7 Support</li>
-            </ul>
-          </div>
-
-          {/* Customer Reviews */}
-          <div className="mt-6">
-            <h3 className="text-lg font-bold mb-3">Customer Reviews</h3>
-            {product.reviews.length > 0 ? (
-              <ul className="space-y-3 max-h-64 overflow-y-auto">
-                {product.reviews.map((review) => (
-                  <li key={review.id} className="border p-3 rounded-lg text-gray-700 shadow-sm">
-                    <div className="flex justify-between">
-                      <strong>⭐ {review.rating}</strong>
-                      <span className="text-sm text-gray-500">{review.date || ""}</span>
-                    </div>
-                    <p className="mt-1">{review.comment}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500">No reviews yet.</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <div className="mt-12">
-          <h3 className="text-2xl font-bold mb-4">Related Products</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            {relatedProducts.map((p) => (
-              <div
-                key={p.id}
-                className="border rounded-lg p-3 hover:shadow-lg transition-transform transform hover:scale-105"
-              >
-                <img
-                  src={p.productThumbnail || "/frontend/products/product01.png"}
-                  alt={p.name}
-                  className="w-full h-40 object-cover rounded"
-                />
-                <h4 className="mt-2 text-sm font-semibold">{p.name}</h4>
-                <p className="text-red-600 font-semibold">{formatPrice(p.price)}</p>
-                <Link
-                  to={`/product/${p.id}`}
-                  className="text-blue-500 text-xs hover:underline"
-                >
-                  View
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Store Details with banner, logo, and products */}
-      {product.store && (
-        <div className="mt-16">
-          {/* Banner */}
-          {product.store.bannerUrl && (
-            <div className="w-full h-48 sm:h-64 rounded-lg overflow-hidden mb-4 shadow-md">
-              <img
-                src={product.store.bannerUrl}
-                alt={product.store.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-4 mb-4">
-            {/* Logo */}
-            {product.store.logoUrl ? (
-              <img
-                src={product.store.logoUrl}
-                alt={product.store.name}
-                className="w-16 h-16 rounded-full border shadow-sm object-cover"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">
-                {product.store.name.charAt(0)}
-              </div>
-            )}
-
-            <div>
-              <h3 className="text-2xl font-bold">{product.store.name}</h3>
-              <p className="text-gray-600">{product.store.description}</p>
-            </div>
-          </div>
-
-          {/* Store Products */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-4">
-            {storeProducts.length > 0 ? (
-              storeProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="border rounded-lg p-3 hover:shadow-lg transition-transform transform hover:scale-105"
-                >
-                  <img
-                    src={p.productThumbnail || "/frontend/products/product01.png"}
-                    alt={p.name}
-                    className="w-full h-40 object-cover rounded"
-                  />
-                  <h4 className="mt-2 text-sm font-semibold">{p.name}</h4>
-                  <p className="text-red-600 font-semibold">{formatPrice(p.price)}</p>
-                  <Link
-                    to={`/product/${p.id}`}
-                    className="text-blue-500 text-xs hover:underline"
-                  >
-                    View
-                  </Link>
+                <div className="flex items-center justify-center bg-gray-50 p-4 rounded-lg border border-gray-200 border-dashed">
+                    <span className="text-xs text-gray-500 mr-3 uppercase tracking-wider font-semibold">Service Code</span>
+                    <img
+                        src={`data:image/png;base64,${barcode}`}
+                        alt="Barcode"
+                        className="h-10 opacity-80 mix-blend-multiply"
+                    />
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No other products in this store.</p>
             )}
           </div>
+
+          {/* Right Column: Product Info */}
+          <div className="flex flex-col">
+             <div className="mb-4">
+                 <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    {product.category?.name || "Service"}
+                 </span>
+             </div>
+             
+             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 leading-tight">
+                {product.name}
+             </h1>
+             
+             <div className="flex items-center gap-4 mb-6">
+                 <div className="flex items-center bg-yellow-50 px-3 py-1 rounded-lg border border-yellow-100">
+                    <FaStar className="text-yellow-400 mr-1" />
+                    <span className="font-bold text-gray-800">{averageRating.toFixed(1)}</span>
+                    <span className="text-gray-500 text-sm ml-1">({product.reviews.length} reviews)</span>
+                 </div>
+                 {product.stock > 0 ? (
+                     <div className="flex items-center text-green-600 text-sm font-medium">
+                         <FaCheckCircle className="mr-1" /> Available
+                     </div>
+                 ) : (
+                     <div className="flex items-center text-red-500 text-sm font-medium">
+                         <FaCheckCircle className="mr-1" /> Currently Unavailable
+                     </div>
+                 )}
+             </div>
+
+             <div className="flex items-end gap-3 mb-8">
+                 <div className="text-4xl font-bold text-blue-600">
+                    {formatPrice(product.price)}
+                 </div>
+                 {/* Mock original price for discount effect */}
+                 <div className="text-xl text-gray-400 line-through mb-1">
+                    {formatPrice(product.price * 1.2)}
+                 </div>
+                 <div className="text-sm font-bold text-red-500 bg-red-50 px-2 py-1 rounded mb-2">
+                    20% OFF
+                 </div>
+             </div>
+             
+             <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
+                {product.description || "Experience top-tier service with our dedicated professionals. We ensure quality, reliability, and satisfaction with every booking."}
+             </p>
+
+             {/* Vendor Info Card */}
+             {product.store && (
+                 <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-blue-200 transition-colors">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold text-xl mr-4 border border-gray-100">
+                        {product.store.logoUrl ? <img src={product.store.logoUrl} className="w-full h-full rounded-full object-cover" /> : product.store.name.charAt(0)}
+                     </div>
+                     <div className="flex-grow">
+                         <p className="text-xs text-gray-500 font-semibold uppercase">Service Provider</p>
+                         <h3 className="font-bold text-gray-800 flex items-center">
+                             {product.store.name} <MdVerified className="text-blue-500 ml-1" />
+                         </h3>
+                     </div>
+                     <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-blue-600 hover:underline">
+                         View Profile
+                     </Link>
+                 </div>
+             )}
+
+             {/* Booking Date Selection */}
+             <div className="mb-8">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Select Booking Date</label>
+                <input 
+                    type="date" 
+                    className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium shadow-sm"
+                    value={bookingDate}
+                    onChange={(e) => setBookingDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                />
+             </div>
+
+             {/* Action Buttons */}
+             <div className="flex gap-4 mt-auto">
+                 <button
+                    onClick={handleBuyNow}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1"
+                 >
+                    Book Now
+                 </button>
+                 <button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-4 px-8 rounded-xl transition-colors"
+                 >
+                    Add to Cart
+                 </button>
+                 <button
+                    onClick={handleToggleWishlist}
+                    className={`p-4 rounded-xl border-2 transition-colors flex items-center justify-center ${isWishlisted ? 'border-red-500 text-red-500 bg-red-50' : 'border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500'}`}
+                 >
+                    {isWishlisted ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
+                 </button>
+             </div>
+          </div>
         </div>
-      )}
+
+        {/* Facilities / Trust Badges */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 my-12">
+            {[
+                { icon: <FaTruck />, title: "Service Guarantee", desc: "Verified Professionals" },
+                { icon: <FaUndo />, title: "Easy Cancellation", desc: "Up to 24h before" },
+                { icon: <FaShieldAlt />, title: "Secure Payment", desc: "100% Protected" },
+                { icon: <FaHeadset />, title: "24/7 Support", desc: "Dedicated Team" }
+            ].map((item, idx) => (
+                <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div className="text-3xl text-blue-500 mb-3">{item.icon}</div>
+                    <h4 className="font-bold text-gray-800">{item.title}</h4>
+                    <p className="text-sm text-gray-500">{item.desc}</p>
+                </div>
+            ))}
+        </div>
+
+        {/* Reviews Section */}
+        <div className="bg-white rounded-2xl shadow-sm p-8 mb-12">
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-800">Customer Reviews</h3>
+                {!showReviewForm && (
+                    <button 
+                        onClick={() => setShowReviewForm(true)}
+                        className="text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors"
+                    >
+                        Write a Review
+                    </button>
+                )}
+            </div>
+
+            {showReviewForm && (
+                <div className="bg-gray-50 p-6 rounded-xl mb-8 border border-gray-100">
+                    <h4 className="font-bold text-gray-800 mb-4">Write your review</h4>
+                    <form onSubmit={handleReviewSubmit}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Rating</label>
+                            <div className="flex space-x-2">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                        type="button"
+                                        key={star}
+                                        onClick={() => setReviewRating(star)}
+                                        className={`text-2xl focus:outline-none ${star <= reviewRating ? 'text-yellow-400' : 'text-gray-300'}`}
+                                    >
+                                        <FaStar />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Comment</label>
+                            <textarea
+                                value={reviewComment}
+                                onChange={(e) => setReviewComment(e.target.value)}
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                rows="4"
+                                placeholder="Share your experience..."
+                                required
+                            ></textarea>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowReviewForm(false)}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg font-bold"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={reviewSubmitting}
+                                className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {product.reviews.length > 0 ? (
+                <div className="space-y-6">
+                    {product.reviews.map((review) => (
+                        <div key={review.id} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
+                            <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-center">
+                                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500 mr-3">
+                                        {review.user?.firstName?.charAt(0) || "U"}
+                                    </div>
+                                    <div>
+                                        <h5 className="font-bold text-gray-800">{review.user?.firstName || "Anonymous User"}</h5>
+                                        <div className="flex text-yellow-400 text-sm">
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <FaStar key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-300"} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <span className="text-xs text-gray-400">{review.date || "Recently"}</span>
+                            </div>
+                            <p className="text-gray-600 pl-13">{review.comment}</p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                !showReviewForm && (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                    <p className="text-gray-500 mb-4">No reviews yet. Be the first to review this service!</p>
+                    <button onClick={() => setShowReviewForm(true)} className="text-blue-600 font-bold hover:underline">Write a Review</button>
+                </div>
+                )
+            )}
+        </div>
+
+        {/* Related Services */}
+        {relatedProducts.length > 0 && (
+            <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Similar Services</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    {relatedProducts.map((p) => (
+                        <Link key={p.id} to={`/product/${p.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                            <div className="h-48 overflow-hidden relative">
+                                <img
+                                    src={p.productThumbnail || "/frontend/products/product01.png"}
+                                    alt={p.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-blue-600 shadow-sm">
+                                    {p.category?.name}
+                                </div>
+                            </div>
+                            <div className="p-4">
+                                <h4 className="font-bold text-gray-800 mb-1 truncate group-hover:text-blue-600 transition-colors">{p.name}</h4>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-blue-600 font-bold">{formatPrice(p.price)}</span>
+                                    <div className="flex items-center text-xs text-gray-500">
+                                        <FaStar className="text-yellow-400 mr-1" /> 4.8
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        )}
+      </div>
     </div>
   );
 };

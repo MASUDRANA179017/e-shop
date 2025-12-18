@@ -74,28 +74,25 @@ const ButtonBar = () => {
                 Vendors
               </Link>
             </li>
-            <li ref={productRef} className="relative">
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center hover:underline"
-              >
-                Product
-              </button>
-              {isDropdownOpen && (
-                <div className="absolute top-[45px] left-0 bg-white text-black shadow-lg rounded-md w-48 animate-fadeIn">
-                  <ul className='py-2 font-["Montserrat"] text-base leading-6'>
-                    <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link to="/product">Submenu Item 1</Link>
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link to="/product">Submenu Item 2</Link>
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link to="/product">Submenu Item 3</Link>
-                    </li>
-                  </ul>
-                </div>
-              )}
+            <li className="group relative z-50">
+              <Link to={"/service"} className="hover:underline flex items-center gap-1">
+                Service
+                {/* <FaAngleDown /> */}
+              </Link>
+              {/* Dropdown Menu */}
+              {/* <div className="absolute top-full left-0 w-48 bg-white text-gray-800 shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <ul className="flex flex-col py-2">
+                  <li className="px-4 py-2 hover:bg-gray-100">
+                    <Link to="/service">Submenu Item 1</Link>
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100">
+                    <Link to="/service">Submenu Item 2</Link>
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100">
+                    <Link to="/service">Submenu Item 3</Link>
+                  </li>
+                </ul>
+              </div> */}
             </li>
             <li>
               <Link to={"/blog"} className="hover:underline">
@@ -137,12 +134,12 @@ const ButtonBar = () => {
               )}
             </li>
             <li>
-              <Link to={"/product"} className="hover:underline">
+              <Link to={"/service"} className="hover:underline">
                 Best Seller
               </Link>
             </li>
             <li>
-              <Link to={"/product"} className="hover:underline">
+              <Link to={"/service"} className="hover:underline">
                 New Arrival
               </Link>
             </li>
@@ -168,7 +165,7 @@ const ButtonBar = () => {
             categories.map((cat) => (
               <li key={cat.id}>
                 <div className="font-bold mb-1 text-gray-800 hover:text-[#FF624C] transition-colors">
-                  <Link to={`/product?category=${cat.id}`} onClick={() => setIsCategoryDrawerOpen(false)}>
+                  <Link to={`/service?category=${cat.id}`} onClick={() => setIsCategoryDrawerOpen(false)}>
                     {cat.name}
                   </Link>
                 </div>
@@ -176,7 +173,7 @@ const ButtonBar = () => {
                   <ul className="pl-3 space-y-1 text-sm text-gray-600 border-l-2 border-gray-100">
                     {cat.children.map(sub => (
                       <li key={sub.id}>
-                        <Link to={`/product?category=${sub.id}`} onClick={() => setIsCategoryDrawerOpen(false)} className="hover:text-[#FF624C] block py-0.5 transition-colors">
+                        <Link to={`/service?category=${sub.id}`} onClick={() => setIsCategoryDrawerOpen(false)} className="hover:text-[#FF624C] block py-0.5 transition-colors">
                           {sub.name}
                         </Link>
                       </li>

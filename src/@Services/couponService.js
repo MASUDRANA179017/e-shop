@@ -25,6 +25,12 @@ export const updateCoupon = async (id, data) => {
   return res.data;
 };
 
+// Apply coupon
+export const applyCoupon = async (data) => {
+  const res = await api.post("/coupon/apply", data);
+  return res.data;
+};
+
 // Delete coupon by ID
 export const deleteCoupon = async (id) => {
   const res = await api.delete(`/coupon/delete/${id}`);

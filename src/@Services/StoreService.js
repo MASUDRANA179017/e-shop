@@ -50,7 +50,25 @@ export const sendStoreEmail = async (storeId, data) => {
 
 // Delete store by ID
 export const deleteStore = async (id) => {
-  const res = await api.delete(`/store/delete/${id}`);
+  const res = await api.delete(`/store/deleteStore/${id}`);
+  return res.data;
+};
+
+// Follow a store
+export const followStore = async (id) => {
+  const res = await api.post(`/store/${id}/follow`);
+  return res.data;
+};
+
+// Unfollow a store
+export const unfollowStore = async (id) => {
+  const res = await api.delete(`/store/${id}/follow`);
+  return res.data;
+};
+
+// Check follow status
+export const checkFollowStatus = async (id) => {
+  const res = await api.get(`/store/${id}/is-following`);
   return res.data;
 };
 

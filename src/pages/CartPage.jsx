@@ -58,6 +58,11 @@ const CartPage = () => {
                           <div>
                             <h3 className="font-semibold text-gray-800">{item.name}</h3>
                             <p className="text-sm text-gray-500">{item.brand?.name}</p>
+                            {item.bookingDate && (
+                              <p className="text-xs text-blue-600 font-bold mt-1 bg-blue-50 px-2 py-1 rounded inline-block">
+                                Booking: {new Date(item.bookingDate).toLocaleDateString()}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </td>
