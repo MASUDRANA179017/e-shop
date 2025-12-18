@@ -1,5 +1,6 @@
-// src/@Services/PosService.js
 import api from "../api/axiosInstance";
+
+// ==================== SESSION ENDPOINTS ====================
 
 // Open a new POS session
 export const openSession = async (data) => {
@@ -31,6 +32,8 @@ export const getStoreSessions = async (storeId) => {
   return res.data;
 };
 
+// ==================== TRANSACTION ENDPOINTS ====================
+
 // Create a new sale transaction
 export const createTransaction = async (data) => {
   const res = await api.post("/pos/transaction/create", data);
@@ -56,7 +59,7 @@ export const getSessionTransactions = async (sessionId) => {
 };
 
 // Refund a transaction
-export const refundTransaction = async (transactionId, data) => {
-  const res = await api.put(`/pos/transaction/refund/${transactionId}`, data);
+export const refundTransaction = async (transactionId) => {
+  const res = await api.put(`/pos/transaction/refund/${transactionId}`);
   return res.data;
 };

@@ -32,7 +32,7 @@ import {
 } from "react-icons/fa";
 import { TiDeleteOutline } from "react-icons/ti";
 import {
-  vendorProduct,
+  getVendorProducts,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -95,7 +95,7 @@ export default function VendorProductsTable() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const data = await vendorProduct();
+      const data = await getVendorProducts();
       setProducts(data || []);
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to load products");

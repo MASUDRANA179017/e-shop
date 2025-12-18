@@ -7,8 +7,8 @@ export const getAllProducts = async () => {
   return res.data;
 };
 
-// Get all products
-export const vendorProduct = async () => {
+// Get vendor products (role based)
+export const getVendorProducts = async () => {
   const res = await api.get("/product/vendorProduct");
   return res.data;
 };

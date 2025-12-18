@@ -1,4 +1,3 @@
-// src/@Services/CheckoutService.js
 import api from "../api/axiosInstance";
 
 // Create a new order

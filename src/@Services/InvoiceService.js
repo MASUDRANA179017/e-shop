@@ -1,4 +1,3 @@
-// src/@Services/InvoiceService.js
 import api from "../api/axiosInstance";
 
 // Create a new invoice
