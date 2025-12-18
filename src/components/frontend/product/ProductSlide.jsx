@@ -9,6 +9,8 @@ import ProductLayout from "../../commonLayouts/ProductLayout";
 
 
 
+import { getAllProducts } from "../../../@Services/ProductService";
+
 const NextArrow = ({ className, style, onClick }) => (
   <div
     className={className}
@@ -33,9 +35,7 @@ const ProductSlider = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    // fetch("/data/products.json")
-    fetch("http://localhost:3000/product/getAll")
-      .then((res) => res.json())
+    getAllProducts()
       .then((data) => {
         const formatted = data.map((item) => ({
           id: item.id,
@@ -45,8 +45,8 @@ const ProductSlider = () => {
           oldPrice: item.old_price ? item.old_price : null,
           image: item.productThumbnail || "/frontend/products/product01.png",
           rating: item.rating || 4,
-          reviews: item.reviews || 100,
-          category: item.category || "Laptop",
+          reviews: item.reviews || [], // reviews is array
+          category: item.category || { name: "General" }, // Keep object or fallback
           discount: item.discount || null,
         }));
         setProducts(formatted);

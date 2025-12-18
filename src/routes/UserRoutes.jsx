@@ -7,6 +7,7 @@ import UserDashboard from "../components/dashboard/user/index";
 import Dashboard from "../pages/Dashboard";
 import UpdateProfile from "../components/dashboard/UpdateProfile";
 import CreateStorePage from "../components/dashboard/user/CreateShop";
+import UserWallet from "../components/dashboard/user/UserWallet";
 
 
 export const UserRoutes = (
@@ -21,8 +22,10 @@ export const UserRoutes = (
     {/* Nested Pages */}
     <Route index element={<UserDashboard />} />
     <Route path="bookings" element={<div className="p-10 text-center">
-      <Dashboard />
+      <h2 className="text-xl font-bold">My Bookings</h2>
+      <p className="text-gray-500">Booking history coming soon...</p>
     </div>} />
+    <Route path="wallet" element={<UserWallet />} />
     <Route path="profile" element={<div className="p-10 text-center">
       <UpdateProfile />
     </div>} />

@@ -2,7 +2,7 @@ import React from "react";
 import { Route } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminLayout from "../components/dashboard/admin/AdminLayout";
-import UserDashboard from "../components/dashboard/user";
+import AdminDashboard from "../components/dashboard/admin/index";
 import Dashboard from "../pages/Dashboard";
 import AdminUsersTable from "../components/dashboard/admin/AdminUsersTable";
 import AdminProductsTable from "../components/dashboard/admin/AdminProductsTable";
@@ -21,20 +21,21 @@ export const AdminRoutes = (
       }
     >
       {/* Nested Pages */}
-      <Route index element={<UserDashboard />} />
+      <Route index element={<AdminDashboard />} />
       <Route path="bookings" element={<div className="p-10 text-center">
-        <Dashboard />
+        <h2 className="text-xl font-bold">Bookings Management</h2>
+        <p className="text-gray-500">Order list coming soon...</p>
       </div>} />
-      <Route path="users" element={<div className="p-10 text-center">
+      <Route path="users" element={<div className="p-4">
         <AdminUsersTable />
       </div>} />
-      <Route path="category" element={<div className="p-10 text-center">
+      <Route path="category" element={<div className="p-4">
         <AdminCategoryTable />
       </div>} />
-      <Route path="stores" element={<div className="p-10 text-center">
+      <Route path="stores" element={<div className="p-4">
         <AdminStoreTable />
       </div>} />
-      <Route path="products" element={<div className="p-10 text-center">
+      <Route path="products" element={<div className="p-4">
         <AdminProductsTable />
       </div>} />
       <Route path="profile" element={<div className="p-10 text-center">

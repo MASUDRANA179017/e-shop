@@ -71,6 +71,16 @@ const MobileHeader = () => {
               </Link>
             </li>
             <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/wishlist"} className="hover:underline">
+                Wishlist
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+              <Link to={"/dashboard/user/wallet"} className="hover:underline">
+                Wallet
+              </Link>
+            </li>
+            <li className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
               <Link to={"/cart"} className="hover:underline">
                 Cart
               </Link>
@@ -101,7 +111,8 @@ const MobileBottomMenu = () => {
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 shadow-md z-50 md:hidden">
       <div className="flex justify-around items-center py-2 text-gray-600">
-        <button
+        <Link
+          to="/"
           onClick={() => setActive("home")}
           className={`flex flex-col items-center text-sm ${
             active === "home" ? "text-[#FF624C]" : ""
@@ -109,7 +120,7 @@ const MobileBottomMenu = () => {
         >
           <FaHome className="text-xl" />
           Home
-        </button>
+        </Link>
         <button
           onClick={() => setActive("categories")}
           className={`flex flex-col items-center text-sm ${
@@ -120,7 +131,8 @@ const MobileBottomMenu = () => {
           Categories
         </button>
 
-        <button
+        <Link
+          to="/cart"
           onClick={() => setActive("cart")}
           className={`flex flex-col items-center text-sm ${
             active === "cart" ? "text-[#FF624C]" : ""
@@ -128,8 +140,9 @@ const MobileBottomMenu = () => {
         >
           <FaShoppingCart className="text-xl" />
           Cart
-        </button>
-        <button
+        </Link>
+        <Link
+          to="/dashboard/user"
           onClick={() => setActive("profile")}
           className={`flex flex-col items-center text-sm ${
             active === "profile" ? "text-[#FF624C]" : ""
@@ -137,7 +150,7 @@ const MobileBottomMenu = () => {
         >
           <FaUser className="text-xl" />
           Profile
-        </button>
+        </Link>
       </div>
     </div>
   );

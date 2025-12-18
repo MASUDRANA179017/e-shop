@@ -5,7 +5,7 @@ import VendorLayout from "../components/dashboard/vendor/VendorLayout";
 import UpdateProfile from "../components/dashboard/UpdateProfile";
 import VendorProductsTable from "../components/dashboard/vendor/VendorProductTable";
 import VendorStoreTable from "../components/dashboard/vendor/VendorStoreTable";
-import UserDashboard from "../components/dashboard/user";
+import VendorDashboard from "../components/dashboard/vendor/index";
 import VendorPrescriptionTable from "../components/dashboard/vendor/VendorPrescriptionTable";
 import CouponTable from "../components/dashboard/vendor/VendorCouponTable";
 
@@ -19,7 +19,7 @@ export const VendorRoutes = (
         </ProtectedRoute>
       }
     >
-      <Route index element={<UserDashboard />} />
+      <Route index element={<VendorDashboard />} />
       <Route
         path="profile"
         element={
@@ -32,21 +32,16 @@ export const VendorRoutes = (
       <Route
         path="prescriptions"
         element={
-          <div className="p-10 text-center">
+          <div className="p-4">
             <VendorPrescriptionTable />
           </div>
         }
       />
-      {/* prescriptions */}
-      {/* products  */}
-      {/* Pet Details */}
-      {/* Accounting  */}
-      {/* Inventory */}
-      {/* Note and reminders  */}
+      
       <Route
         path="my-services"
         element={
-          <div className="p-10 text-center">
+          <div className="p-4">
             <VendorStoreTable />
           </div>
         }
@@ -54,7 +49,7 @@ export const VendorRoutes = (
       <Route
         path="my-coupons"
         element={
-          <div className="p-10 text-center">
+          <div className="p-4">
             <CouponTable />
           </div>
         }
@@ -62,7 +57,7 @@ export const VendorRoutes = (
       <Route
         path="my-products"
         element={
-          <div className="p-10 text-center">
+          <div className="p-4">
             <VendorProductsTable />
           </div>
         }

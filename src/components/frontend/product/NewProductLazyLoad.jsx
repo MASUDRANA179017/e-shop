@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductSingle from "./ProductSingle";
 import ProductLayout from "../../commonLayouts/ProductLayout";
+import { getAllProducts } from "../../../@Services/ProductService";
 
 const PRODUCTS_PER_LOAD = 8;
 
@@ -10,8 +11,7 @@ const NewProductLazyLoad = () => {
   const [selectedCategory, setSelectedCategory] = useState("Featured Products");
 
   useEffect(() => {
-    fetch("http://localhost:3000/product/getAll")
-      .then((res) => res.json())
+    getAllProducts()
       .then((data) => {
         const formatted = data.map((item) => ({
           id: item.id,
@@ -22,8 +22,8 @@ const NewProductLazyLoad = () => {
           oldPrice: item.old_price ? item.old_price / 100 : null,
           image: item.productThumbnail || "/frontend/products/product01.png",
           rating: item.rating || 4,
-          reviews: item.reviews || 100,
-          category: item.category || "Laptop",
+          reviews: item.reviews || [],
+          category: item.category || { name: "General" },
           discount: item.discount || null,
         }));
         setProducts(formatted);

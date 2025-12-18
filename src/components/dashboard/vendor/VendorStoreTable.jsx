@@ -147,13 +147,13 @@ export default function VendorStoreTable() {
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-                <Typography variant="h6">Stores List</Typography>
-                <Button variant="contained" onClick={openAdd}>Add Store</Button>
+                <Typography variant="h6">My Services</Typography>
+                <Button variant="contained" onClick={openAdd}>Add Service</Button>
             </Box>
 
             <TextField
                 fullWidth
-                placeholder="Search by store or owner"
+                placeholder="Search by service"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 InputProps={{ startAdornment: <InputAdornment position="start"><FaSearch /></InputAdornment> }}
@@ -300,7 +300,7 @@ export default function VendorStoreTable() {
 
             {/* Delete Dialog */}
             <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-                <DialogTitle>Delete Store</DialogTitle>
+                <DialogTitle>Delete Service</DialogTitle>
                 <DialogContent>
                     <Typography>Are you sure you want to delete "{activeStore?.name}"?</Typography>
                 </DialogContent>

@@ -84,7 +84,7 @@ export default function CreateStorePage() {
 
             {/* Store Name */}
             <TextField
-              label="Store Name"
+              label="Service Name"
               name="name"
               value={form.name}
               onChange={handleFormChange}

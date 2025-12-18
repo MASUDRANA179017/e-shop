@@ -1,9 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Container from "../commonLayouts/Container";
-import { FaShoppingCart, FaUser, FaSearch } from "react-icons/fa";
-
+import { FaShoppingCart, FaUser, FaSearch, FaHeart, FaWallet } from "react-icons/fa";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 const MiddleBar = () => {
+  const { cartTotal, cartCount } = useCart();
+  const { wishlistItems } = useWishlist();
 
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
@@ -32,24 +36,55 @@ const MiddleBar = () => {
           </button>
         </div>
 
-        {/* Right Section: Cart and User Account */}
+        {/* Right Section: Icons */}
         <div className="flex items-center gap-6">
+          
+          {/* Wishlist */}
+          <Link to="/wishlist" className="flex items-center cursor-pointer text-gray-700 hover:text-red-500 transition-colors duration-200 relative">
+            <div className="relative">
+                <FaHeart className="w-6 h-6" />
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {wishlistItems.length}
+                  </span>
+                )}
+            </div>
+            <div className="hidden sm:block ml-2">
+              <div className="text-sm">Wishlist</div>
+            </div>
+          </Link>
+
+          {/* Wallet */}
+          <Link to="/dashboard/user/wallet" className="flex items-center cursor-pointer text-gray-700 hover:text-green-600 transition-colors duration-200">
+            <FaWallet className="w-6 h-6" />
+            <div className="hidden sm:block ml-2">
+              <div className="text-sm">Wallet</div>
+            </div>
+          </Link>
+
           {/* Cart */}
-          <div className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200">
-            <FaShoppingCart className="w-6 h-6 mr-2" />
+          <Link to="/cart" className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200">
+            <div className="relative">
+              <FaShoppingCart className="w-6 h-6 mr-2" />
+               {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-1 bg-[#FF624C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+            </div>
             <div className="hidden sm:block">
               <div className="text-sm">Cart</div>
-              <div className="text-md font-semibold text-gray-800">$150.00</div>
+              <div className="text-md font-semibold text-gray-800">${cartTotal.toFixed(2)}</div>
             </div>
-          </div>
+          </Link>
 
           {/* Vertical Separator */}
           <div className="hidden sm:block w-px h-8 bg-gray-300"></div>
 
           {/* User Account */}
-          <div
+          <Link
+            to={user ? "/dashboard/user" : "/login"}
             className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200"
-            onClick={() => window.location.href = '/login'}
           >
             <FaUser className="w-6 h-6 mr-2" />
             <div className="hidden sm:block">
@@ -69,7 +104,7 @@ const MiddleBar = () => {
                 </>
               )}
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </Container>

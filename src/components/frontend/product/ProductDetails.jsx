@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ProductImageSlider from "../../commonLayouts/ProductImageSlide";
+import { useCart } from "../../../context/CartContext";
+import { useWishlist } from "../../../context/WishlistContext";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -10,8 +13,11 @@ const ProductDetails = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [storeProducts, setStoreProducts] = useState([]);
 
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
   const country = localStorage.getItem("selectedCountry")
-  const { code, currency, flag, name } = country;
+  const { code, currency, flag, name } = country ? JSON.parse(country) : {}; // Added JSON.parse and fallback
 
 
 
@@ -44,11 +50,36 @@ const ProductDetails = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    alert(`${product.name} added to cart!`);
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.productThumbnail,
+      thumbnail: product.productThumbnail,
+      brand: product.brand
+    });
+    // Optional: Show toast/notification
+  };
+
+  const handleToggleWishlist = () => {
+      if (isInWishlist(product.id)) {
+          removeFromWishlist(product.id);
+      } else {
+          addToWishlist({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.productThumbnail,
+              thumbnail: product.productThumbnail,
+              brand: product.brand
+          });
+      }
   };
 
   if (loading) return <p className="p-6 text-center">Loading product...</p>;
   if (!product) return <p className="p-6 text-center">Product not found.</p>;
+
+  const isWishlisted = isInWishlist(product.id);
 
   const averageRating =
     product.reviews.length > 0
@@ -97,12 +128,21 @@ const ProductDetails = () => {
             </p>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            className="mt-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
-          >
-            Add to Cart
-          </button>
+          <div className="flex gap-4 mt-4">
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleToggleWishlist}
+              className={`px-4 rounded-lg shadow-md border transition-colors flex items-center justify-center ${isWishlisted ? 'bg-red-50 border-red-200 text-red-500' : 'bg-white border-gray-200 text-gray-500 hover:text-red-500'}`}
+              title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+            >
+               {isWishlisted ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
+            </button>
+          </div>
 
           {/* Facilities */}
           <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-sm">

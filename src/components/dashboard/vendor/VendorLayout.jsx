@@ -20,16 +20,16 @@ const VendorLayout = () => {
     { to: "/dashboard/vendor", label: "Dashboard", icon: <BiHome size={18} /> },
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
     { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={18} /> },
-    { to: "/dashboard/vendor/my-coupons", label: "My Coupons List", icon: <FaStore size={18} /> },
+    { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaStore size={18} /> },
     
     // coupons table
     // marketing plan
     // My Clients / users
-    { to: "/dashboard/vendor/prescriptions", label: "Memo Lists", icon: <FaFileInvoice size={18} /> },
+    { to: "/dashboard/vendor/prescriptions", label: "Prescriptions", icon: <FaFileInvoice size={18} /> },
     // My Memo List
 
     { to: "/dashboard/vendor/my-products", label: "Service Products", icon: <FaShoppingCart size={18} /> },
-    { to: "/dashboard/vendor/settings", label: "system Settings", icon: <CiSettings size={18} /> },
+    { to: "/dashboard/vendor/settings", label: "Settings", icon: <CiSettings size={18} /> },
      // {/* products  */}
 
      // {/* Pet Details */}

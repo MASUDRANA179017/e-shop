@@ -10,6 +10,8 @@ import ContactPage from "./pages/ContactPage";
 import CommonLayout from "./components/commonLayouts/CommonLayout";
 import VendorListPage from "./pages/VendorListPage";
 import VendorProfilePage from "./pages/VendorProfilePage";
+import CartPage from "./pages/CartPage";
+import WishlistPage from "./pages/WishlistPage";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -40,6 +42,8 @@ function App() {
         <Route path="blog" element={<BlogPage />} />
         <Route path="vendors" element={<VendorListPage />} />
         <Route path="vendor/:id" element={<VendorProfilePage />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="wishlist" element={<WishlistPage />} />
       </Route>
 
       {/* Auth Routes */}
