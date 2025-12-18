@@ -5,31 +5,35 @@ import { getAllProducts } from "../../../@Services/ProductService";
 
 const PRODUCTS_PER_LOAD = 8;
 
-const NewProductLazyLoad = () => {
+const NewProductLazyLoad = ({ type, products: propProducts }) => {
   const [products, setProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(PRODUCTS_PER_LOAD);
   const [selectedCategory, setSelectedCategory] = useState("Featured Products");
 
   useEffect(() => {
-    getAllProducts()
-      .then((data) => {
-        const formatted = data.map((item) => ({
-          id: item.id,
-          img:item.productThumbnail,
-          title: item.name,
-          description: item.description,
-          currentPrice: item.price / 100,
-          oldPrice: item.old_price ? item.old_price / 100 : null,
-          image: item.productThumbnail || "/frontend/products/product01.png",
-          rating: item.rating || 4,
-          reviews: item.reviews || [],
-          category: item.category || { name: "General" },
-          discount: item.discount || null,
-        }));
-        setProducts(formatted);
-      })
-      .catch((err) => console.error("Failed to fetch products:", err));
-  }, []);
+    if (propProducts) {
+      setProducts(propProducts);
+    } else {
+      getAllProducts(type)
+        .then((data) => {
+          const formatted = data.map((item) => ({
+            id: item.id,
+            img:item.productThumbnail,
+            title: item.name,
+            description: item.description,
+            currentPrice: item.price / 100,
+            oldPrice: item.old_price ? item.old_price / 100 : null,
+            image: item.productThumbnail || "/frontend/products/product01.png",
+            rating: item.rating || 4,
+            reviews: item.reviews || [],
+            category: item.category || { name: "General" },
+            discount: item.discount || null,
+          }));
+          setProducts(formatted);
+        })
+        .catch((err) => console.error("Failed to fetch products:", err));
+    }
+  }, [type, propProducts]);
 
   const handleLoadMore = () => {
     if (visibleProducts >= products.length) {

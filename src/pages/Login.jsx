@@ -99,7 +99,7 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4 relative">
             <label className="block mb-1 text-gray-700 font-medium">Email</label>
-            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
               <FaUser className="text-gray-400 mr-2" />
               <input
                 type="email"
@@ -115,7 +115,7 @@ const Login = () => {
 
           <div className="mb-4 relative">
             <label className="block mb-1 text-gray-700 font-medium">Password</label>
-            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
               <FaLock className="text-gray-400 mr-2" />
               <input
                 type={showPassword ? "text" : "password"}
@@ -129,7 +129,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-500 hover:text-blue-600 focus:outline-none ml-2"
+                className="text-gray-500 hover:text-[#FF624C] focus:outline-none ml-2"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -142,13 +142,13 @@ const Login = () => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="mr-2 rounded text-blue-600 focus:ring-blue-500"
+                className="mr-2 rounded text-[#FF624C] focus:ring-[#FF624C]"
               />
               Remember Me
             </label>
             <span 
               onClick={() => navigate("/forgot-password")}
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-[#FF624C] hover:underline cursor-pointer"
             >
               Forgot Password?
             </span>
@@ -157,7 +157,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-600 transition shadow-md transform hover:scale-[1.02]"
+            className="w-full bg-[#FF624C] text-white font-semibold py-2.5 rounded-lg hover:bg-[#e0523e] transition shadow-md transform hover:scale-[1.02]"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -166,7 +166,7 @@ const Login = () => {
             Don’t have an account?{" "}
             <span
               onClick={() => navigate("/register")}
-              className="text-blue-600 hover:underline cursor-pointer font-medium"
+              className="text-[#FF624C] hover:underline cursor-pointer font-medium"
             >
               Register here
             </span>

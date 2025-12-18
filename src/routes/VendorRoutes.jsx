@@ -4,12 +4,12 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import VendorLayout from "../components/dashboard/vendor/VendorLayout";
 import UpdateProfile from "../components/dashboard/UpdateProfile";
 import VendorProductsTable from "../components/dashboard/vendor/VendorProductTable";
-import VendorStoreTable from "../components/dashboard/vendor/VendorStoreTable";
 import VendorDashboard from "../components/dashboard/vendor/index";
 import VendorPrescriptionTable from "../components/dashboard/vendor/VendorPrescriptionTable";
 import CouponTable from "../components/dashboard/vendor/VendorCouponTable";
 import VendorPos from "../components/dashboard/vendor/pos/VendorPos";
 import VendorOrderTable from "../components/dashboard/vendor/VendorOrderTable";
+import VendorServiceTable from "../components/dashboard/vendor/VendorServiceTable";
 import VendorSettings from "../components/dashboard/vendor/VendorSettings";
 import UserWallet from "../components/dashboard/user/UserWallet";
 import WithdrawalRequests from "../components/dashboard/user/WithdrawalRequests";
@@ -45,10 +45,10 @@ export const VendorRoutes = (
       />
       
       <Route
-        path="my-services"
+        path="services"
         element={
           <div className="p-4">
-            <VendorStoreTable />
+            <VendorServiceTable />
           </div>
         }
       />
@@ -69,7 +69,7 @@ export const VendorRoutes = (
         }
       />
       <Route
-        path="my-products"
+        path="products"
         element={
           <div className="p-4">
             <VendorProductsTable />

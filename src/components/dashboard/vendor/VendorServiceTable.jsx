@@ -33,8 +33,8 @@ import {
 } from "react-icons/fa";
 import { TiDeleteOutline } from "react-icons/ti";
 import {
-  getVendorPhysicalProducts,
-  createPhysicalProduct,
+  getVendorServices,
+  createService,
   updateProduct,
   deleteProduct,
 } from "../../../@Services/ProductService";
@@ -47,7 +47,7 @@ import { getAllBrands } from "../../../@Services/BrandsService";
 import { getAllWeightUnits } from "../../../@Services/weightUnitService";
 import { BiLoader } from "react-icons/bi";
 
-export default function VendorProductsTable() {
+export default function VendorServiceTable() {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,10 +112,10 @@ export default function VendorProductsTable() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const data = await getVendorPhysicalProducts();
+      const data = await getVendorServices();
       setProducts(data || []);
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to load products");
+      setError(err?.response?.data?.message || "Failed to load services");
     } finally {
       setLoading(false);
     }
@@ -382,7 +382,7 @@ export default function VendorProductsTable() {
       const result = await bulkGenerateCodes(ids);
       const normalized = (result || []).map(item => ({
         id: item?.product?.id || item?.productId,
-        name: item?.product?.name || `Product #${item?.productId}`,
+        name: item?.product?.name || `Service #${item?.productId}`,
         qrCode: item?.qrCode,
         barcode: item?.barcode,
         error: item?.error,
@@ -433,14 +433,14 @@ export default function VendorProductsTable() {
 
         productThumbnail: thumbnailUrl,
         productGallery: uploadedGallery,
-        isService: false,
+        isService: true,
       };
 
-      const newProduct = await createPhysicalProduct(payload);
+      const newProduct = await createService(payload);
       setProducts((prev) => [...prev, newProduct]);
       setSnack({
         open: true,
-        message: "Product added successfully",
+        message: "Service added successfully",
         severity: "success",
       });
       setAddOpen(false);
@@ -448,7 +448,7 @@ export default function VendorProductsTable() {
       console.error(err);
       setSnack({
         open: true,
-        message: err?.response?.data?.message || "Failed to add product",
+        message: err?.response?.data?.message || "Failed to add service",
         severity: "error",
       });
     }
@@ -491,6 +491,7 @@ export default function VendorProductsTable() {
 
         productThumbnail: thumbnailUrl,
         productGallery: uploadedGallery,
+        isService: true,
       };
 
       const updated = await updateProduct(activeProduct.id, payload);
@@ -500,7 +501,7 @@ export default function VendorProductsTable() {
 
       setSnack({
         open: true,
-        message: "Product updated successfully",
+        message: "Service updated successfully",
         severity: "success",
       });
       setEditOpen(false);
@@ -508,7 +509,7 @@ export default function VendorProductsTable() {
       console.log(err);
       setSnack({
         open: true,
-        message: err?.response?.data?.message || "Failed to update product",
+        message: err?.response?.data?.message || "Failed to update service",
         severity: "error",
       });
     }
@@ -521,7 +522,7 @@ export default function VendorProductsTable() {
       setProducts((prev) => prev.filter((p) => p.id !== activeProduct.id));
       setSnack({
         open: true,
-        message: "Product deleted successfully",
+        message: "Service deleted successfully",
         severity: "info",
       });
       setDeleteOpen(false);
@@ -537,13 +538,13 @@ export default function VendorProductsTable() {
   return (
     <Box>
   <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-    <Typography variant="h6">Products List</Typography>
+    <Typography variant="h6">Services List</Typography>
     <Box sx={{ display: 'flex', gap: 1 }}>
       <Button variant="outlined" startIcon={<FaBarcode />} onClick={openAllBarcodes}>
         Show All Codes
       </Button>
       <Button variant="contained" onClick={openAdd}>
-        Add Product
+        Add Service
       </Button>
     </Box>
   </Box>
@@ -579,7 +580,7 @@ export default function VendorProductsTable() {
                 <TableRow>
                   <TableCell>ID</TableCell>
                   <TableCell>Thumbnail</TableCell>
-                  <TableCell>Product Gallery</TableCell>
+                  <TableCell>Gallery</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Price</TableCell>
                   <TableCell>Stock</TableCell>
@@ -594,7 +595,7 @@ export default function VendorProductsTable() {
                 {filteredProducts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} align="center">
-                      No products found
+                      No services found
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -683,7 +684,7 @@ export default function VendorProductsTable() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Add Product</DialogTitle>
+        <DialogTitle>Add Service</DialogTitle>
 
         <DialogContent>
           <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
@@ -887,7 +888,7 @@ export default function VendorProductsTable() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Product Details</DialogTitle>
+        <DialogTitle>Service Details</DialogTitle>
         <DialogContent>
           {activeProduct && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -991,7 +992,7 @@ export default function VendorProductsTable() {
         fullWidth
         maxWidth="md"
       >
-        <DialogTitle>All Product Codes</DialogTitle>
+        <DialogTitle>All Service Codes</DialogTitle>
         <DialogContent dividers>
           {barcodeAllLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -1039,7 +1040,7 @@ export default function VendorProductsTable() {
         maxWidth="xs"
         fullWidth
       >
-        <DialogTitle>Product Barcode</DialogTitle>
+        <DialogTitle>Service Barcode</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 4 }}>
           {barcodeData ? (
             <>
@@ -1077,7 +1078,7 @@ export default function VendorProductsTable() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Edit Product</DialogTitle>
+        <DialogTitle>Edit Service</DialogTitle>
 
         <DialogContent>
           <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
@@ -1311,7 +1312,7 @@ export default function VendorProductsTable() {
 
       {/* Delete Dialog */}
       <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-        <DialogTitle>Delete Product</DialogTitle>
+        <DialogTitle>Delete Service</DialogTitle>
         <DialogContent>
           <Typography>
             Are you sure you want to delete {activeProduct?.name}?

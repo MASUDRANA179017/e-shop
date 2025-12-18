@@ -3,7 +3,7 @@ import {
   Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper,
   Typography, Box, CircularProgress, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from "@mui/material";
-import { FaEye, FaCalendarCheck } from "react-icons/fa";
+import { FaEye, FaCalendarCheck, FaFileInvoice } from "react-icons/fa";
 import { getAllOrders } from "../../../@Services/CheckoutService";
 import { useCurrency } from "../../../context/CurrencyContext";
 
@@ -45,6 +45,106 @@ const UserBookings = () => {
   const handleCloseDetails = () => {
     setDetailsOpen(false);
     setSelectedBooking(null);
+  };
+
+  const handlePrintInvoice = () => {
+    if (!selectedBooking) return;
+    
+    const printWindow = window.open('', '_blank');
+    const itemsHtml = selectedBooking.items.map(item => `
+        <tr>
+            <td>
+                ${item.product?.title || "Item"}
+                ${item.serviceDate ? `<br><small style="color: #666;">Service Date: ${new Date(item.serviceDate).toLocaleDateString()}</small>` : ''}
+            </td>
+            <td>${item.quantity || 1}</td>
+            <td>${formatPrice(item.price)}</td>
+            <td>${formatPrice(item.price * (item.quantity || 1))}</td>
+        </tr>
+    `).join('');
+
+    const content = `
+        <html>
+        <head>
+            <title>Booking Invoice - #${selectedBooking.id}</title>
+            <style>
+                body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #333; }
+                .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+                .company-name { font-size: 24px; font-weight: bold; color: #2c3e50; }
+                .invoice-title { font-size: 32px; font-weight: bold; color: #7f8c8d; text-align: right; }
+                .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+                .meta-box h3 { margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; color: #7f8c8d; }
+                .meta-box p { margin: 0 0 5px 0; font-size: 14px; }
+                .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                .table th { background-color: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #eee; font-weight: 600; }
+                .table td { padding: 12px; border-bottom: 1px solid #eee; }
+                .totals { float: right; width: 300px; }
+                .total-row { display: flex; justify-content: space-between; padding: 8px 0; }
+                .total-final { font-weight: bold; font-size: 18px; border-top: 2px solid #333; margin-top: 10px; padding-top: 10px; }
+                .footer { clear: both; margin-top: 60px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="company-name">
+                    Service Sell<br>
+                    <span style="font-size: 14px; font-weight: normal; color: #666;">Booking Confirmation</span>
+                </div>
+                <div class="invoice-details">
+                    <div class="invoice-title">INVOICE</div>
+                    <p style="text-align: right; margin: 5px 0;"># ${selectedBooking.id}</p>
+                    <p style="text-align: right; margin: 0;">Date: ${new Date(selectedBooking.createdAt).toLocaleDateString()}</p>
+                </div>
+            </div>
+            
+            <div class="meta-grid">
+                <div class="meta-box">
+                    <h3>Bill To</h3>
+                    <p><strong>${selectedBooking.customerName || "Customer"}</strong></p>
+                    <p>${selectedBooking.customerPhone || ''}</p>
+                    <p>${selectedBooking.shippingAddress || ''}</p>
+                </div>
+                <div class="meta-box">
+                    <h3>Booking Details</h3>
+                    <p>Status: Confirmed</p>
+                    ${selectedBooking.notes ? `<p>Notes: ${selectedBooking.notes}</p>` : ''}
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Service / Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+
+            <div class="totals">
+                <div class="total-row total-final">
+                    <span>Total</span>
+                    <span>${formatPrice(selectedBooking.totalAmount)}</span>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Thank you for booking with us!</p>
+            </div>
+
+            <script>
+                window.onload = function() { window.print(); }
+            </script>
+        </body>
+        </html>
+    `;
+
+    printWindow.document.write(content);
+    printWindow.document.close();
   };
 
   if (loading) {
@@ -92,8 +192,8 @@ const UserBookings = () => {
                     <TableCell className="font-medium">{formatPrice(booking.totalAmount)}</TableCell>
                     <TableCell>
                       <Chip 
-                        label="Confirmed" 
-                        color="primary" 
+                        label={booking.status || "Pending"} 
+                        color={booking.status === "Completed" ? "success" : booking.status === "Cancelled" ? "error" : "primary"}
                         size="small" 
                         variant="outlined"
                       />
@@ -102,6 +202,17 @@ const UserBookings = () => {
                       <IconButton size="small" color="primary" onClick={() => handleViewDetails(booking)}>
                         <FaEye />
                       </IconButton>
+                      {booking.status === 'Completed' && (
+                          <IconButton 
+                              size="small"
+                              color="secondary"
+                              onClick={() => handlePrintInvoice(booking)}
+                              title="Download Invoice"
+                              sx={{ ml: 1 }}
+                          >
+                              <FaFileInvoice />
+                          </IconButton>
+                      )}
                     </TableCell>
                   </TableRow>
                  );
@@ -130,6 +241,18 @@ const UserBookings = () => {
                   <p className="text-sm text-gray-500">Service Location/Address</p>
                   <p className="font-medium">{selectedBooking.shippingAddress}</p>
                 </div>
+                {selectedBooking.customerPhone && (
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-medium">{selectedBooking.customerPhone}</p>
+                  </div>
+                )}
+                {selectedBooking.notes && (
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-500">Notes</p>
+                    <p className="font-medium bg-gray-50 p-2 rounded">{selectedBooking.notes}</p>
+                  </div>
+                )}
               </div>
 
               <Typography variant="h6" className="mt-4 mb-2">Booked Services</Typography>
@@ -193,6 +316,14 @@ const UserBookings = () => {
           )}
         </DialogContent>
         <DialogActions>
+          <Button 
+            startIcon={<FaFileInvoice />} 
+            onClick={handlePrintInvoice}
+            color="primary"
+            variant="contained"
+          >
+              Download Invoice
+          </Button>
           <Button onClick={handleCloseDetails}>Close</Button>
         </DialogActions>
       </Dialog>

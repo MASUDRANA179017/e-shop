@@ -158,7 +158,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <label className="block mb-1 text-sm font-medium text-gray-700">First Name</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
                 <FaUser className="text-gray-400 mr-2" />
                 <input
                   type="text"
@@ -173,7 +173,7 @@ export default function RegisterPage() {
             
             <div className="relative">
               <label className="block mb-1 text-sm font-medium text-gray-700">Last Name</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
                 <FaUser className="text-gray-400 mr-2" />
                 <input
                   type="text"
@@ -191,7 +191,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div className="relative">
               <label className="block mb-1 text-sm font-medium text-gray-700">Username</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
                 <FaIdCard className="text-gray-400 mr-2" />
                 <input
                   type="text"
@@ -206,7 +206,7 @@ export default function RegisterPage() {
 
             <div className="relative">
               <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
                 <FaEnvelope className="text-gray-400 mr-2" />
                 <input
                   type="email"
@@ -224,7 +224,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
                 <FaLock className="text-gray-400 mr-2" />
                 <input
                   type="password"
@@ -239,7 +239,7 @@ export default function RegisterPage() {
 
             <div className="relative">
               <label className="block mb-1 text-sm font-medium text-gray-700">Confirm Password</label>
-              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+              <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
                 <FaLock className="text-gray-400 mr-2" />
                 <input
                   type="password"
@@ -255,7 +255,7 @@ export default function RegisterPage() {
           
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-3 rounded-lg hover:from-blue-700 hover:to-blue-600 transition shadow-md transform hover:scale-[1.01] mt-4"
+            className="w-full bg-[#FF624C] text-white font-semibold py-3 rounded-lg hover:bg-[#e0523e] transition shadow-md transform hover:scale-[1.01] mt-4"
           >
             Create Account
           </button>
@@ -265,7 +265,7 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-blue-600 hover:underline cursor-pointer font-medium"
+            className="text-[#FF624C] hover:underline cursor-pointer font-medium"
           >
             Login here
           </span>

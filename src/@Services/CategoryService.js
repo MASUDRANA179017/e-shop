@@ -3,7 +3,7 @@ import api from "../api/axiosInstance";
 
 // Get all Categories
 export const getAllCategory = async () => {
-  const res = await api.get("/category/all");
+  const res = await api.get("/category/all", { skipRedirect: true });
   return res.data;
 };
 

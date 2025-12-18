@@ -20,9 +20,10 @@ const VendorLayout = () => {
   const navItems = [
     { to: "/dashboard/vendor", label: "Dashboard", icon: <BiHome size={20} /> },
     { to: "/dashboard/vendor/pos", label: "POS System", icon: <FaCashRegister size={20} /> },
-    { to: "/dashboard/vendor/my-orders", label: "Order History", icon: <FaFileInvoice size={20} /> },
+    { to: "/dashboard/vendor/my-orders", label: "Orders & Bookings", icon: <FaFileInvoice size={20} /> },
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={20} /> },
-    { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={20} /> },
+    { to: "/dashboard/vendor/services", label: "Services", icon: <FaStore size={20} /> },
+    { to: "/dashboard/vendor/products", label: "Products", icon: <FaBoxOpen size={20} /> },
     { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaTicketAlt size={20} /> },
     { to: "/dashboard/vendor/wallet", label: "Wallet", icon: <FaWallet size={20} /> },
     { to: "/dashboard/vendor/withdrawals", label: "Withdrawal Requests", icon: <BiMoneyWithdraw size={20} /> },
@@ -33,9 +34,8 @@ const VendorLayout = () => {
     { to: "/dashboard/vendor/prescriptions", label: "Prescriptions", icon: <FaFileMedical size={20} /> },
     // My Memo List
 
-    { to: "/dashboard/vendor/my-products", label: "Service Products", icon: <FaBoxOpen size={20} /> },
     { to: "/dashboard/vendor/settings", label: "Settings", icon: <CiSettings size={20} /> },
-     // {/* products  */}
+    // {/* products  */}
 
      // {/* Pet Details */}
      // {/* Accounting  */}

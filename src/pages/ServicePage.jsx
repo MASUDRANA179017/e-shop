@@ -5,6 +5,7 @@ import { getProductsByStoreId } from "../@Services/ProductService";
 import { getAllCategory } from "../@Services/CategoryService";
 import { FaSearch, FaStar, FaMapMarkerAlt, FaFilter, FaArrowRight, FaBars, FaTimes } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
+import SidebarFilter from "../components/frontend/SidebarFilter";
 
 const ServicePage = () => {
   const [stores, setStores] = useState([]);
@@ -17,12 +18,9 @@ const ServicePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [storesData, categoriesData] = await Promise.all([
-          getAllPublicStores(),
-          getAllCategory()
+        const [storesData] = await Promise.all([
+          getAllPublicStores()
         ]);
-
-        setCategories(["All", ...categoriesData.map(c => c.name)]);
 
         // Fetch products for each store
         const storesWithProducts = await Promise.all(
@@ -108,29 +106,13 @@ const ServicePage = () => {
               </div>
 
               {/* Categories */}
-              <div>
-                <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <FaFilter className="text-blue-600" /> Categories
-                </h3>
-                <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => {
-                        setSelectedCategory(cat);
-                        setShowMobileSidebar(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        selectedCategory === cat
-                          ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-blue-600"
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <SidebarFilter 
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                showBrands={false}
+                showPrice={false}
+                clean={true}
+              />
             </div>
           </div>
 

@@ -12,6 +12,9 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [address, setAddress] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Check for direct buy items from navigation state
@@ -27,10 +30,24 @@ const CheckoutPage = () => {
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      toast.info("Please login or create an account to proceed with checkout.");
-      navigate("/login", { state: { from: "/checkout" } });
-    }
+    // if (!token) {
+    //   toast.info("Please login or create an account to proceed with checkout.");
+    //   navigate("/login", { state: { from: "/checkout" } });
+    // } else {
+      // Pre-fill from local storage if available
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          if (user.firstName && user.lastName) {
+            setName(`${user.firstName} ${user.lastName}`);
+          }
+          // If user object has phone or address in future, we can pre-fill here too
+        }
+      } catch (e) {
+        console.error("Failed to parse user from local storage");
+      }
+    // }
   }, [navigate]);
 
   if (itemsToCheckout.length === 0) {
@@ -40,8 +57,8 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    if (!address) {
-      alert("Please enter a shipping address");
+    if (!address || !name || !phone) {
+      alert("Please fill in all required fields (Name, Phone, Address)");
       return;
     }
 
@@ -56,6 +73,9 @@ const CheckoutPage = () => {
 
       const payload = {
         shippingAddress: address,
+        customerName: name,
+        customerPhone: phone,
+        notes: notes,
         items: items,
       };
 
@@ -112,8 +132,32 @@ const CheckoutPage = () => {
           </div>
 
           <form onSubmit={handlePlaceOrder}>
-            <div className="mb-6">
-              <label className="block text-gray-700 font-bold mb-2">Shipping Address</label>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-bold mb-2">Full Name</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 font-bold mb-2">Phone Number</label>
+              <input
+                type="tel"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="+1 234 567 8900"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 font-bold mb-2">Shipping Address / Service Location</label>
               <textarea
                 className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows="3"
@@ -121,6 +165,17 @@ const CheckoutPage = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
+              ></textarea>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-gray-700 font-bold mb-2">Order Notes / Instructions (Optional)</label>
+              <textarea
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="2"
+                placeholder="Gate code, special requests, etc."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               ></textarea>
             </div>
 

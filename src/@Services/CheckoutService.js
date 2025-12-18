@@ -17,3 +17,9 @@ export const getVendorOrders = async () => {
   const res = await api.get("/checkout/vendor-orders");
   return res.data;
 };
+
+// Update order status
+export const updateOrderStatus = async (id, status) => {
+  const res = await api.patch(`/checkout/${id}/status`, { status });
+  return res.data;
+};

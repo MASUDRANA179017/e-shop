@@ -8,7 +8,7 @@ export const createBrand = async (data) => {
 
 // Get All Brands
 export const getAllBrands = async () => {
-    const res = await api.get("/brand/all");
+    const res = await api.get("/brand/all", { skipRedirect: true });
     return res.data;
 };
 

@@ -1,130 +1,193 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAllCategory } from '../../@Services/CategoryService';
+import { getAllBrands } from '../../@Services/BrandService';
 
-const categories = [
-    'Computers & Tablets',
-    'Mobile & Accessories',
-    'TV & Home Theater',
-    'Audio & Headphones',
-    'Cameras & Camcorders',
-    'Gaming Equipment',
-    'Home Appliances',
-];
+export default function SidebarFilter({ 
+    selectedCategory, 
+    setSelectedCategory, 
+    selectedBrands, 
+    setSelectedBrands,
+    minPrice,
+    maxPrice,
+    setPriceRange,
+    showBrands = true,
+    showPrice = true,
+    clean = false
+}) {
+    const [categories, setCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [minVal, setMinVal] = useState(minPrice || 0);
+    const [maxVal, setMaxVal] = useState(maxPrice || 10000);
 
-const brands = [
-    { name: 'Apple', count: 565 },
-    { name: 'Samsung', count: 428 },
-    { name: 'ASUS', count: 323 },
-    { name: 'Dell', count: 298 },
-    { name: 'Lenovo', count: 180 },
-    { name: 'HP', count: 98 },
-    { name: 'Panasonic', count: 17 },
-];
+    useEffect(() => {
+        // Fetch Categories
+        getAllCategory()
+            .then(data => setCategories(data))
+            .catch(err => console.error("Failed to fetch categories", err));
 
-export default function SidebarFilter() {
-    const [selectedCategory, setSelectedCategory] = useState('Mobile & Accessories');
-    const [selectedBrands, setSelectedBrands] = useState(['Lenovo']);
-    const [minVal, setMinVal] = useState(0);
-    const [maxVal, setMaxVal] = useState(1000);
-
-    const updateSlider = (type,value)=>{
-        if (type == 'min') {
-            const newMin = Math.min(parseInt(value), maxVal)
-            setMinVal(newMin)
-        }else {
-            const newMax = Math.max(parseInt(value), minVal )
-            setMaxVal(newMax)
+        if (showBrands) {
+            // Fetch Brands
+            getAllBrands()
+                .then(data => setBrands(data))
+                .catch(err => console.error("Failed to fetch brands", err));
         }
-    }
-    const minPercent = (minVal / 1000)*100
-    const maxPercent = (minVal / 1000)*100
+    }, [showBrands]);
 
-    const handleBrandToggle = (brand: string) => {
-        setSelectedBrands((prev) =>
-            prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
-        );
+    useEffect(() => {
+        if (minPrice !== undefined) setMinVal(minPrice);
+        if (maxPrice !== undefined) setMaxVal(maxPrice);
+    }, [minPrice, maxPrice]);
+
+    const handleBrandToggle = (brandName) => {
+        if (!setSelectedBrands) return;
+        if (selectedBrands.includes(brandName)) {
+            setSelectedBrands(selectedBrands.filter(b => b !== brandName));
+        } else {
+            setSelectedBrands([...selectedBrands, brandName]);
+        }
     };
 
+    const updateSlider = (type, value) => {
+        const val = parseInt(value);
+        if (type === 'min') {
+            if (val > maxVal) return;
+            setMinVal(val);
+            if (setPriceRange) setPriceRange(val, maxVal);
+        } else {
+            if (val < minVal) return;
+            setMaxVal(val);
+            if (setPriceRange) setPriceRange(minVal, val);
+        }
+    };
+
+    const minPercent = (minVal / 10000) * 100;
+    const maxPercent = (maxVal / 10000) * 100;
+
+    const Container = clean ? 'div' : 'aside';
+    const containerClass = clean ? 'w-full' : 'w-full bg-white p-4 rounded-lg shadow';
+
     return (
-        <aside className="w-full max-w-xs p-6 bg-white rounded-2xl shadow-md space-y-6">
+        <Container className={containerClass}>
             {/* Categories */}
-            <div>
+            <div className="mb-6">
                 <h2 className="font-semibold text-lg mb-2">Categories</h2>
-                <ul className="space-y-2">
+                <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                    <li className="flex items-center space-x-2">
+                        <input
+                            type="radio" // Changed to radio for single selection or maintain checkbox for multiple? 
+                            // The original code used checkbox but state was a string `selectedCategory`. 
+                            // So it was acting like a radio. Let's stick to that.
+                            name="category"
+                            checked={selectedCategory === 'All' || !selectedCategory}
+                            onChange={() => setSelectedCategory('All')}
+                            className="accent-red-500"
+                        />
+                        <label className={`text-sm ${selectedCategory === 'All' ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+                            All Categories
+                        </label>
+                    </li>
                     {categories.map((category) => (
-                        <li key={category} className="flex items-center space-x-2">
+                        <li key={category.id || category.name} className="flex items-center space-x-2">
                             <input
-                                type="checkbox"
-                                checked={selectedCategory === category}
-                                onChange={() => setSelectedCategory(category)}
+                                type="radio"
+                                name="category"
+                                checked={selectedCategory === category.name}
+                                onChange={() => setSelectedCategory(category.name)}
                                 className="accent-red-500"
                             />
-                            <label className={`text-sm ${selectedCategory === category ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
-                                {category}
+                            <label className={`text-sm ${selectedCategory === category.name ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+                                {category.name}
                             </label>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            <hr />
+            {showBrands && (
+                <>
+                    <hr />
+                    {/* Brands */}
+                    <div>
+                        <h2 className="font-semibold text-lg mb-2">Brands</h2>
+                        <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                            {brands.map((brand) => (
+                                <li key={brand.id || brand.name} className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedBrands?.includes(brand.name)}
+                                            onChange={() => handleBrandToggle(brand.name)}
+                                            className="accent-red-500"
+                                        />
+                                        <label className={`text-sm ${selectedBrands?.includes(brand.name) ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+                                            {brand.name}
+                                        </label>
+                                    </div>
+                                    {/* <span className="text-sm text-gray-500">({brand.count || 0})</span> */}
+                                </li>
+                            ))}
+                        </ul>
+                        {/* <button className="mt-2 text-sm font-semibold underline text-gray-700">More Brands</button> */}
+                    </div>
+                </>
+            )}
 
-            {/* Brands */}
-            <div>
-                <h2 className="font-semibold text-lg mb-2">Brands</h2>
-                <ul className="space-y-2">
-                    {brands.map((brand) => (
-                        <li key={brand.name} className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
+            {showPrice && (
+                <>
+                    <hr />
+                    {/* Price */}
+                    <div className=''>
+                        <h2 className="font-semibold text-lg mb-2">Price</h2>
+                        <div className="flex space-x-4 mb-4">
+                            <div className="flex items-center border rounded-lg px-2 py-2 bg-gray-50">
+                                <span className="text-gray-500 mr-1">$</span>
                                 <input
-                                    type="checkbox"
-                                    checked={selectedBrands.includes(brand.name)}
-                                    onChange={() => handleBrandToggle(brand.name)}
-                                    className="accent-red-500"
+                                    type="number"
+                                    value={minVal}
+                                    onChange={(e) => updateSlider('min', e.target.value)}
+                                    className="w-full bg-transparent outline-none text-sm text-gray-700"
+                                    min={0}
+                                    max={maxVal}
                                 />
-                                <label className={`text-sm ${selectedBrands.includes(brand.name) ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
-                                    {brand.name}
-                                </label>
                             </div>
-                            <span className="text-sm text-gray-500">({brand.count})</span>
-                        </li>
-                    ))}
-                </ul>
-                <button className="mt-2 text-sm font-semibold underline text-gray-700">More Brands</button>
-            </div>
+                            <div className="flex items-center border rounded-lg px-2 py-2 bg-gray-50">
+                                <span className="text-gray-500 mr-1">$</span>
+                                <input
+                                    type="number"
+                                    value={maxVal}
+                                    onChange={(e) => updateSlider('max', e.target.value)}
+                                    className="w-full bg-transparent outline-none text-sm text-gray-700"
+                                    min={minVal}
+                                    max={10000}
+                                />
+                            </div>
+                        </div>
+                        <div className="relative w-full h-2.5 bg-gray-200 rounded">
+                            <div className="absolute h-2.5 bg-red-500 rounded"
+                            style={{left: `${minPercent}%`, width: `${maxPercent - minPercent}%`}}
+                            ></div>
 
-            <hr />
-
-            {/* Price */}
-            <div className=''>
-                <h2 className="font-semibold text-lg mb-2">Price</h2>
-                <div className="flex space-x-4">
-                    <div className="border rounded-lg px-4 py-2 text-sm text-gray-700">${minVal}</div>
-                    <div className="border rounded-lg px-4 py-2 text-sm text-gray-700">${maxVal}</div>
-                </div>
-                <div className="relative w-full h-2.5 bg-green-500 rounded">
-                    <div className="absolute h-full bg-red-500 rounded "
-                    style={{left: `${minPercent}%`, width: `${maxPercent - minPercent}%`}}
-                    ></div>
-
-                    <input
-                        type="range"
-                        min={0}
-                        max={10000}
-                        value={minVal}
-                        onChange={(e) => updateSlider('min', e.target.value)}
-                        className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none"
-                    />
-                    <input
-                        type="range"
-                        min={0}
-                        max={10000}
-                        value={maxVal}
-                        onChange={(e) => updateSlider('max', e.target.value)}
-                        className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none"
-                    />
-                </div>
-            </div>
-        </aside>
+                            <input
+                                type="range"
+                                min={0}
+                                max={10000}
+                                value={minVal}
+                                onChange={(e) => updateSlider('min', e.target.value)}
+                                className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none -top-0 z-20"
+                            />
+                            <input
+                                type="range"
+                                min={0}
+                                max={10000}
+                                value={maxVal}
+                                onChange={(e) => updateSlider('max', e.target.value)}
+                                className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none -top-0 z-20"
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
+        </Container>
     );
 }

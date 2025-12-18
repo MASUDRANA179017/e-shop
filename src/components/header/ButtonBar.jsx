@@ -74,6 +74,11 @@ const ButtonBar = () => {
                 Vendors
               </Link>
             </li>
+            <li>
+              <Link to={"/product"} className="hover:underline">
+                Products
+              </Link>
+            </li>
             <li className="group relative z-50">
               <Link to={"/service"} className="hover:underline flex items-center gap-1">
                 Service

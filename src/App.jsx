@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import { BlogPage } from "./pages/BlogPage";
 import { ProductListPage } from "./pages/ProductListPage";
+import { ServiceListPage } from "./pages/ServiceListPage";
 import ContactPage from "./pages/ContactPage";
 import CommonLayout from "./components/commonLayouts/CommonLayout";
 import VendorListPage from "./pages/VendorListPage";
@@ -43,8 +44,8 @@ function App() {
       {/* Public Routes (wrapped inside CommonLayout) */}
       <Route path="/" element={<CommonLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="service" element={<ServicePage />} />
-        {/* <Route path="product" element={<ProductListPage />} /> */}
+        <Route path="service" element={<ServiceListPage />} />
+        <Route path="product" element={<ProductListPage />} />
         <Route path="product/:id" element={<ProductDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="blog" element={<BlogPage />} />

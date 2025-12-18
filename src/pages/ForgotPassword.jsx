@@ -50,7 +50,7 @@ const ForgotPassword = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-6 relative">
             <label className="block mb-1 text-gray-700 font-medium">Email</label>
-            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-400">
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-[#FF624C]">
               <FaEnvelope className="text-gray-400 mr-2" />
               <input
                 type="email"
@@ -66,7 +66,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-600 transition shadow-md transform hover:scale-[1.02]"
+            className="w-full bg-[#FF624C] text-white font-semibold py-2.5 rounded-lg hover:bg-[#e0523e] transition shadow-md transform hover:scale-[1.02]"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
@@ -75,7 +75,7 @@ const ForgotPassword = () => {
             Remember your password?{" "}
             <span
               onClick={() => navigate("/login")}
-              className="text-blue-600 hover:underline cursor-pointer font-medium"
+              className="text-[#FF624C] hover:underline cursor-pointer font-medium"
             >
               Back to Login
             </span>

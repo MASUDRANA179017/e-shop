@@ -83,14 +83,18 @@ const ProductDetails = () => {
       .finally(() => setBarcodeLoading(false));
   }, [product?.id]);
 
+  const isService = product?.category?.name?.toLowerCase().includes("service") || product?.category?.name?.toLowerCase().includes("booking");
+
   const handleAddToCart = () => {
-    if (!bookingDate) {
-      alert("Please select a date for your service booking.");
-      return;
-    }
-    if (!bookingTime) {
-      alert("Please select a time for your service booking.");
-      return;
+    if (isService) {
+      if (!bookingDate) {
+        alert("Please select a date for your service booking.");
+        return;
+      }
+      if (!bookingTime) {
+        alert("Please select a time for your service booking.");
+        return;
+      }
     }
     addToCart({
       id: product.id,
@@ -99,15 +103,19 @@ const ProductDetails = () => {
       image: product.productThumbnail,
       thumbnail: product.productThumbnail,
       brand: product.brand,
-      bookingDate: bookingDate,
-      bookingTime: bookingTime
+      bookingDate: isService ? bookingDate : null,
+      bookingTime: isService ? bookingTime : null
     });
     // Optional: Show toast/notification
   };
 
   const handleBuyNow = () => {
-    if (bookingDate) {
+    if (isService) {
        // Direct booking flow for services
+       if (!bookingDate) {
+         alert("Please select a date for your service booking.");
+         return;
+       }
        if (!bookingTime) {
          alert("Please select a time for your service booking.");
          return;

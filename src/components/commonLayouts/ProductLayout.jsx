@@ -122,14 +122,16 @@ const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating,
                         <FaCartPlus />
                     </button>
                     
-                     {/* Buy Now / Book Now */}
-                    <button
-                        onClick={handleBuyNow}
-                        className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
-                        title={isService ? "Book Now" : "Buy Now"}
-                    >
-                        {isService ? <FaCalendarCheck /> : <FaBolt />}
-                    </button>
+                     {/* Buy Now / Book Now - Only show for Services */}
+                    {isService && (
+                        <button
+                            onClick={handleBuyNow}
+                            className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
+                            title="Book Now"
+                        >
+                            <FaCalendarCheck />
+                        </button>
+                    )}
                 </div>
             </div>
 

@@ -4,7 +4,7 @@ import Container from '../components/commonLayouts/Container'
 import SidebarFilter from '../components/frontend/SidebarFilter'
 import { getAllProducts } from '../@Services/ProductService'
 
-export const ProductListPage = () => {
+export const ServiceListPage = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -12,8 +12,8 @@ export const ProductListPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch all products initially
-    getAllProducts()
+    // Fetch all service products initially
+    getAllProducts("service")
       .then(data => {
         const formatted = data.map((item) => ({
             id: item.id,
@@ -31,7 +31,7 @@ export const ProductListPage = () => {
           }));
         setAllProducts(formatted);
       })
-      .catch(err => console.error("Failed to fetch products", err))
+      .catch(err => console.error("Failed to fetch services", err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -77,12 +77,10 @@ export const ProductListPage = () => {
                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF624C]"></div>
              </div>
            ) : (
-             <NewProductLazyLoad products={filteredProducts} />
+             <NewProductLazyLoad products={filteredProducts} type="service" />
            )}
         </div>
       </div>
     </Container>
   )
 }
-
-

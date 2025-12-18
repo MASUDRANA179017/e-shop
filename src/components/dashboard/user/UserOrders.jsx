@@ -3,7 +3,7 @@ import {
   Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper,
   Typography, Box, CircularProgress, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from "@mui/material";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaFileInvoice } from "react-icons/fa";
 import { getAllOrders } from "../../../@Services/CheckoutService";
 import { useCurrency } from "../../../context/CurrencyContext";
 import { toast } from "react-toastify";
@@ -52,6 +52,102 @@ const UserOrders = () => {
     setSelectedOrder(null);
   };
 
+  const handlePrintInvoice = () => {
+    if (!selectedOrder) return;
+    
+    const printWindow = window.open('', '_blank');
+    const itemsHtml = selectedOrder.items.map(item => `
+        <tr>
+            <td>${item.product?.title || "Item"}</td>
+            <td>${item.quantity}</td>
+            <td>${formatPrice(item.price)}</td>
+            <td>${formatPrice(item.price * item.quantity)}</td>
+        </tr>
+    `).join('');
+
+    const content = `
+        <html>
+        <head>
+            <title>Invoice - #${selectedOrder.id}</title>
+            <style>
+                body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #333; }
+                .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+                .company-name { font-size: 24px; font-weight: bold; color: #2c3e50; }
+                .invoice-title { font-size: 32px; font-weight: bold; color: #7f8c8d; text-align: right; }
+                .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+                .meta-box h3 { margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; color: #7f8c8d; }
+                .meta-box p { margin: 0 0 5px 0; font-size: 14px; }
+                .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                .table th { background-color: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #eee; font-weight: 600; }
+                .table td { padding: 12px; border-bottom: 1px solid #eee; }
+                .totals { float: right; width: 300px; }
+                .total-row { display: flex; justify-content: space-between; padding: 8px 0; }
+                .total-final { font-weight: bold; font-size: 18px; border-top: 2px solid #333; margin-top: 10px; padding-top: 10px; }
+                .footer { clear: both; margin-top: 60px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="company-name">
+                    Service Sell<br>
+                </div>
+                <div class="invoice-details">
+                    <div class="invoice-title">INVOICE</div>
+                    <p style="text-align: right; margin: 5px 0;"># ${selectedOrder.id}</p>
+                    <p style="text-align: right; margin: 0;">Date: ${new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+                </div>
+            </div>
+            
+            <div class="meta-grid">
+                <div class="meta-box">
+                    <h3>Bill To</h3>
+                    <p><strong>${selectedOrder.customerName || "Customer"}</strong></p>
+                    <p>${selectedOrder.customerPhone || ''}</p>
+                    <p>${selectedOrder.shippingAddress || ''}</p>
+                </div>
+                <div class="meta-box">
+                    <h3>Order Details</h3>
+                    <p>Status: ${selectedOrder.status || "Completed"}</p>
+                    ${selectedOrder.notes ? `<p>Notes: ${selectedOrder.notes}</p>` : ''}
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+
+            <div class="totals">
+                <div class="total-row total-final">
+                    <span>Total</span>
+                    <span>${formatPrice(selectedOrder.totalAmount)}</span>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Thank you for your order!</p>
+            </div>
+
+            <script>
+                window.onload = function() { window.print(); }
+            </script>
+        </body>
+        </html>
+    `;
+
+    printWindow.document.write(content);
+    printWindow.document.close();
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -88,8 +184,8 @@ const UserOrders = () => {
                   <TableCell className="font-medium">{formatPrice(order.totalAmount)}</TableCell>
                   <TableCell>
                     <Chip 
-                      label="Completed" 
-                      color="success" 
+                      label={order.status || "Pending"} 
+                      color={order.status === "Completed" ? "success" : order.status === "Cancelled" ? "error" : "primary"}
                       size="small" 
                       variant="outlined"
                     />
@@ -98,6 +194,17 @@ const UserOrders = () => {
                     <IconButton size="small" color="primary" onClick={() => handleViewDetails(order)}>
                       <FaEye />
                     </IconButton>
+                    {order.status === 'Completed' && (
+                        <IconButton 
+                            size="small"
+                            color="secondary"
+                            onClick={() => handlePrintInvoice(order)}
+                            title="Download Invoice"
+                            sx={{ ml: 1 }}
+                        >
+                            <FaFileInvoice />
+                        </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -125,6 +232,18 @@ const UserOrders = () => {
                   <p className="text-sm text-gray-500">Shipping Address</p>
                   <p className="font-medium">{selectedOrder.shippingAddress}</p>
                 </div>
+                {selectedOrder.customerPhone && (
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-medium">{selectedOrder.customerPhone}</p>
+                  </div>
+                )}
+                {selectedOrder.notes && (
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-500">Notes</p>
+                    <p className="font-medium bg-gray-50 p-2 rounded">{selectedOrder.notes}</p>
+                  </div>
+                )}
               </div>
 
               <Typography variant="h6" className="mt-4 mb-2">Items</Typography>
@@ -158,6 +277,14 @@ const UserOrders = () => {
           )}
         </DialogContent>
         <DialogActions>
+          <Button 
+            startIcon={<FaFileInvoice />} 
+            onClick={handlePrintInvoice}
+            color="primary"
+            variant="contained"
+          >
+              Download Invoice
+          </Button>
           <Button onClick={handleCloseDetails}>Close</Button>
         </DialogActions>
       </Dialog>
