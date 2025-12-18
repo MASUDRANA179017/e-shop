@@ -43,9 +43,14 @@ export const updateStore = async (id, data) => {
   return res.data;
 };
 
+export const sendStoreEmail = async (storeId, data) => {
+  const res = await api.post(`/store/sendMail/${storeId}`, data);
+  return res.data;
+};
+
 // Delete store by ID
 export const deleteStore = async (id) => {
-  const res = await api.delete(`/store/deleteStore/${id}`);
+  const res = await api.delete(`/store/delete/${id}`);
   return res.data;
 };
 

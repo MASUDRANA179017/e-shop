@@ -57,7 +57,7 @@ const MiddleBar = () => {
           </Link>
 
           {/* Wallet */}
-          <Link to="/dashboard/user/wallet" className="flex items-center cursor-pointer text-gray-700 hover:text-green-600 transition-colors duration-200">
+          <Link to={(user ? (user.role === "admin" ? "/dashboard/admin/wallet" : user.role === "vendor" ? "/dashboard/vendor/wallet" : "/dashboard/user/wallet") : "/login")} className="flex items-center cursor-pointer text-gray-700 hover:text-green-600 transition-colors duration-200">
             <FaWallet className="w-6 h-6" />
             <div className="hidden sm:block ml-2">
               <div className="text-sm">Wallet</div>
@@ -85,7 +85,7 @@ const MiddleBar = () => {
 
           {/* User Account */}
           <Link
-            to={user ? "/dashboard/user" : "/login"}
+            to={user ? (user.role === "admin" ? "/dashboard/admin" : user.role === "vendor" ? "/dashboard/vendor" : "/dashboard/user") : "/login"}
             className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200"
           >
             <FaUser className="w-6 h-6 mr-2" />

@@ -6,6 +6,7 @@ import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useCurrency } from "../../../context/CurrencyContext";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { getProductBarcode } from "../../../@Services/BarcodeService";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -13,6 +14,9 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [storeProducts, setStoreProducts] = useState([]);
+  const [barcode, setBarcode] = useState(null);
+  const [barcodeLoading, setBarcodeLoading] = useState(false);
+  const [barcodeError, setBarcodeError] = useState(null);
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -50,6 +54,21 @@ const ProductDetails = () => {
         setLoading(false);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    setBarcodeLoading(true);
+    setBarcodeError(null);
+    getProductBarcode(product.id)
+      .then((data) => {
+        setBarcode(data?.barcode || data);
+      })
+      .catch((err) => {
+        console.error("Failed to load barcode", err);
+        setBarcodeError("Failed to load barcode");
+      })
+      .finally(() => setBarcodeLoading(false));
+  }, [product?.id]);
 
   const handleAddToCart = () => {
     addToCart({
@@ -144,6 +163,21 @@ const ProductDetails = () => {
             >
                {isWishlisted ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
             </button>
+          </div>
+
+          <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-sm">
+            <h3 className="text-lg font-bold mb-2">Product Barcode</h3>
+            {barcodeLoading && <p className="text-gray-500">Loading barcode...</p>}
+            {barcodeError && <p className="text-red-500">{barcodeError}</p>}
+            {barcode && (
+              <div className="flex items-center gap-4">
+                <img
+                  src={`data:image/png;base64,${barcode}`}
+                  alt="Product Barcode"
+                  className="h-24 object-contain border rounded p-2 bg-white"
+                />
+              </div>
+            )}
           </div>
 
           {/* Facilities */}

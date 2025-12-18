@@ -23,6 +23,8 @@ const VendorLayout = () => {
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={18} /> },
     { to: "/dashboard/vendor/my-services", label: "My Services", icon: <FaStore size={18} /> },
     { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaStore size={18} /> },
+    { to: "/dashboard/vendor/wallet", label: "Wallet", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/vendor/withdrawals", label: "Withdrawal Requests", icon: <FaShoppingCart size={18} /> },
     
     // coupons table
     // marketing plan

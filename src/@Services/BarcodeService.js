@@ -48,3 +48,23 @@ export const generateCustomBarcode = async (text, type) => {
   const res = await api.post('/barcode/barcode/custom', { text }, { params });
   return res.data;
 };
+
+// ==================== COMBINED ENDPOINTS ====================
+
+// Get product with both QR code and barcode
+export const getProductWithCodes = async (productId) => {
+  const res = await api.get(`/barcode/product/${productId}`);
+  return res.data;
+};
+
+// Bulk generate QR and barcodes for multiple products
+export const bulkGenerateCodes = async (productIds) => {
+  const res = await api.post('/barcode/bulk', { productIds });
+  return res.data;
+};
+
+// Get available barcode types
+export const getBarcodeTypes = async () => {
+  const res = await api.get('/barcode/types');
+  return res.data;
+};

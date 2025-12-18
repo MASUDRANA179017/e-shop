@@ -159,6 +159,7 @@ export default function AdminProductsTable() {
     const openAdd = () => {
         setForm({
             name: "",
+            barcode: "",
             description: "",
             price: 0,
             stock: 0,
@@ -175,6 +176,7 @@ export default function AdminProductsTable() {
         setActiveProduct(product);
         setForm({
             name: product.name || "",
+            barcode: product.barcode || "",
             description: product.description || "",
             price: product.price || 0,
             stock: product.stock || 0,
@@ -219,6 +221,7 @@ export default function AdminProductsTable() {
 
             const payload = {
                 name: form.name,
+                barcode: form.barcode,
                 description: form.description,
                 price: Number(form.price),
                 stock: Number(form.stock),
@@ -263,6 +266,7 @@ export default function AdminProductsTable() {
 
             const payload = {
                 name: form.name,
+                barcode: form.barcode,
                 description: form.description,
                 price: Number(form.price),
                 stock: Number(form.stock),
@@ -333,6 +337,7 @@ export default function AdminProductsTable() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
+                                    <TableCell>Barcode</TableCell>
                                     <TableCell>Thumbnail</TableCell>
                                     <TableCell>Product Gallery</TableCell>
                                     <TableCell>Name</TableCell>
@@ -354,6 +359,7 @@ export default function AdminProductsTable() {
                                     filteredProducts.map((product) => (
                                         <TableRow key={product.id} hover>
                                             <TableCell>{product.id}</TableCell>
+                                            <TableCell>{product.barcode || "N/A"}</TableCell>
                                             <TableCell>
                                                 <img
                                                     src={product.productThumbnail || "/frontend/products/product01.png"}
@@ -617,6 +623,7 @@ export default function AdminProductsTable() {
                     <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
                         {/* --- Text Fields --- */}
                         <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} />
+                        <TextField label="Barcode" name="barcode" value={form.barcode} onChange={handleFormChange} />
                         <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} />
                         <TextField label="Price" name="price" type="number" value={form.price} onChange={handleFormChange} />
                         <TextField label="Stock" name="stock" type="number" value={form.stock} onChange={handleFormChange} />

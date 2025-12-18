@@ -17,8 +17,10 @@ const UserLayout = () => {
   const navItems = [
     { to: "/dashboard/user", label: "Home", icon: <BiHome size={18} /> },
     { to: "/dashboard/user/bookings", label: "My Bookings", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/user/wallet", label: "Wallet", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/user/withdrawals", label: "Withdrawal Requests", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/user/profile", label: "Profile", icon: <BiUser size={18} /> },
-    { to: "/dashboard/user/shop-create", label: "Become a Service Provider", icon: <FaShop size={18} /> },
+    { to: "/dashboard/user/shop-create", label: "Sell Account Create", icon: <FaShop size={18} /> },
     { to: "/dashboard/user/settings", label: "Settings", icon: <CiSettings size={18} /> },
   ];
 

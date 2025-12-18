@@ -190,6 +190,22 @@ export default function RegisterPage() {
             onChange={handleFormChange}
             className="border rounded-lg px-3 py-2 w-full"
           />
+          
+          {/* Role Selector */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Account Type</label>
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleFormChange}
+                className="border rounded-lg px-3 py-2 w-full"
+              >
+                <option value="user">User</option>
+                <option value="vendor">Vendor</option>
+              </select>
+            </div>
+          </div>
 
           <button
             type="submit"

@@ -18,9 +18,9 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     switch (user.role) {
       case "admin":
-        return <Navigate to="/admin/dashboard" replace />;
+        return <Navigate to="/dashboard/admin" replace />;
       case "vendor":
-        return <Navigate to="/vendor/dashboard" replace />;
+        return <Navigate to="/dashboard/vendor" replace />;
       case "user":
         return <Navigate to="/dashboard/user" replace />;
       default:

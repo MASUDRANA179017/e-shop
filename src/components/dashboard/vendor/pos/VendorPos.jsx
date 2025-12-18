@@ -10,8 +10,10 @@ import api from '../../../../api/axiosInstance';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { useCurrency } from '../../../../context/CurrencyContext';
 
 const VendorPos = () => {
+    const { formatPrice } = useCurrency();
     const [session, setSession] = useState(null);
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -53,36 +55,52 @@ const VendorPos = () => {
 
     const loadInitialData = async () => {
         setLoading(true);
+        console.log("Starting loadInitialData...");
         try {
             // 1. Fetch Products
+            console.log("Fetching vendor products...");
             const productData = await getVendorProducts();
+            console.log("Fetched products:", productData);
             setProducts(productData || []);
             setFilteredProducts(productData || []);
 
             // 2. Resolve store and ensure active session
+            console.log("Fetching stores...");
             const user = JSON.parse(localStorage.getItem('user'));
             const stores = await getAllStores();
+            console.log("Fetched stores:", stores);
+            
             const myStore = (stores || []).find(s => (s.ownerId || s.owner?.id) === user?.id) || (stores || [])[0];
+            console.log("My Store:", myStore);
+            
             if (myStore?.id) {
                 setStoreId(myStore.id);
                 try {
+                    console.log("Checking active session...");
                     const active = await getActiveSession(myStore.id);
+                    console.log("Active session:", active);
                     if (active && active.id) {
                         setSession(active);
                     } else {
+                        console.log("Opening new session...");
                         const opened = await openSession({ storeId: myStore.id, openingBalance: 0 });
                         setSession(opened);
                     }
-                } catch {
+                } catch (sessionErr) {
+                    console.error("Session error, trying to open new one:", sessionErr);
                     const opened = await openSession({ storeId: myStore.id, openingBalance: 0 });
                     setSession(opened);
                 }
+            } else {
+                console.warn("No store found for user");
             }
             setAmountPaid(0);
             
         } catch (error) {
             console.error("Error loading POS data:", error);
+            toast.error("Failed to load POS data. Please refresh.");
         } finally {
+            console.log("Finished loadInitialData, setting loading to false");
             setLoading(false);
         }
     };
@@ -95,13 +113,13 @@ const VendorPos = () => {
             const lowerTerm = searchTerm.toLowerCase();
             const filtered = products.filter(p => 
                 p.name.toLowerCase().includes(lowerTerm) || 
-                (p.barcode && p.barcode.includes(lowerTerm)) ||
+                (p.barcode && p.barcode.toLowerCase().includes(lowerTerm)) ||
                 p.id.toString().includes(lowerTerm)
             );
             setFilteredProducts(filtered);
             
             // Auto-add if exact barcode match
-            const exactMatch = products.find(p => p.barcode === searchTerm || p.id.toString() === searchTerm);
+            const exactMatch = products.find(p => p.barcode?.toLowerCase() === lowerTerm || p.id.toString() === lowerTerm);
             if (exactMatch) {
                 addToCart(exactMatch);
                 setSearchTerm(""); // Clear after auto-add
@@ -250,7 +268,7 @@ const VendorPos = () => {
         const profileImage = `${api.defaults.baseURL}/uploads/default/file-1761926804589-16322692.jpg`;
         try {
             const currentUser = JSON.parse(localStorage.getItem('user'));
-            const res = await registerUser({
+            await registerUser({
                 email,
                 password,
                 firstName: customerFirstName,
@@ -337,7 +355,7 @@ const VendorPos = () => {
                                     <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-1 inline-block">
                                         {product.category?.name || "Item"}
                                     </span>
-                                    <p className="font-bold text-green-600">${Number(product.price).toFixed(2)}</p>
+                                    <p className="font-bold text-green-600">{formatPrice(Number(product.price || 0))}</p>
                                 </div>
                             </div>
                         ))}
@@ -374,7 +392,7 @@ const VendorPos = () => {
                             <div key={item.id} className="bg-white border border-gray-100 p-3 rounded-lg shadow-sm flex justify-between items-center">
                                 <div className="flex-1">
                                     <h4 className="font-medium text-gray-800 text-sm">{item.name}</h4>
-                                    <p className="text-gray-500 text-xs">${Number(item.price).toFixed(2)} x {item.quantity}</p>
+                                    <p className="text-gray-500 text-xs">{formatPrice(Number(item.price || 0))} x {item.quantity}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="flex items-center border rounded-md">
@@ -409,15 +427,15 @@ const VendorPos = () => {
                     <div className="space-y-2 mb-4">
                         <div className="flex justify-between text-gray-600">
                             <span>Subtotal</span>
-                            <span>${calculateTotal().toFixed(2)}</span>
+                            <span>{formatPrice(calculateTotal())}</span>
                         </div>
                         <div className="flex justify-between text-gray-600">
                             <span>Tax (0%)</span>
-                            <span>$0.00</span>
+                            <span>{formatPrice(0)}</span>
                         </div>
                         <div className="flex justify-between text-xl font-bold text-gray-800 border-t border-gray-300 pt-2">
                             <span>Total</span>
-                            <span>${calculateTotal().toFixed(2)}</span>
+                            <span>{formatPrice(calculateTotal())}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 pt-2">
                             <div>
@@ -439,7 +457,7 @@ const VendorPos = () => {
                                     className="w-full border border-gray-300 rounded-md px-2 py-2 text-sm"
                                     value={amountPaid}
                                     onChange={(e) => setAmountPaid(e.target.value)}
-                                    placeholder={calculateTotal().toFixed(2)}
+                                    placeholder={formatPrice(calculateTotal())}
                                 />
                             </div>
                         </div>
@@ -520,7 +538,7 @@ const VendorPos = () => {
                             <span>Processing...</span>
                         ) : (
                             <>
-                                <FaMoneyBillWave /> Pay ${calculateTotal().toFixed(2)}
+                                <FaMoneyBillWave /> Pay {formatPrice(calculateTotal())}
                             </>
                         )}
                     </button>
@@ -543,7 +561,7 @@ const VendorPos = () => {
                                 <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <FaCheck size={32} />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-800">${receiptData.total.toFixed(2)}</h2>
+                                <h2 className="text-2xl font-bold text-gray-800">{formatPrice(Number(receiptData.total || 0))}</h2>
                                 <p className="text-gray-500">Paid via {receiptData.paymentMethod}</p>
                             </div>
                             
@@ -599,8 +617,8 @@ const VendorPos = () => {
                             <div key={i} className="grid grid-cols-12 text-sm mb-1">
                                 <div className="col-span-6 truncate">{item.name}</div>
                                 <div className="col-span-2 text-center">{item.quantity}</div>
-                                <div className="col-span-2 text-right">${Number(item.price).toFixed(2)}</div>
-                                <div className="col-span-2 text-right">${(item.price * item.quantity).toFixed(2)}</div>
+                                <div className="col-span-2 text-right">{formatPrice(Number(item.price || 0))}</div>
+                                <div className="col-span-2 text-right">{formatPrice(Number(item.price || 0) * Number(item.quantity || 0))}</div>
                             </div>
                         ))}
                     </div>
@@ -608,15 +626,15 @@ const VendorPos = () => {
                     <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span>${receiptData.total.toFixed(2)}</span>
+                            <span>{formatPrice(Number(receiptData.total || 0))}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Tax</span>
-                            <span>$0.00</span>
+                            <span>{formatPrice(0)}</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg border-t border-gray-300 pt-1 mt-1">
                             <span>Total</span>
-                            <span>${receiptData.total.toFixed(2)}</span>
+                            <span>{formatPrice(Number(receiptData.total || 0))}</span>
                         </div>
                         <div className="flex justify-between pt-2">
                             <span>Payment Method</span>
@@ -624,11 +642,11 @@ const VendorPos = () => {
                         </div>
                         <div className="flex justify-between">
                             <span>Amount Paid</span>
-                            <span>${receiptData.amountPaid.toFixed(2)}</span>
+                            <span>{formatPrice(Number(receiptData.amountPaid || 0))}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Change</span>
-                            <span>${receiptData.change.toFixed(2)}</span>
+                            <span>{formatPrice(Number(receiptData.change || 0))}</span>
                         </div>
                     </div>
                     

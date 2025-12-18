@@ -64,6 +64,12 @@ export const getStoreTransactions = async (storeId) => {
   return res.data;
 };
 
+// Get daily sales report for a store
+export const getDailySalesReport = async (storeId, date) => {
+  const res = await api.get(`/pos/report/daily/${storeId}`, { params: { date } });
+  return res.data;
+};
+
 // Refund a transaction
 export const refundTransaction = async (transactionId) => {
   const res = await api.put(`/pos/transaction/refund/${transactionId}`);

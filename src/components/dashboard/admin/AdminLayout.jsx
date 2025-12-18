@@ -24,6 +24,8 @@ const AdminLayout = () => {
     {to: "/dashboard/admin/stores", label: "Services List", icon: <FaStore size={18} /> },
     {to: "/dashboard/admin/products", label: "Products List", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/admin/bookings", label: "My Bookings", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/admin/wallet", label: "Wallet", icon: <FaShoppingCart size={18} /> },
+    { to: "/dashboard/admin/withdrawals", label: "Withdrawals", icon: <FaShoppingCart size={18} /> },
     { to: "/dashboard/admin/profile", label: "Profile", icon: <BiUser size={18} /> },
     { to: "/dashboard/admin/settings", label: "Settings", icon: <CiSettings size={18} /> },
   ];

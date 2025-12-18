@@ -10,7 +10,22 @@ export const getWalletTransactions = async () => {
   return res.data;
 };
 
-export const depositFunds = async (data) => {
-  const res = await api.post("/wallet/deposit", data);
+export const depositToWallet = async (amount, description) => {
+  const res = await api.post("/wallet/deposit", { amount, description });
+  return res.data;
+};
+
+export const requestWithdrawal = async (amount, description) => {
+  const res = await api.post("/wallet/withdraw/request", { amount, description });
+  return res.data;
+};
+
+export const getWithdrawalRequests = async () => {
+  const res = await api.get("/wallet/withdraw/requests");
+  return res.data;
+};
+
+export const updateWithdrawalStatus = async (id, status, adminNotes) => {
+  const res = await api.put(`/wallet/withdraw/approve/${id}`, { status, adminNotes });
   return res.data;
 };

@@ -9,6 +9,8 @@ import AdminProductsTable from "../components/dashboard/admin/AdminProductsTable
 import AdminCategoryTable from "../components/dashboard/admin/AdminCategoryTable";
 import AdminStoreTable from "../components/dashboard/admin/AdminStoreTable";
 import UpdateProfile from "../components/dashboard/UpdateProfile";
+import UserWallet from "../components/dashboard/user/UserWallet";
+import AdminWithdrawalRequests from "../components/dashboard/admin/AdminWithdrawalRequests";
 
 export const AdminRoutes = (
   <>
@@ -41,6 +43,8 @@ export const AdminRoutes = (
       <Route path="profile" element={<div className="p-10 text-center">
         <UpdateProfile/>
       </div>} />
+      <Route path="wallet" element={<div className="p-4"><UserWallet /></div>} />
+      <Route path="withdrawals" element={<div className="p-4"><AdminWithdrawalRequests /></div>} />
       <Route path="settings" element={<div className="p-10 text-center">Settings Page</div>} />
     </Route>
   </>

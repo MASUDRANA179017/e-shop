@@ -10,6 +10,9 @@ import VendorPrescriptionTable from "../components/dashboard/vendor/VendorPrescr
 import CouponTable from "../components/dashboard/vendor/VendorCouponTable";
 import VendorPos from "../components/dashboard/vendor/pos/VendorPos";
 import VendorOrderTable from "../components/dashboard/vendor/VendorOrderTable";
+import VendorSettings from "../components/dashboard/vendor/VendorSettings";
+import UserWallet from "../components/dashboard/user/UserWallet";
+import WithdrawalRequests from "../components/dashboard/user/WithdrawalRequests";
 
 export const VendorRoutes = (
   <>
@@ -74,10 +77,9 @@ export const VendorRoutes = (
         }
       />
 
-      <Route
-        path="settings"
-        element={<div className="p-10 text-center">Settings Page</div>}
-      />
+      <Route path="wallet" element={<div className="p-4"><UserWallet /></div>} />
+      <Route path="withdrawals" element={<div className="p-4"><WithdrawalRequests /></div>} />
+      <Route path="settings" element={<div className="p-4"><VendorSettings /></div>} />
     </Route>
   </>
 );

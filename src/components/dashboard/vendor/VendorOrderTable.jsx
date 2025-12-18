@@ -7,11 +7,14 @@ import { FaEye } from "react-icons/fa";
 import { getVendorOrders } from "../../../@Services/CheckoutService";
 import { getStoreTransactions } from "../../../@Services/PosService";
 import { getAllStores } from "../../../@Services/StoreService";
+import { sendStoreEmail } from "../../../@Services/StoreService";
 import { getVendorProducts } from "../../../@Services/ProductService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCurrency } from "../../../context/CurrencyContext";
 
 export default function VendorOrderTable() {
+    const { formatPrice } = useCurrency();
     const [orders, setOrders] = useState([]);
     const [onlineOrders, setOnlineOrders] = useState([]);
     const [posOrders, setPosOrders] = useState([]);
@@ -19,6 +22,10 @@ export default function VendorOrderTable() {
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
+    const [sendOpen, setSendOpen] = useState(false);
+    const [sendForm, setSendForm] = useState({ to: "", subject: "", text: "" });
+    const [sending, setSending] = useState(false);
+    const [myStores, setMyStores] = useState([]);
 
     useEffect(() => {
         fetchData();
@@ -55,12 +62,14 @@ export default function VendorOrderTable() {
                 const allStores = await getAllStores();
                 // Ensure ID comparison is type-safe
                 let myStores = allStores.filter(s => String(s.ownerId || s.owner?.id) === String(user.id));
+                setMyStores(myStores);
                 
                 // Fallback: derive store IDs from vendor products if none found
                 if (myStores.length === 0) {
                     const vProducts = await getVendorProducts();
                     const storeIds = Array.from(new Set((vProducts || []).map(p => p.store?.id).filter(Boolean)));
                     myStores = allStores.filter(s => storeIds.includes(s.id));
+                    setMyStores(myStores);
                 }
                 
                 let posTransactions = [];
@@ -110,6 +119,43 @@ export default function VendorOrderTable() {
         setDetailsOpen(true);
     };
 
+    const handleContact = (order) => {
+        setSelectedOrder(order);
+        const to =
+            order.source === "Online"
+                ? (order.raw?.user?.email || "")
+                : (order.raw?.customer?.email || "");
+        const subject = `Regarding your ${order.source} order ${order.displayId}`;
+        const text = `Hello ${order.customer},\n\nWe are contacting you about ${order.displayId} placed on ${new Date(order.date).toLocaleDateString()}.\nTotal: ${formatPrice(Number(order.total || 0))}.\n\nThank you,\nVendor`;
+        setSendForm({ to, subject, text });
+        setSendOpen(true);
+    };
+
+    const handleSendEmail = async () => {
+        if (!myStores[0]) {
+            toast.error("No store found for sending email");
+            return;
+        }
+        if (!sendForm.to) {
+            toast.error("Recipient email is empty");
+            return;
+        }
+        setSending(true);
+        try {
+            await sendStoreEmail(myStores[0].id, {
+                to: sendForm.to,
+                subject: sendForm.subject,
+                text: sendForm.text
+            });
+            toast.success("Message sent");
+            setSendOpen(false);
+        } catch (e) {
+            toast.error(e?.response?.data?.message || "Failed to send message");
+        } finally {
+            setSending(false);
+        }
+    };
+
     return (
         <Box>
             <Typography variant="h5" sx={{ mb: 2 }}>Order History</Typography>
@@ -147,13 +193,16 @@ export default function VendorOrderTable() {
                                 <TableCell>
                                     <Chip label={order.source} color={order.source === "POS" ? "primary" : "secondary"} size="small" />
                                 </TableCell>
-                                <TableCell>{order.customer}</TableCell>
-                                <TableCell>${Number(order.total).toFixed(2)}</TableCell>
-                                <TableCell>{order.status}</TableCell>
-                                <TableCell>
-                                    <IconButton onClick={() => handleView(order)} color="primary"><FaEye /></IconButton>
-                                </TableCell>
-                            </TableRow>
+                            <TableCell>{order.customer}</TableCell>
+                            <TableCell>{formatPrice(Number(order.total || 0))}</TableCell>
+                            <TableCell>{order.status}</TableCell>
+                            <TableCell>
+                                <IconButton onClick={() => handleView(order)} color="primary"><FaEye /></IconButton>
+                                <Button size="small" sx={{ ml: 1 }} variant="outlined" onClick={() => handleContact(order)}>
+                                    Contact
+                                </Button>
+                            </TableCell>
+                        </TableRow>
                         ))}
                     </TableBody>
                 </Table>
@@ -189,8 +238,8 @@ export default function VendorOrderTable() {
                                             <TableRow key={i}>
                                                 <TableCell>{item.productName || item.product?.name || "Item"}</TableCell>
                                                 <TableCell align="right">{item.quantity}</TableCell>
-                                                <TableCell align="right">${Number(item.unitPrice || item.product?.price || 0).toFixed(2)}</TableCell>
-                                                <TableCell align="right">${Number(item.totalPrice || 0).toFixed(2)}</TableCell>
+                                                <TableCell align="right">{formatPrice(Number(item.unitPrice || item.product?.price || 0))}</TableCell>
+                                                <TableCell align="right">{formatPrice(Number(item.totalPrice || 0))}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -198,13 +247,49 @@ export default function VendorOrderTable() {
                             </TableContainer>
                             
                             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                                <Typography variant="h6">Total: ${Number(selectedOrder.total).toFixed(2)}</Typography>
+                                <Typography variant="h6">Total: {formatPrice(Number(selectedOrder.total || 0))}</Typography>
                             </Box>
                         </Box>
                     )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDetailsOpen(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={sendOpen} onClose={() => setSendOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Send Message</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                        <input
+                            className="border border-gray-300 rounded p-2"
+                            placeholder="Recipient email"
+                            value={sendForm.to}
+                            onChange={(e) => setSendForm(prev => ({ ...prev, to: e.target.value }))}
+                        />
+                        <input
+                            className="border border-gray-300 rounded p-2"
+                            placeholder="Subject"
+                            value={sendForm.subject}
+                            onChange={(e) => setSendForm(prev => ({ ...prev, subject: e.target.value }))}
+                        />
+                        <textarea
+                            className="border border-gray-300 rounded p-2 h-32"
+                            placeholder="Message"
+                            value={sendForm.text}
+                            onChange={(e) => setSendForm(prev => ({ ...prev, text: e.target.value }))}
+                        />
+                        {!sendForm.to && (
+                            <Typography variant="caption" color="error">
+                                No email available for this customer. For POS Walk-in customers, email may be missing.
+                            </Typography>
+                        )}
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setSendOpen(false)}>Cancel</Button>
+                    <Button onClick={handleSendEmail} disabled={sending || !sendForm.to} variant="contained">
+                        {sending ? "Sending..." : "Send"}
+                    </Button>
                 </DialogActions>
             </Dialog>
             <ToastContainer />

@@ -38,7 +38,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "../../../@Services/ProductService";
-import { getProductBarcode } from "../../../@Services/BarcodeService";
+import { getProductBarcode, bulkGenerateCodes } from "../../../@Services/BarcodeService";
 import api from "../../../api/axiosInstance";
 import { getAllStores } from "../../../@Services/StoreService";
 import { getAllCategory } from "../../../@Services/CategoryService";
@@ -60,6 +60,9 @@ export default function VendorProductsTable() {
   const [viewOpen, setViewOpen] = useState(false);
   const [barcodeOpen, setBarcodeOpen] = useState(false);
   const [barcodeData, setBarcodeData] = useState(null);
+  const [barcodeAllOpen, setBarcodeAllOpen] = useState(false);
+  const [barcodeAllData, setBarcodeAllData] = useState([]);
+  const [barcodeAllLoading, setBarcodeAllLoading] = useState(false);
 
   const [form, setForm] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -275,6 +278,7 @@ export default function VendorProductsTable() {
       description: "",
       price: 0,
       stock: 0,
+      barcode: "",
       manufactureDate: "",
       expireDate: "",
       storeId: "",
@@ -295,6 +299,7 @@ export default function VendorProductsTable() {
       description: product.description || "",
       price: product.price || 0,
       stock: product.stock || 0,
+      barcode: product.barcode || "",
 
       manufactureDate: product.manufactureDate || "",
       expireDate: product.expireDate || "",
@@ -350,6 +355,10 @@ export default function VendorProductsTable() {
           normalized = `data:image/png;base64,${data.base64}`;
         } else if (data.imageBase64) {
           normalized = `data:image/png;base64,${data.imageBase64}`;
+        } else if (data.barcode) {
+          normalized = data.barcode.startsWith('data:')
+            ? data.barcode
+            : `data:image/png;base64,${data.barcode}`;
         }
       }
       setBarcodeData(normalized);
@@ -363,6 +372,27 @@ export default function VendorProductsTable() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openAllBarcodes = async () => {
+    setBarcodeAllLoading(true);
+    try {
+      const ids = products.map(p => p.id);
+      const result = await bulkGenerateCodes(ids);
+      const normalized = (result || []).map(item => ({
+        id: item?.product?.id || item?.productId,
+        name: item?.product?.name || `Product #${item?.productId}`,
+        qrCode: item?.qrCode,
+        barcode: item?.barcode,
+        error: item?.error,
+      }));
+      setBarcodeAllData(normalized);
+      setBarcodeAllOpen(true);
+    } catch (err) {
+      setSnack({ open: true, message: err?.response?.data?.message || "Failed to load barcodes", severity: "error" });
+    } finally {
+      setBarcodeAllLoading(false);
     }
   };
 
@@ -505,12 +535,17 @@ export default function VendorProductsTable() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h6">Products List</Typography>
-        <Button variant="contained" onClick={openAdd}>
-          Add Product
-        </Button>
-      </Box>
+  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+    <Typography variant="h6">Products List</Typography>
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <Button variant="outlined" startIcon={<FaBarcode />} onClick={openAllBarcodes}>
+        Show All Codes
+      </Button>
+      <Button variant="contained" onClick={openAdd}>
+        Add Product
+      </Button>
+    </Box>
+  </Box>
 
       <TextField
         fullWidth
@@ -676,6 +711,12 @@ export default function VendorProductsTable() {
               name="stock"
               type="number"
               value={form.stock}
+              onChange={handleFormChange}
+            />
+            <TextField
+              label="Barcode"
+              name="barcode"
+              value={form.barcode}
               onChange={handleFormChange}
             />
 
@@ -916,8 +957,11 @@ export default function VendorProductsTable() {
               </Typography>
               <Typography>
                 <strong>Stock:</strong> {activeProduct.stock}
-              </Typography>
-              <Typography>
+            </Typography>
+            <Typography>
+                <strong>Barcode:</strong> {activeProduct.barcode || "N/A"}
+            </Typography>
+            <Typography>
                 <strong>Category:</strong>{" "}
                 {activeProduct.category?.name || "N/A"}
               </Typography>
@@ -936,6 +980,54 @@ export default function VendorProductsTable() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setViewOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* All Barcodes Dialog */}
+      <Dialog
+        open={barcodeAllOpen}
+        onClose={() => setBarcodeAllOpen(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>All Product Codes</DialogTitle>
+        <DialogContent dividers>
+          {barcodeAllLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : barcodeAllData?.length ? (
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 2 }}>
+              {barcodeAllData.map((item) => (
+                <Box key={item.id} sx={{ border: '1px solid #eee', borderRadius: 2, p: 2 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>{item.name}</Typography>
+                  {item.error ? (
+                    <Alert severity="error">{item.error}</Alert>
+                  ) : (
+                    <>
+                      {item.qrCode && (
+                        <Box sx={{ textAlign: 'center', mb: 1 }}>
+                          <img src={item.qrCode} alt={`QR ${item.id}`} style={{ maxWidth: '100%', height: 120, objectFit: 'contain' }} />
+                          <Typography variant="caption">QR Code</Typography>
+                        </Box>
+                      )}
+                      {item.barcode && (
+                        <Box sx={{ textAlign: 'center' }}>
+                          <img src={item.barcode} alt={`Barcode ${item.id}`} style={{ maxWidth: '100%', height: 80, objectFit: 'contain' }} />
+                          <Typography variant="caption">Barcode</Typography>
+                        </Box>
+                      )}
+                    </>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Typography>No codes found.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBarcodeAllOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 
