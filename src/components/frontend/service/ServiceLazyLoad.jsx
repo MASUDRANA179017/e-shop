@@ -63,9 +63,9 @@ const ServiceLazyLoad = ({ products: propProducts }) => {
 
   return (
     <section className="bg-white py-16">
-      <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
+      <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
         {visibleItems.map((product) => (
-          <div key={product.id} className="px-3">
+          <div key={product.id} className="">
             <ServiceLayout 
                 id={product.id} 
                 img={product.image} 

@@ -297,19 +297,27 @@ const ServiceDetails = () => {
                     <div className="animate-fade-in">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Select Available Time</label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
-                            {timeSlots.map(time => (
-                                <button
-                                    key={time}
-                                    onClick={() => setBookingTime(time)}
-                                    className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
-                                        bookingTime === time 
-                                        ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105" 
-                                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
-                                    }`}
-                                >
-                                    {time}
-                                </button>
-                            ))}
+                            {timeSlots.map(time => {
+                                // Check availability (assuming product.bookedSlots structure exists or future API integration)
+                                const isAvailable = !product?.bookedSlots?.[bookingDate]?.includes(time);
+                                
+                                return (
+                                    <button
+                                        key={time}
+                                        onClick={() => isAvailable && setBookingTime(time)}
+                                        disabled={!isAvailable}
+                                        className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
+                                            bookingTime === time 
+                                            ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105" 
+                                            : !isAvailable
+                                                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through opacity-60"
+                                                : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
+                                        }`}
+                                    >
+                                        {time}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 )}

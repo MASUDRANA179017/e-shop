@@ -93,7 +93,7 @@ const CartPage = () => {
                           <td className="py-4 px-6 text-gray-700">
                             {item.bookingDate ? (
                                 <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                    {new Date(item.bookingDate).toLocaleDateString()} {item.bookingTime}
+                                    {new Date(item.bookingDate).toLocaleDateString()} {item.bookingTime ? `at ${item.bookingTime}` : ''}
                                 </span>
                             ) : (
                                 <span className="text-gray-400 italic">No date selected</span>

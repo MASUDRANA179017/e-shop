@@ -61,7 +61,10 @@ const Login = () => {
       // Redirect by user role or back to origin
       setTimeout(() => {
         if (location.state?.from) {
-          navigate(location.state.from, { replace: true });
+          navigate(location.state.from, { 
+            replace: true,
+            state: location.state.checkoutState || {} // Restore the original state
+          });
         } else {
           if (data.user.role === "admin") navigate("/dashboard/admin");
           else if (data.user.role === "vendor") navigate("/dashboard/vendor");

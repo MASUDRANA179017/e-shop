@@ -7,7 +7,7 @@ import Container from "../components/commonLayouts/Container";
 import { toast } from "react-toastify";
 
 const CheckoutPage = () => {
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal, clearCart, removeFromCart } = useCart();
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,10 +32,15 @@ const CheckoutPage = () => {
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
-    // if (!token) {
-    //   toast.info("Please login or create an account to proceed with checkout.");
-    //   navigate("/login", { state: { from: "/checkout" } });
-    // } else {
+    if (!token) {
+      toast.info("Please login or create an account to proceed with checkout.");
+      navigate("/login", { 
+        state: { 
+          from: "/checkout",
+          checkoutState: location.state // Pass current state to be restored later
+        } 
+      });
+    } else {
       // Pre-fill from local storage if available
       try {
         const userStr = localStorage.getItem("user");
@@ -49,8 +54,8 @@ const CheckoutPage = () => {
       } catch (e) {
         console.error("Failed to parse user from local storage");
       }
-    // }
-  }, [navigate]);
+    }
+  }, [navigate, location.state]);
 
   if (itemsToCheckout.length === 0) {
     navigate("/cart");
@@ -85,7 +90,11 @@ const CheckoutPage = () => {
       
       // Only clear cart if we are checking out from cart
       if (!isDirectBuy) {
-        clearCart();
+        // clearCart();
+        // Remove only the items that were just purchased to preserve other types of items
+        itemsToCheckout.forEach(item => {
+            removeFromCart(item.id);
+        });
       }
       
       // Determine if this was primarily a booking or product order
@@ -120,7 +129,7 @@ const CheckoutPage = () => {
                   <p className="font-medium text-gray-800">{item.name} x {item.quantity}</p>
                   {item.bookingDate && (
                     <p className="text-xs text-blue-600 font-bold">
-                      Booking: {new Date(item.bookingDate).toLocaleDateString()}
+                      Booking: {new Date(item.bookingDate).toLocaleDateString()} {item.bookingTime ? `at ${item.bookingTime}` : ''}
                     </p>
                   )}
                 </div>

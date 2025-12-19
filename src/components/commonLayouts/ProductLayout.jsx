@@ -62,7 +62,7 @@ const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating,
             style={{ background: bg }}
             className="border border-gray-200 rounded-lg w-full flex flex-col justify-center group p-3 sm:p-4 hover:shadow-lg hover:shadow-[#FF624C] transition-shadow duration-300 relative"
         >
-            <div className="relative mb-3 sm:mb-4">
+            <div className="relative mb-2 sm:mb-2">
                 <img
                     className="object-cover w-full h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px]"
                     src={img}

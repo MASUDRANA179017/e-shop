@@ -35,9 +35,9 @@ const Bestseller = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* Product Grid */}
                     <div className="bg-transparent p-2 sm:p-4 rounded col-span-1 lg:col-span-2">
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                             {products.slice(0, 6).map((product) => (
-                                <div key={product.id} className="px-1 sm:px-3">
+                                <div key={product.id} className="">
                                     <ProductLayout
                                         id={product.id}
                                         img={product.image}
