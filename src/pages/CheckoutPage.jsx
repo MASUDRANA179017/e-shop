@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { createOrder } from "../@Services/CheckoutService";
+import { getServiceAvailability } from "../@Services/ProductService";
 import { useNavigate, useLocation } from "react-router-dom";
 import Container from "../components/commonLayouts/Container";
 import { toast } from "react-toastify";
@@ -71,6 +72,34 @@ const CheckoutPage = () => {
 
     setLoading(true);
     try {
+      if (isServiceCheckout) {
+        for (const item of itemsToCheckout) {
+          if (item.isService || item.bookingDate) {
+            const resp = await getServiceAvailability(item.id, item.bookingDate, item.bookingTime || null);
+            if (resp && resp.bookedSlots && resp.bookedSlots[item.bookingDate]) {
+              const toMin = (t) => {
+                const [hm, ap] = t.split(" ");
+                const [h, m] = hm.split(":").map(Number);
+                const hh = (h % 12) + (ap === "PM" ? 12 : 0);
+                return hh * 60 + m;
+              };
+              const overlaps30 = (a, b) => Math.abs(toMin(a) - toMin(b)) < 30;
+              const booked = resp.bookedSlots[item.bookingDate];
+              const conflict = booked.some((t) => overlaps30(t, item.bookingTime));
+              if (conflict) {
+                alert("Selected time overlaps with an existing booking. Please choose another time.");
+                setLoading(false);
+                return;
+              }
+            }
+            if (resp && resp.available === false) {
+              alert(resp.message || "Selected time is unavailable. Please choose another time.");
+              setLoading(false);
+              return;
+            }
+          }
+        }
+      }
       // Map items to order items, ensuring bookingDate is mapped to serviceDate
       const items = itemsToCheckout.map((item) => ({
         productId: item.id,

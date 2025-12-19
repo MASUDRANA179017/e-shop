@@ -104,7 +104,7 @@ const CartPage = () => {
                           </td>
                           <td className="py-4 px-6">
                             <button
-                              onClick={() => removeFromCart(item.id)}
+                              onClick={() => removeFromCart(item.id, item.bookingDate, item.bookingTime)}
                               className="text-red-500 hover:text-red-700 transition-colors"
                               title="Remove Service"
                             >

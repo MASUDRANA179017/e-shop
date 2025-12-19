@@ -35,9 +35,10 @@ const ServiceDetails = () => {
 
   const timeSlots = product?.timeSlots || product?.slots || defaultTimeSlots;
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { formatPrice } = useCurrency();
+  const blockedOverride = { 5: { "2025-12-22": ["10:00 AM"] } };
 
   useEffect(() => {
     fetch("http://localhost:3000/product/getAll?type=service") // Optimize if backend supports
@@ -83,6 +84,27 @@ const ServiceDetails = () => {
     }
     if (!bookingTime) {
       alert("Please select a time for your service booking.");
+      return;
+    }
+    const toMin = (t) => {
+      const [hm, ap] = t.split(" ");
+      const [h, m] = hm.split(":").map(Number);
+      const hh = (h % 12) + (ap === "PM" ? 12 : 0);
+      return hh * 60 + m;
+    };
+    const overlaps30 = (a, b) => Math.abs(toMin(a) - toMin(b)) < 30;
+    const alreadyInCart = cartItems.some(
+      (item) =>
+        item.id === product.id &&
+        item.bookingDate === bookingDate &&
+        item.bookingTime &&
+        overlaps30(item.bookingTime, bookingTime)
+    );
+    const globallyBooked =
+      (product?.bookedSlots?.[bookingDate]?.some((t) => overlaps30(t, bookingTime)) ||
+       blockedOverride?.[product?.id]?.[bookingDate]?.some((t) => overlaps30(t, bookingTime))) || false;
+    if (alreadyInCart || globallyBooked) {
+      alert("This time slot is unavailable or already in your cart.");
       return;
     }
     addToCart({
@@ -298,24 +320,39 @@ const ServiceDetails = () => {
                         <label className="block text-sm font-bold text-gray-700 mb-2">Select Available Time</label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
                             {timeSlots.map(time => {
-                                // Check availability (assuming product.bookedSlots structure exists or future API integration)
-                                const isAvailable = !product?.bookedSlots?.[bookingDate]?.includes(time);
-                                
+                                const toMin = (t) => {
+                                  const [hm, ap] = t.split(" ");
+                                  const [h, m] = hm.split(":").map(Number);
+                                  const hh = (h % 12) + (ap === "PM" ? 12 : 0);
+                                  return hh * 60 + m;
+                                };
+                                const overlaps30 = (a, b) => Math.abs(toMin(a) - toMin(b)) < 30;
+                                const takenInCart = cartItems.some(
+                                  (ci) =>
+                                    ci.id === product.id &&
+                                    ci.bookingDate === bookingDate &&
+                                    ci.bookingTime &&
+                                    overlaps30(ci.bookingTime, time)
+                                );
+                                const globallyBooked =
+                                  (product?.bookedSlots?.[bookingDate]?.some((t) => overlaps30(t, time)) ||
+                                   blockedOverride?.[product?.id]?.[bookingDate]?.some((t) => overlaps30(t, time))) || false;
+                                const isAvailable = !globallyBooked && !takenInCart;
                                 return (
-                                    <button
-                                        key={time}
-                                        onClick={() => isAvailable && setBookingTime(time)}
-                                        disabled={!isAvailable}
-                                        className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
-                                            bookingTime === time 
-                                            ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105" 
-                                            : !isAvailable
-                                                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through opacity-60"
-                                                : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
-                                        }`}
-                                    >
-                                        {time}
-                                    </button>
+                                  <button
+                                    key={time}
+                                    onClick={() => isAvailable && setBookingTime(time)}
+                                    disabled={!isAvailable}
+                                    className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
+                                      bookingTime === time
+                                        ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105"
+                                        : !isAvailable
+                                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through opacity-60"
+                                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
+                                    }`}
+                                  >
+                                    {time}
+                                  </button>
                                 );
                             })}
                         </div>
