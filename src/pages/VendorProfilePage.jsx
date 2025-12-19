@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getPublicStoreById, followStore, unfollowStore, checkFollowStatus } from "../@Services/StoreService";
 import { getProductsByStoreId } from "../@Services/ProductService";
 import ProductLayout from "../components/commonLayouts/ProductLayout";
+import ServiceLayout from "../components/commonLayouts/ServiceLayout";
 import { FaMapMarkerAlt, FaEnvelope, FaStar, FaPhone, FaGlobe, FaUserPlus, FaUserCheck } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 
@@ -223,21 +224,39 @@ const VendorProfilePage = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
                     <div key={product.id}>
-                     <ProductLayout
-                        id={product.id}
-                        img={product.productThumbnail || "/frontend/products/product01.png"}
-                        percentTag={product.discount > 0}
-                        roundTag={false}
-                        category={product.category?.name}
-                        stock={product.stock > 0}
-                        stockAmount={product.stock}
-                        title={product.name}
-                        rating={product.rating || 4}
-                        totalRating={product.reviews?.length || 0}
-                        price={product.price / 100}
-                        border="true"
-                        bg="white"
-                     />
+                    {product.type === 'service' ? (
+                        <ServiceLayout
+                            id={product.id}
+                            img={product.productThumbnail || "/frontend/products/product01.png"}
+                            percentTag={product.discount > 0}
+                            roundTag={false}
+                            category={product.category?.name}
+                            stock={product.stock > 0}
+                            stockAmount={product.stock}
+                            title={product.name}
+                            rating={product.rating || 4}
+                            totalRating={product.reviews?.length || 0}
+                            price={product.price / 100}
+                            border="true"
+                            bg="white"
+                        />
+                    ) : (
+                        <ProductLayout
+                            id={product.id}
+                            img={product.productThumbnail || "/frontend/products/product01.png"}
+                            percentTag={product.discount > 0}
+                            roundTag={false}
+                            category={product.category?.name}
+                            stock={product.stock > 0}
+                            stockAmount={product.stock}
+                            title={product.name}
+                            rating={product.rating || 4}
+                            totalRating={product.reviews?.length || 0}
+                            price={product.price / 100}
+                            border="true"
+                            bg="white"
+                        />
+                    )}
                     </div>
                 ))}
                 </div>

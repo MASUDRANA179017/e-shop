@@ -18,11 +18,13 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
 
   // Check for direct buy items from navigation state
-  const { checkoutItems: directItems, isDirectBuy } = location.state || {};
+  const { checkoutItems: directItems, isDirectBuy, checkoutType } = location.state || {};
   
   // Use direct items if available, otherwise fall back to cart items
   const itemsToCheckout = directItems || cartItems;
   
+  const isServiceCheckout = checkoutType === 'service' || itemsToCheckout.some(item => item.isService || item.bookingDate);
+
   // Calculate total for direct items
   const totalToCheckout = directItems 
      ? directItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
@@ -157,11 +159,13 @@ const CheckoutPage = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2">Shipping Address / Service Location</label>
+              <label className="block text-gray-700 font-bold mb-2">
+                  {isServiceCheckout ? "Service Location Address" : "Shipping Address"}
+              </label>
               <textarea
                 className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows="3"
-                placeholder="Enter your full address..."
+                placeholder={isServiceCheckout ? "Enter the address where service will be performed..." : "Enter your full delivery address..."}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
@@ -169,11 +173,13 @@ const CheckoutPage = () => {
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-700 font-bold mb-2">Order Notes / Instructions (Optional)</label>
+              <label className="block text-gray-700 font-bold mb-2">
+                  {isServiceCheckout ? "Booking Notes / Special Instructions" : "Order Notes / Instructions (Optional)"}
+              </label>
               <textarea
                 className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows="2"
-                placeholder="Gate code, special requests, etc."
+                placeholder={isServiceCheckout ? "Any specific instructions for the service provider..." : "Gate code, special requests, etc."}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               ></textarea>
@@ -182,9 +188,9 @@ const CheckoutPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#FF624C] text-white font-bold py-3 rounded-lg shadow-md hover:bg-[#ff4f36] transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              className={`w-full text-white font-bold py-3 rounded-lg shadow-md transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""} ${isServiceCheckout ? "bg-blue-600 hover:bg-blue-700" : "bg-[#FF624C] hover:bg-[#ff4f36]"}`}
             >
-              {loading ? "Placing Order..." : "Confirm Order"}
+              {loading ? "Processing..." : (isServiceCheckout ? "Confirm Booking" : "Place Order")}
             </button>
           </form>
         </div>

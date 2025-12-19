@@ -61,6 +61,18 @@ export const updateProduct = async (id, data) => {
   return res.data;
 };
 
+// Update Service
+export const updateService = async (id, data) => {
+  const res = await api.put(`/product/update/service/${id}`, data);
+  return res.data;
+};
+
+// Update Physical Product
+export const updatePhysicalProduct = async (id, data) => {
+  const res = await api.put(`/product/update/product/${id}`, data);
+  return res.data;
+};
+
 // Delete product by ID
 export const deleteProduct = async (id) => {
   const res = await api.delete(`/product/delete/${id}`);

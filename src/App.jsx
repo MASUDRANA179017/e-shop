@@ -4,6 +4,7 @@ import "./App.css";
 // Public Pages
 import HomePage from "./pages/HomePage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import { BlogPage } from "./pages/BlogPage";
 import { ProductListPage } from "./pages/ProductListPage";
 import { ServiceListPage } from "./pages/ServiceListPage";
@@ -47,6 +48,7 @@ function App() {
         <Route path="service" element={<ServiceListPage />} />
         <Route path="product" element={<ProductListPage />} />
         <Route path="product/:id" element={<ProductDetailsPage />} />
+        <Route path="service/:id" element={<ServiceDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="blog" element={<BlogPage />} />
         <Route path="vendors" element={<VendorListPage />} />

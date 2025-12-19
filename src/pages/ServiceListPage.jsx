@@ -22,12 +22,15 @@ export const ServiceListPage = () => {
             description: item.description,
             currentPrice: item.price / 100, // Assuming price is in cents
             oldPrice: item.old_price ? item.old_price / 100 : null,
-            image: item.productThumbnail || "/frontend/products/product01.png",
+            // For services, try to use the 2nd image (first from gallery) as requested
+            image: (item.productGallery && item.productGallery.length > 0) ? item.productGallery[0] : (item.productThumbnail || "/frontend/products/product01.png"),
             rating: item.rating || 4,
             reviews: item.reviews || [],
             category: item.category || { name: "General" },
             discount: item.discount || null,
             brand: item.brand?.name || item.brand || "", // Handle brand structure
+            type: item.type,
+            stock: item.stock,
           }));
         setAllProducts(formatted);
       })

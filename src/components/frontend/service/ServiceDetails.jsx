@@ -1,22 +1,21 @@
-// src/pages/ProductDetails.jsx
+// src/components/frontend/service/ServiceDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ProductImageSlider from "../../commonLayouts/ProductImageSlide";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useCurrency } from "../../../context/CurrencyContext";
-import { FaHeart, FaRegHeart, FaStar, FaStore, FaCheckCircle, FaTruck, FaUndo, FaShieldAlt, FaHeadset } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar, FaStore, FaCheckCircle, FaTruck, FaUndo, FaShieldAlt, FaHeadset, FaCalendarCheck } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { getProductBarcode } from "../../../@Services/BarcodeService";
 import { createReview } from "../../../@Services/ReviewService";
 
-const ProductDetails = () => {
+const ServiceDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [storeProducts, setStoreProducts] = useState([]);
   const [barcode, setBarcode] = useState(null);
   const [barcodeLoading, setBarcodeLoading] = useState(false);
   const [barcodeError, setBarcodeError] = useState(null);
@@ -25,17 +24,23 @@ const ProductDetails = () => {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+
+  // Use API provided slots if available, otherwise fallback to default
+  const defaultTimeSlots = [
+    "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
+    "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
+  ];
+
+  const timeSlots = product?.timeSlots || product?.slots || defaultTimeSlots;
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { selectedCountry, formatPrice } = useCurrency();
-
-  // Derived from context now
-  const { code, flag, name } = selectedCountry || {};
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
-    fetch("http://localhost:3000/product/getAll")
+    fetch("http://localhost:3000/product/getAll?type=service") // Optimize if backend supports
       .then((res) => res.json())
       .then((data) => {
         const foundProduct = data.find((item) => item.id === parseInt(id));
@@ -47,17 +52,11 @@ const ProductDetails = () => {
               (p) => p.category?.id === foundProduct.category?.id && p.id !== foundProduct.id
             ).slice(0, 4)
           );
-
-          setStoreProducts(
-            data.filter(
-              (p) => p.store?.id === foundProduct.store?.id && p.id !== foundProduct.id
-            ).slice(0, 4)
-          );
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching product:", err);
+        console.error("Error fetching service:", err);
         setLoading(false);
       });
   }, [id]);
@@ -78,6 +77,14 @@ const ProductDetails = () => {
   }, [product?.id]);
 
   const handleAddToCart = () => {
+    if (!bookingDate) {
+      alert("Please select a date for your service booking.");
+      return;
+    }
+    if (!bookingTime) {
+      alert("Please select a time for your service booking.");
+      return;
+    }
     addToCart({
       id: product.id,
       name: product.name,
@@ -85,15 +92,24 @@ const ProductDetails = () => {
       image: product.productThumbnail,
       thumbnail: product.productThumbnail,
       brand: product.brand,
-      isService: false,
-      type: 'product',
-      quantity: quantity
+      bookingDate: bookingDate,
+      bookingTime: bookingTime,
+      isService: true,
+      type: 'service',
+      quantity: 1
     });
-    // Optional: Show toast/notification
   };
 
   const handleBuyNow = () => {
-       // Regular product buy now
+       // Direct booking flow for services
+       if (!bookingDate) {
+         alert("Please select a date for your service booking.");
+         return;
+       }
+       if (!bookingTime) {
+         alert("Please select a time for your service booking.");
+         return;
+       }
        const item = {
          id: product.id,
          name: product.name,
@@ -101,12 +117,12 @@ const ProductDetails = () => {
          image: product.productThumbnail,
          thumbnail: product.productThumbnail,
          brand: product.brand,
-         quantity: quantity,
-         isService: false
+         bookingDate: bookingDate,
+         bookingTime: bookingTime,
+         quantity: 1,
+         isService: true
        };
-       // Directly go to checkout or cart
-       addToCart(item); // Add to cart first to ensure persistence
-       navigate('/cart');
+       navigate('/checkout', { state: { checkoutItems: [item], isDirectBuy: true } });
   };
 
   const handleReviewSubmit = async (e) => {
@@ -121,7 +137,6 @@ const ProductDetails = () => {
       alert("Review submitted successfully! You earned 5 points.");
       setShowReviewForm(false);
       setReviewComment("");
-      // Ideally refresh product reviews here
     } catch (error) {
       console.error(error);
       alert("Failed to submit review. Please ensure you are logged in.");
@@ -140,7 +155,8 @@ const ProductDetails = () => {
               price: product.price,
               image: product.productThumbnail,
               thumbnail: product.productThumbnail,
-              brand: product.brand
+              brand: product.brand,
+              isService: true
           });
       }
   };
@@ -163,7 +179,7 @@ const ProductDetails = () => {
   const averageRating =
     product.reviews.length > 0
       ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length
-      : 4.8; // Default mock rating for better UI if empty
+      : 4.8;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20 font-sans">
@@ -179,15 +195,14 @@ const ProductDetails = () => {
           {/* Left Column: Image Gallery */}
           <div className="space-y-6">
             <div className="rounded-2xl overflow-hidden shadow-inner bg-gray-100 border border-gray-100">
-               {/* Assuming ProductImageSlider handles styling internally, wrapping it for control */}
                <ProductImageSlider product={product} />
             </div>
             
-            {/* Barcode Section (Hidden if not available, subtle if is) */}
+            {/* Barcode Section */}
             {barcode && (
                 <div className="flex items-center justify-center bg-gray-50 p-4 rounded-lg border border-gray-200 border-dashed">
                     <span className="text-xs text-gray-500 mr-3 uppercase tracking-wider font-semibold">
-                        Product Code
+                        Service Code
                     </span>
                     <img
                         src={`data:image/png;base64,${barcode}`}
@@ -202,7 +217,7 @@ const ProductDetails = () => {
           <div className="flex flex-col">
              <div className="mb-4">
                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                    {product.category?.name || "Product"}
+                    {product.category?.name || "Service"}
                  </span>
              </div>
              
@@ -216,22 +231,15 @@ const ProductDetails = () => {
                     <span className="font-bold text-gray-800">{averageRating.toFixed(1)}</span>
                     <span className="text-gray-500 text-sm ml-1">({product.reviews.length} reviews)</span>
                  </div>
-                 {product.stock > 0 ? (
-                     <div className="flex items-center text-green-600 text-sm font-medium">
-                         <FaCheckCircle className="mr-1" /> Available
-                     </div>
-                 ) : (
-                     <div className="flex items-center text-red-500 text-sm font-medium">
-                         <FaCheckCircle className="mr-1" /> Currently Unavailable
-                     </div>
-                 )}
+                 <div className="flex items-center text-green-600 text-sm font-medium">
+                     <FaCheckCircle className="mr-1" /> Available
+                 </div>
              </div>
 
              <div className="flex items-end gap-3 mb-8">
                  <div className="text-4xl font-bold text-blue-600">
                     {formatPrice(product.price)}
                  </div>
-                 {/* Mock original price for discount effect */}
                  <div className="text-xl text-gray-400 line-through mb-1">
                     {formatPrice(product.price * 1.2)}
                  </div>
@@ -252,7 +260,7 @@ const ProductDetails = () => {
                      </div>
                      <div className="flex-grow">
                          <p className="text-xs text-gray-500 font-semibold uppercase">
-                            Seller
+                            Service Provider
                          </p>
                          <h3 className="font-bold text-gray-800 flex items-center">
                              {product.store.name} <MdVerified className="text-blue-500 ml-1" />
@@ -264,58 +272,60 @@ const ProductDetails = () => {
                  </div>
              )}
 
-            {/* Quantity Selector for Products */}
-            <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-2">Quantity</label>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
-                        <button 
-                            onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                            className="px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
-                        >
-                            -
-                        </button>
-                        <input 
-                            type="number" 
-                            className="w-16 text-center font-bold text-gray-800 outline-none"
-                            value={quantity}
-                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            min="1"
-                        />
-                        <button 
-                            onClick={() => setQuantity(q => q + 1)}
-                            className="px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
-                        >
-                            +
-                        </button>
-                    </div>
-                    <span className="text-sm text-gray-500">
-                        {product.stock > 0 ? `${product.stock} items available` : "Out of Stock"}
-                    </span>
+             {/* Booking Date & Time Selection */}
+             <div className="mb-8 bg-blue-50 p-6 rounded-xl border border-blue-100">
+                <div className="border-b border-blue-200 pb-4 mb-6">
+                    <h3 className="text-xl font-bold text-blue-800 flex items-center">
+                        <FaCalendarCheck className="mr-2 text-blue-600" /> 
+                        Schedule Your Service
+                    </h3>
+                    <p className="text-sm text-blue-600 mt-1">Select a preferred date and time slot below.</p>
                 </div>
-            </div>
+
+                <div className="mb-6">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Select Booking Date</label>
+                    <input 
+                        type="date" 
+                        className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium shadow-sm"
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                    />
+                </div>
+
+                {bookingDate && (
+                    <div className="animate-fade-in">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Select Available Time</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            {timeSlots.map(time => (
+                                <button
+                                    key={time}
+                                    onClick={() => setBookingTime(time)}
+                                    className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
+                                        bookingTime === time 
+                                        ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105" 
+                                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
+                                    }`}
+                                >
+                                    {time}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+             </div>
 
              {/* Action Buttons */}
              <div className="flex gap-4 mt-auto">
                  <button
                     onClick={handleBuyNow}
-                    disabled={product.stock <= 0}
-                    className={`flex-1 font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 ${
-                        (product.stock <= 0) 
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none" 
-                        : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
-                    }`}
+                    className="flex-1 font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
                  >
-                    Buy Now
+                    Book Now
                  </button>
                  <button
                     onClick={handleAddToCart}
-                    disabled={product.stock <= 0}
-                    className={`flex-1 border-2 font-bold py-4 px-8 rounded-xl transition-colors ${
-                        (product.stock <= 0)
-                        ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
-                    }`}
+                    className="flex-1 border-2 font-bold py-4 px-8 rounded-xl transition-colors bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
                  >
                     Add to Cart
                  </button>
@@ -449,10 +459,10 @@ const ProductDetails = () => {
                 <h3 className="text-2xl font-bold text-gray-800 mb-6">Similar Services</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {relatedProducts.map((p) => (
-                        <Link key={p.id} to={`/product/${p.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                        <Link key={p.id} to={`/service/${p.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
                             <div className="h-48 overflow-hidden relative">
                                 <img
-                                    src={p.productThumbnail || "/frontend/products/product01.png"}
+                                    src={(p.productGallery && p.productGallery.length > 0) ? p.productGallery[0] : (p.productThumbnail || "/frontend/products/product01.png")}
                                     alt={p.name}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
@@ -479,4 +489,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
+export default ServiceDetails;

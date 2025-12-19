@@ -21,6 +21,8 @@ import {
   CircularProgress,
   Tooltip,
   InputAdornment,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 
 import {
@@ -35,7 +37,7 @@ import { TiDeleteOutline } from "react-icons/ti";
 import {
   getVendorServices,
   createService,
-  updateProduct,
+  updateService,
   deleteProduct,
 } from "../../../@Services/ProductService";
 import { getProductBarcode, bulkGenerateCodes } from "../../../@Services/BarcodeService";
@@ -43,8 +45,6 @@ import api from "../../../api/axiosInstance";
 import { getAllStores } from "../../../@Services/StoreService";
 import { getAllCategory } from "../../../@Services/CategoryService";
 import { uploadImage } from "../../../@Services/uploadService";
-import { getAllBrands } from "../../../@Services/BrandsService";
-import { getAllWeightUnits } from "../../../@Services/weightUnitService";
 import { BiLoader } from "react-icons/bi";
 
 export default function VendorServiceTable() {
@@ -74,8 +74,6 @@ export default function VendorServiceTable() {
 
   const [categories, setCategories] = useState([]);
   const [stores, setStores] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [weightUnits, setWeightUnits] = useState([]);
 
   const [uploading, setUploading] = useState(false);
 
@@ -88,24 +86,6 @@ export default function VendorServiceTable() {
     if (url.startsWith("http")) return url;
     if (url.startsWith("/")) return `${api.defaults.baseURL}${url}`;
     return url;
-  };
-
-  const fetchBrands = async () => {
-    try {
-      const data = await getAllBrands();
-      setBrands(data || []);
-    } catch (err) {
-      console.error("Failed to fetch Brands", err);
-    }
-  };
-
-  const fetchWeightUnits = async () => {
-    try {
-      const data = await getAllWeightUnits();
-      setWeightUnits(data || []);
-    } catch (err) {
-      console.error("Failed to fetch Weight Units", err);
-    }
   };
 
   // Fetch each vendor products
@@ -143,8 +123,6 @@ export default function VendorServiceTable() {
     fetchProducts();
     fetchCategories();
     fetchStores();
-    fetchBrands();
-    fetchWeightUnits();
   }, []);
 
   useEffect(() => {
@@ -194,6 +172,8 @@ export default function VendorServiceTable() {
     const file = e.target.files[0];
     if (!file) return;
 
+    const previousThumbnail = form.productThumbnail;
+
     // Show local preview immediately
     setForm((prev) => ({
       ...prev,
@@ -215,6 +195,11 @@ export default function VendorServiceTable() {
         severity: "success",
       });
     } catch (err) {
+      setForm((prev) => ({
+        ...prev,
+        productThumbnail: previousThumbnail,
+        productThumbnailFile: null,
+      }));
       setSnack({
         open: true,
         message: "Thumbnail upload failed",
@@ -261,6 +246,11 @@ export default function VendorServiceTable() {
         severity: "success",
       });
     } catch (err) {
+      setForm((prev) => ({
+        ...prev,
+        productGallery: prev.productGallery.filter((img) => !previewUrls.includes(img)),
+        productGalleryFiles: [],
+      }));
       setSnack({
         open: true,
         message: "Gallery upload failed",
@@ -272,50 +262,89 @@ export default function VendorServiceTable() {
     }
   };
 
+  // Initial weekly schedule
+  const initialSchedule = {
+    monday: { open: false, start: "09:00", end: "17:00" },
+    tuesday: { open: false, start: "09:00", end: "17:00" },
+    wednesday: { open: false, start: "09:00", end: "17:00" },
+    thursday: { open: false, start: "09:00", end: "17:00" },
+    friday: { open: false, start: "09:00", end: "17:00" },
+    saturday: { open: false, start: "09:00", end: "17:00" },
+    sunday: { open: false, start: "09:00", end: "17:00" },
+  };
+
+  const [weeklySchedule, setWeeklySchedule] = useState(initialSchedule);
+
+  const calculateTotalHours = (schedule) => {
+    let totalMinutes = 0;
+    Object.values(schedule).forEach((day) => {
+      if (day.open && day.start && day.end) {
+        const start = new Date(`1970-01-01T${day.start}:00`);
+        const end = new Date(`1970-01-01T${day.end}:00`);
+        if (end > start) {
+          totalMinutes += (end - start) / (1000 * 60);
+        }
+      }
+    });
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    return `${hours}h ${mins}m`;
+  };
+
+  const handleScheduleChange = (day, field, value) => {
+    setWeeklySchedule((prev) => ({
+      ...prev,
+      [day]: { ...prev[day], [field]: value },
+    }));
+  };
+
   const openAdd = () => {
     setForm({
       name: "",
       description: "",
       price: 0,
-      stock: 0,
-      barcode: "",
-      manufactureDate: "",
-      expireDate: "",
       storeId: "",
       categoryId: "",
-      brandId: "",
-      weightUnitId: "",
       productThumbnail: "",
       productGallery: [],
+      isAvailable: true,
     });
+    setWeeklySchedule(initialSchedule);
     setAddOpen(true);
   };
 
   const openEdit = (product) => {
     setActiveProduct(product);
 
+    // Try parsing schedule JSON
+    let parsedSchedule = initialSchedule;
+    if (product.schedule) {
+        try {
+            // Check if it's JSON or old string format
+            if (product.schedule.startsWith("{")) {
+                parsedSchedule = JSON.parse(product.schedule);
+            }
+        } catch (e) {
+            console.error("Failed to parse schedule", e);
+        }
+    }
+
     setForm({
       name: product.name || "",
       description: product.description || "",
       price: product.price || 0,
-      stock: product.stock || 0,
-      barcode: product.barcode || "",
-
-      manufactureDate: product.manufactureDate || "",
-      expireDate: product.expireDate || "",
 
       storeId: Number(product.store?.id || product.storeId) || "",
       categoryId: Number(product.category?.id || product.categoryId) || "",
-      brandId: Number(product.brand?.id || product.brandId) || "",
-      weightUnitId:
-        Number(product.weightUnit?.id || product.weightUnitId) || "",
 
       productThumbnail: product.productThumbnail || "",
       productThumbnailFile: null,
 
       productGallery: product.productGallery || [],
       productGalleryFiles: [],
+      isAvailable: product.isAvailable !== undefined ? product.isAvailable : true,
     });
+    setWeeklySchedule(parsedSchedule);
 
     setEditOpen(true);
   };
@@ -421,19 +450,15 @@ export default function VendorServiceTable() {
         name: form.name,
         description: form.description,
         price: Number(form.price),
-        stock: Number(form.stock),
-
-        manufactureDate: form.manufactureDate,
-        expireDate: form.expireDate,
 
         storeId: Number(form.storeId),
         categoryId: Number(form.categoryId),
-        brandId: Number(form.brandId),
-        weightUnitId: Number(form.weightUnitId),
 
         productThumbnail: thumbnailUrl,
         productGallery: uploadedGallery,
         isService: true,
+        schedule: JSON.stringify(weeklySchedule),
+        isAvailable: form.isAvailable,
       };
 
       const newProduct = await createService(payload);
@@ -479,22 +504,18 @@ export default function VendorServiceTable() {
         name: form.name,
         description: form.description,
         price: Number(form.price),
-        stock: Number(form.stock),
-
-        manufactureDate: form.manufactureDate,
-        expireDate: form.expireDate,
 
         storeId: Number(form.storeId),
         categoryId: Number(form.categoryId),
-        brandId: Number(form.brandId),
-        weightUnitId: Number(form.weightUnitId),
 
         productThumbnail: thumbnailUrl,
         productGallery: uploadedGallery,
         isService: true,
+        schedule: JSON.stringify(weeklySchedule),
+        isAvailable: form.isAvailable,
       };
 
-      const updated = await updateProduct(activeProduct.id, payload);
+      const updated = await updateService(activeProduct.id, payload);
       setProducts((prev) =>
         prev.map((p) => (p.id === activeProduct.id ? updated : p))
       );
@@ -583,7 +604,7 @@ export default function VendorServiceTable() {
                   <TableCell>Gallery</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Price</TableCell>
-                  <TableCell>Stock</TableCell>
+                  <TableCell>Available</TableCell>
                   <TableCell>Category</TableCell>
                   <TableCell>Store Name</TableCell>
                   <TableCell>Vendor Name</TableCell>
@@ -639,7 +660,17 @@ export default function VendorServiceTable() {
 
                       <TableCell>{product.name}</TableCell>
                       <TableCell>${product.price}</TableCell>
-                      <TableCell>{product.stock}</TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={
+                            product.isAvailable !== undefined
+                              ? product.isAvailable
+                              : true
+                          }
+                          size="small"
+                          disabled // Read-only in table
+                        />
+                      </TableCell>
                       <TableCell>{product.category.name}</TableCell>
                       <TableCell>{product.store.name}</TableCell>
                       <TableCell>
@@ -708,36 +739,64 @@ export default function VendorServiceTable() {
               value={form.price}
               onChange={handleFormChange}
             />
-            <TextField
-              label="Stock"
-              name="stock"
-              type="number"
-              value={form.stock}
-              onChange={handleFormChange}
-            />
-            <TextField
-              label="Barcode"
-              name="barcode"
-              value={form.barcode}
-              onChange={handleFormChange}
-            />
 
-            {/* Manufacture & Expire Date */}
-            <TextField
-              label="Manufacture Date"
-              type="date"
-              name="manufactureDate"
-              value={form.manufactureDate}
-              onChange={handleFormChange}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              label="Expire Date"
-              type="date"
-              name="expireDate"
-              value={form.expireDate}
-              onChange={handleFormChange}
-              InputLabelProps={{ shrink: true }}
+            <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                    Weekly Schedule
+                </Typography>
+                <Box sx={{ display: 'grid', gap: 1 }}>
+                    {Object.keys(weeklySchedule).map((day) => (
+                        <Box key={day} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={weeklySchedule[day].open}
+                                        onChange={(e) => handleScheduleChange(day, 'open', e.target.checked)}
+                                        size="small"
+                                    />
+                                }
+                                label={<span style={{ textTransform: 'capitalize', width: 80, display: 'inline-block' }}>{day}</span>}
+                            />
+                            {weeklySchedule[day].open ? (
+                                <>
+                                    <TextField
+                                        type="time"
+                                        size="small"
+                                        value={weeklySchedule[day].start}
+                                        onChange={(e) => handleScheduleChange(day, 'start', e.target.value)}
+                                    />
+                                    <Typography>-</Typography>
+                                    <TextField
+                                        type="time"
+                                        size="small"
+                                        value={weeklySchedule[day].end}
+                                        onChange={(e) => handleScheduleChange(day, 'end', e.target.value)}
+                                    />
+                                </>
+                            ) : (
+                                <Typography variant="caption" color="textSecondary">Closed</Typography>
+                            )}
+                        </Box>
+                    ))}
+                </Box>
+                <Box sx={{ mt: 2, p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                    <Typography variant="body2" fontWeight="bold">
+                        Total Available Time: {calculateTotalHours(weeklySchedule)}
+                    </Typography>
+                </Box>
+            </Box>
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={form.isAvailable}
+                  onChange={(e) =>
+                    setForm({ ...form, isAvailable: e.target.checked })
+                  }
+                  name="isAvailable"
+                />
+              }
+              label="Available"
             />
 
             {/* Category */}
@@ -753,40 +812,6 @@ export default function VendorServiceTable() {
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
-                </option>
-              ))}
-            </TextField>
-
-            {/* Brand */}
-            <TextField
-              select
-              label="Brand"
-              name="brandId"
-              value={form.brandId}
-              onChange={handleFormChange}
-              slotProps={{ select: { native: true } }}
-            >
-              <option value="">Select Brand</option>
-              {brands.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </TextField>
-
-            {/* Weight Unit */}
-            <TextField
-              select
-              label="Weight Unit"
-              name="weightUnitId"
-              value={form.weightUnitId}
-              onChange={handleFormChange}
-              slotProps={{ select: { native: true } }}
-            >
-              <option value="">Select Weight Unit</option>
-              {weightUnits.map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.name}
                 </option>
               ))}
             </TextField>
@@ -958,24 +983,17 @@ export default function VendorServiceTable() {
                 <strong>Price:</strong> ${activeProduct.price}
               </Typography>
               <Typography>
-                <strong>Stock:</strong> {activeProduct.stock}
-            </Typography>
-            <Typography>
-                <strong>Barcode:</strong> {activeProduct.barcode || "N/A"}
-            </Typography>
-            <Typography>
+                <strong>Schedule:</strong> {activeProduct.schedule || "N/A"}
+              </Typography>
+              <Typography>
+                <strong>Available:</strong> {activeProduct.isAvailable ? "Yes" : "No"}
+              </Typography>
+              <Typography>
                 <strong>Category:</strong>{" "}
                 {activeProduct.category?.name || "N/A"}
               </Typography>
               <Typography>
                 <strong>Store:</strong> {activeProduct.store?.name || "N/A"}
-              </Typography>
-              <Typography>
-                <strong>Brand:</strong> {activeProduct.brand?.name || "N/A"}
-              </Typography>
-              <Typography>
-                <strong>Weight Unit:</strong>{" "}
-                {activeProduct.weightUnit?.name || "N/A"}
               </Typography>
             </Box>
           )}
@@ -1102,30 +1120,64 @@ export default function VendorServiceTable() {
               value={form.price}
               onChange={handleFormChange}
             />
-            <TextField
-              label="Stock"
-              name="stock"
-              type="number"
-              value={form.stock}
-              onChange={handleFormChange}
-            />
 
-            {/* Manufacture & Expire Date */}
-            <TextField
-              label="Manufacture Date"
-              type="date"
-              name="manufactureDate"
-              value={form.manufactureDate}
-              onChange={handleFormChange}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              label="Expire Date"
-              type="date"
-              name="expireDate"
-              value={form.expireDate}
-              onChange={handleFormChange}
-              InputLabelProps={{ shrink: true }}
+            <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                    Weekly Schedule
+                </Typography>
+                <Box sx={{ display: 'grid', gap: 1 }}>
+                    {Object.keys(weeklySchedule).map((day) => (
+                        <Box key={day} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={weeklySchedule[day].open}
+                                        onChange={(e) => handleScheduleChange(day, 'open', e.target.checked)}
+                                        size="small"
+                                    />
+                                }
+                                label={<span style={{ textTransform: 'capitalize', width: 80, display: 'inline-block' }}>{day}</span>}
+                            />
+                            {weeklySchedule[day].open ? (
+                                <>
+                                    <TextField
+                                        type="time"
+                                        size="small"
+                                        value={weeklySchedule[day].start}
+                                        onChange={(e) => handleScheduleChange(day, 'start', e.target.value)}
+                                    />
+                                    <Typography>-</Typography>
+                                    <TextField
+                                        type="time"
+                                        size="small"
+                                        value={weeklySchedule[day].end}
+                                        onChange={(e) => handleScheduleChange(day, 'end', e.target.value)}
+                                    />
+                                </>
+                            ) : (
+                                <Typography variant="caption" color="textSecondary">Closed</Typography>
+                            )}
+                        </Box>
+                    ))}
+                </Box>
+                <Box sx={{ mt: 2, p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                    <Typography variant="body2" fontWeight="bold">
+                        Total Available Time: {calculateTotalHours(weeklySchedule)}
+                    </Typography>
+                </Box>
+            </Box>
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={form.isAvailable}
+                  onChange={(e) =>
+                    setForm({ ...form, isAvailable: e.target.checked })
+                  }
+                  name="isAvailable"
+                />
+              }
+              label="Available"
             />
 
             {/* Category */}
@@ -1140,38 +1192,6 @@ export default function VendorServiceTable() {
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
-                </option>
-              ))}
-            </TextField>
-
-            {/* Brand */}
-            <TextField
-              select
-              label="Brand"
-              name="brandId"
-              value={form.brandId}
-              onChange={handleFormChange}
-              slotProps={{ select: { native: true } }}
-            >
-              {brands.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </TextField>
-
-            {/* Weight Unit */}
-            <TextField
-              select
-              label="Weight Unit"
-              name="weightUnitId"
-              value={form.weightUnitId}
-              onChange={handleFormChange}
-              slotProps={{ select: { native: true } }}
-            >
-              {weightUnits.map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.name}
                 </option>
               ))}
             </TextField>

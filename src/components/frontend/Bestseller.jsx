@@ -21,6 +21,8 @@ const Bestseller = () => {
                     reviews: item.reviews || [],
                     category: item.category || { name: "General" },
                     discount: item.discount || null,
+                    type: item.type,
+                    stock: item.stock,
                 }));
                 setProducts(formatted);
             })
@@ -42,14 +44,15 @@ const Bestseller = () => {
                                         percentTag={true}
                                         roundTag={false}
                                         category={product.category.name}
-                                        stock={false}
-                                        stockAmount="50"
+                                        stock={product.stock > 0}
+                                        stockAmount={product.stock}
                                         title={product.title}
                                         rating={product.rating}
                                         totalRating={product.reviews.length}
                                         price={product.currentPrice}
                                         border="true"
                                         bg="transparent"
+                                        type={product.type}
                                     />
                                 </div>
                             ))}

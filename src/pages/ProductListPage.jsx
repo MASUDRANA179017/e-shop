@@ -13,7 +13,7 @@ export const ProductListPage = () => {
 
   useEffect(() => {
     // Fetch all products initially
-    getAllProducts()
+    getAllProducts("product")
       .then(data => {
         const formatted = data.map((item) => ({
             id: item.id,
@@ -28,6 +28,8 @@ export const ProductListPage = () => {
             category: item.category || { name: "General" },
             discount: item.discount || null,
             brand: item.brand?.name || item.brand || "", // Handle brand structure
+            type: item.type,
+            stock: item.stock,
           }));
         setAllProducts(formatted);
       })

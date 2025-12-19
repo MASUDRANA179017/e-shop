@@ -1,6 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaShoppingCart, FaHeart, FaRegHeart, FaCalendarCheck } from "react-icons/fa";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useCurrency } from "../../../context/CurrencyContext";
@@ -9,12 +9,21 @@ const ProductSingle = ({ product }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { formatPrice } = useCurrency();
+  const navigate = useNavigate();
 
   if (!product) return null;
+
+  const isService = product.type === 'service' || (product.category?.name?.toLowerCase().includes("service") || product.category?.name?.toLowerCase().includes("booking"));
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (isService) {
+        navigate(`/product/${product.id}`);
+        return;
+    }
+
     // Normalize product data for cart
     addToCart({
       id: product.id,
@@ -84,10 +93,10 @@ const ProductSingle = ({ product }) => {
             <h3 className="text-red-600 font-semibold">{formatPrice(product.currentPrice)}</h3>
             <button
                 onClick={handleAddToCart}
-                className="bg-gray-100 hover:bg-[#FF624C] hover:text-white text-gray-800 p-2 rounded-full transition-colors duration-300"
-                title="Add to Cart"
+                className={`p-2 rounded-full transition-colors duration-300 ${isService ? 'bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white' : 'bg-gray-100 hover:bg-[#FF624C] text-gray-800 hover:text-white'}`}
+                title={isService ? "Book Now" : "Add to Cart"}
             >
-                <FaShoppingCart size={16} />
+                {isService ? <FaCalendarCheck size={16} /> : <FaShoppingCart size={16} />}
             </button>
         </div>
       </div>

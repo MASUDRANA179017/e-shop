@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductSingle from "./ProductSingle";
 import ProductLayout from "../../commonLayouts/ProductLayout";
+import ServiceLayout from "../../commonLayouts/ServiceLayout";
 import { getAllProducts } from "../../../@Services/ProductService";
 
 const PRODUCTS_PER_LOAD = 8;
@@ -23,12 +24,17 @@ const NewProductLazyLoad = ({ type, products: propProducts }) => {
             description: item.description,
             currentPrice: item.price / 100,
             oldPrice: item.old_price ? item.old_price / 100 : null,
-            image: item.productThumbnail || "/frontend/products/product01.png",
+            // Use 2nd image for services if available
+            image: (item.type === 'service' && item.productGallery && item.productGallery.length > 0) 
+                   ? item.productGallery[0] 
+                   : (item.productThumbnail || "/frontend/products/product01.png"),
             rating: item.rating || 4,
             reviews: item.reviews || [],
             category: item.category || { name: "General" },
-            discount: item.discount || null,
-          }));
+          discount: item.discount || null,
+          type: item.type,
+          stock: item.stock,
+        }));
           setProducts(formatted);
         })
         .catch((err) => console.error("Failed to fetch products:", err));
@@ -71,7 +77,11 @@ const NewProductLazyLoad = ({ type, products: propProducts }) => {
         {visibleItems.map((product) => (
           <div key={product.id} className="px-3">
             {/* <ProductSingle product={product} /> */}
-            <ProductLayout id={product.id} img={product.image} percentTag={true} roundTag={false} category={product.category.name} stock={false} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+            {type === 'service' || product.type === 'service' ? (
+                <ServiceLayout id={product.id} img={product.image} percentTag={true} roundTag={false} category={product.category.name} stock={product.stock > 0} stockAmount={product.stock} title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+            ) : (
+                <ProductLayout id={product.id} img={product.image} percentTag={true} roundTag={false} category={product.category.name} stock={product.stock > 0} stockAmount={product.stock} title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+            )}
           </div>
         ))}
       </div>

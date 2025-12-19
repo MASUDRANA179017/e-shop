@@ -4,7 +4,7 @@ import { FaBoxOpen, FaClipboardList, FaStore, FaTrash, FaPlus, FaMinus, FaCashRe
 import { useCart } from "../../../context/CartContext";
 import { useCurrency } from "../../../context/CurrencyContext";
 import { useNavigate } from "react-router-dom";
-import { getVendorProducts } from "../../../@Services/ProductService";
+import { getVendorProducts, getVendorServices, getVendorPhysicalProducts } from "../../../@Services/ProductService";
 import { getAllStores, updateStore, sendStoreEmail } from "../../../@Services/StoreService";
 import { getVendorOrders } from "../../../@Services/CheckoutService";
 import { getStoreTransactions, getDailySalesReport } from "../../../@Services/PosService";
@@ -34,15 +34,23 @@ const VendorDashboard = () => {
       const userJson = localStorage.getItem("user");
       const user = userJson ? JSON.parse(userJson) : null;
       let productsCount = 0;
+      let servicesCount = 0;
       let stores = [];
       let onlineOrders = [];
       let posTransactions = [];
       try {
-        const products = await getVendorProducts();
+        const products = await getVendorPhysicalProducts();
         productsCount = Array.isArray(products) ? products.length : 0;
       } catch (e) {
         console.error("Failed to load vendor products", e);
         productsCount = 0;
+      }
+      try {
+        const services = await getVendorServices();
+        servicesCount = Array.isArray(services) ? services.length : 0;
+      } catch (e) {
+        console.error("Failed to load vendor services", e);
+        servicesCount = 0;
       }
       try {
         const allStores = await getAllStores();
@@ -78,7 +86,7 @@ const VendorDashboard = () => {
       const totalRevenue = onlineRevenue + posRevenue;
       setStats([
         { label: "My Products", value: productsCount, icon: <FaBoxOpen />, color: "bg-blue-500" },
-        { label: "Active Services", value: stores.length, icon: <FaStore />, color: "bg-green-500" },
+        { label: "Active Services", value: servicesCount, icon: <FaStore />, color: "bg-green-500" },
         { label: "Total Orders", value: totalOnlineOrders + totalPosOrders, icon: <FaClipboardList />, color: "bg-purple-500" },
         { label: "Revenue", value: formatPrice(totalRevenue), icon: <BiBarChart />, color: "bg-yellow-500" },
       ]);

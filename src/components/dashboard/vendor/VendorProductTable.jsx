@@ -35,7 +35,7 @@ import { TiDeleteOutline } from "react-icons/ti";
 import {
   getVendorPhysicalProducts,
   createPhysicalProduct,
-  updateProduct,
+  updatePhysicalProduct,
   deleteProduct,
 } from "../../../@Services/ProductService";
 import { getProductBarcode, bulkGenerateCodes } from "../../../@Services/BarcodeService";
@@ -194,6 +194,8 @@ export default function VendorProductsTable() {
     const file = e.target.files[0];
     if (!file) return;
 
+    const previousThumbnail = form.productThumbnail;
+
     // Show local preview immediately
     setForm((prev) => ({
       ...prev,
@@ -215,6 +217,11 @@ export default function VendorProductsTable() {
         severity: "success",
       });
     } catch (err) {
+      setForm((prev) => ({
+        ...prev,
+        productThumbnail: previousThumbnail,
+        productThumbnailFile: null,
+      }));
       setSnack({
         open: true,
         message: "Thumbnail upload failed",
@@ -261,6 +268,11 @@ export default function VendorProductsTable() {
         severity: "success",
       });
     } catch (err) {
+      setForm((prev) => ({
+        ...prev,
+        productGallery: prev.productGallery.filter((img) => !previewUrls.includes(img)),
+        productGalleryFiles: [],
+      }));
       setSnack({
         open: true,
         message: "Gallery upload failed",
@@ -493,7 +505,7 @@ export default function VendorProductsTable() {
         productGallery: uploadedGallery,
       };
 
-      const updated = await updateProduct(activeProduct.id, payload);
+      const updated = await updatePhysicalProduct(activeProduct.id, payload);
       setProducts((prev) =>
         prev.map((p) => (p.id === activeProduct.id ? updated : p))
       );

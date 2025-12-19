@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useEffect } from 'react';
 import { getAllCategory } from '../../@Services/CategoryService';
 import { getAllBrands } from '../../@Services/BrandService';
@@ -72,7 +71,7 @@ export default function SidebarFilter({
             {/* Categories */}
             <div className="mb-6">
                 <h2 className="font-semibold text-lg mb-2">Categories</h2>
-                <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                <ul className="space-y-2">
                     <li className="flex items-center space-x-2">
                         <input
                             type="radio" // Changed to radio for single selection or maintain checkbox for multiple? 
@@ -110,7 +109,7 @@ export default function SidebarFilter({
                     {/* Brands */}
                     <div>
                         <h2 className="font-semibold text-lg mb-2">Brands</h2>
-                        <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                        <ul className="space-y-2">
                             {brands.map((brand) => (
                                 <li key={brand.id || brand.name} className="flex items-center justify-between">
                                     <div className="flex items-center space-x-2">
@@ -174,7 +173,7 @@ export default function SidebarFilter({
                                 max={10000}
                                 value={minVal}
                                 onChange={(e) => updateSlider('min', e.target.value)}
-                                className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none -top-0 z-20"
+                                className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none -top-0 z-20 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-[#FF624C] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:-mt-1.5 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:bg-[#FF624C] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer"
                             />
                             <input
                                 type="range"
@@ -182,7 +181,7 @@ export default function SidebarFilter({
                                 max={10000}
                                 value={maxVal}
                                 onChange={(e) => updateSlider('max', e.target.value)}
-                                className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none -top-0 z-20"
+                                className="absolute w-full h-2.5 bg-transparent pointer-events-none appearance-none -top-0 z-20 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-[#FF624C] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:-mt-1.5 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:bg-[#FF624C] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer"
                             />
                         </div>
                     </div>

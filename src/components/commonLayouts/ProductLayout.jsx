@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar, FaHeart, FaRegHeart, FaEye, FaBolt, FaCalendarCheck } from "react-icons/fa";
+import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar, FaHeart, FaRegHeart, FaEye, FaBolt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
@@ -21,16 +21,11 @@ const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating,
         price,
         image: img,
         thumbnail: img,
-        category: { name: category }
+        category: { name: category },
+        isService: false
     };
     
-    // ... rest of code
-    
-    // In JSX:
-    // <p className="text-base sm:text-lg font-['Montserrat'] font-semibold mb-1 sm:mb-2">{formatPrice(price)}</p>
-
     const isWishlisted = isInWishlist(id);
-    const isService = category?.toLowerCase().includes("service") || category?.toLowerCase().includes("booking");
 
     const handleAddToCart = (e) => {
         e.preventDefault();
@@ -51,26 +46,17 @@ const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating,
     const handleBuyNow = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
-        if (isService) {
-             // For services, redirect to details page to force date selection
-             navigate(`/product/${id}`);
-        } else {
-             // For products, standard add to cart + navigate to cart (or direct checkout if preferred)
-             // Keeping it consistent with "Buy Now" for products = Add to Cart + Go to Cart
-             addToCart(productObj);
-             navigate('/cart');
-        }
+        addToCart(productObj);
+        navigate('/cart');
     };
 
     const handleView = (e) => {
-        // Link handles navigation, but we might want a specific view button action
-        // For now, just let it bubble or navigate explicitly
         e.preventDefault();
         e.stopPropagation();
         navigate(`/product/${id}`);
     }
 
+    // Product Card Layout (Default)
     return (
         <div
             style={{ background: bg }}
@@ -121,17 +107,15 @@ const ProductLayout = ({ id, img, percentTag, roundTag, category, title, rating,
                     >
                         <FaCartPlus />
                     </button>
-                    
-                     {/* Buy Now / Book Now - Only show for Services */}
-                    {isService && (
-                        <button
-                            onClick={handleBuyNow}
-                            className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
-                            title="Book Now"
-                        >
-                            <FaCalendarCheck />
-                        </button>
-                    )}
+
+                    {/* Buy Now */}
+                    <button
+                        onClick={handleBuyNow}
+                        className="w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] border bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FF624C] hover:text-white duration-300 cursor-pointer rounded-full flex items-center justify-center text-[18px] sm:text-[22px] shadow-sm"
+                        title="Buy Now"
+                    >
+                        <FaBolt />
+                    </button>
                 </div>
             </div>
 

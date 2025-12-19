@@ -4,7 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { Link } from "react-router-dom";
 import Container from "../components/commonLayouts/Container";
-import { FaTrash, FaShoppingCart } from "react-icons/fa";
+import { FaTrash, FaShoppingCart, FaCalendarCheck } from "react-icons/fa";
 
 const WishlistPage = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
@@ -64,12 +64,21 @@ const WishlistPage = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => handleAddToCart(item)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 transition-colors text-sm"
-                  >
-                    <FaShoppingCart size={14} /> Add to Cart
-                  </button>
+                  {(item.isService || item.category?.name?.toLowerCase().includes("service") || item.category?.name?.toLowerCase().includes("booking")) ? (
+                      <Link
+                        to={`/product/${item.id}`}
+                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-semibold"
+                      >
+                        <FaCalendarCheck size={14} /> Book Now
+                      </Link>
+                  ) : (
+                      <button
+                        onClick={() => handleAddToCart(item)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 transition-colors text-sm"
+                      >
+                        <FaShoppingCart size={14} /> Add to Cart
+                      </button>
+                  )}
                   <button
                     onClick={() => removeFromWishlist(item.id)}
                     className="px-3 py-2 border border-gray-300 rounded-md text-gray-500 hover:text-red-500 hover:border-red-500 transition-colors"

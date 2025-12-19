@@ -81,6 +81,8 @@ const SpringSale = () => {
                     reviews: item.reviews || 100,
                     category: item.category || "Laptop",
                     discount: item.discount || null,
+                    type: item.type,
+                    stock: item.stock,
                 }));
                 setProducts(formatted);
             })
@@ -168,7 +170,7 @@ const SpringSale = () => {
                                 {products.map((product) => (
                                     <div key={product.id} className="px-3 py-6">
                                         {/* <ProductSingle product={product} /> */}
-                                        <ProductLayout id={product.id} img={product.image} percentTag={false} roundTag={true} category={product.category.name} stock={true} stockAmount="50" title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" />
+                                        <ProductLayout id={product.id} img={product.image} percentTag={false} roundTag={true} category={product.category.name} stock={product.stock > 0} stockAmount={product.stock} title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" type={product.type} />
                                     </div>
                                 ))}
                             </Slider>
