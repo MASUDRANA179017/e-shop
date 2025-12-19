@@ -14,6 +14,7 @@ import VendorSettings from "../components/dashboard/vendor/VendorSettings";
 import UserWallet from "../components/dashboard/user/UserWallet";
 import WithdrawalRequests from "../components/dashboard/user/WithdrawalRequests";
 import VendorBlogTable from "../components/dashboard/vendor/VendorBlogTable";
+import VendorCategoryTable from "../components/dashboard/vendor/VendorCategoryTable";
 
 export const VendorRoutes = (
   <>

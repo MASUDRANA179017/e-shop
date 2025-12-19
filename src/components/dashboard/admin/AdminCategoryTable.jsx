@@ -4,7 +4,7 @@ import {
     TableContainer, Paper, IconButton, Dialog, DialogTitle,
     DialogContent, DialogActions, TextField, Button, Box,
     Typography, Snackbar, Alert, CircularProgress, Tooltip,
-    InputAdornment
+    InputAdornment, FormControl, InputLabel, Select, MenuItem
 } from "@mui/material";
 
 import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
@@ -26,7 +26,7 @@ export default function AdminCategoryTable() {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [addOpen, setAddOpen] = useState(false);
 
-    const [form, setForm] = useState({ name: "" });
+    const [form, setForm] = useState({ name: "", description: "", type: "store" });
     const [searchTerm, setSearchTerm] = useState("");
     const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -64,13 +64,17 @@ export default function AdminCategoryTable() {
     };
 
     const openAdd = () => {
-        setForm({ name: "", description: "" });
+        setForm({ name: "", description: "", type: "store" });
         setAddOpen(true);
     };
 
     const openEdit = (category) => {
         setActiveCategory(category);
-        setForm({ name: category.name || "", description: category.description || "" });
+        setForm({ 
+            name: category.name || "", 
+            description: category.description || "",
+            type: category.type || "store"
+        });
         setEditOpen(true);
     };
 
@@ -86,6 +90,7 @@ export default function AdminCategoryTable() {
             setCategories((prev) => [...prev, newCategory]);
             setSnack({ open: true, message: "Category added successfully", severity: "success" });
             setAddOpen(false);
+            fetchCategories(); // Refresh to ensure sync
         } catch (err) {
             setSnack({ open: true, message: err?.response?.data?.message || "Failed to add category", severity: "error" });
         }
@@ -100,6 +105,7 @@ export default function AdminCategoryTable() {
             );
             setSnack({ open: true, message: "Category updated successfully", severity: "success" });
             setEditOpen(false);
+            fetchCategories(); // Refresh
         } catch (err) {
             setSnack({ open: true, message: err?.response?.data?.message || "Failed to update category", severity: "error" });
         }
@@ -148,13 +154,14 @@ export default function AdminCategoryTable() {
                                     <TableCell>ID</TableCell>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Description</TableCell>
+                                    <TableCell>Type</TableCell>
                                     <TableCell align="center">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {filteredCategories.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={3} align="center">No categories found</TableCell>
+                                        <TableCell colSpan={5} align="center">No categories found</TableCell>
                                     </TableRow>
                                 ) : (
                                     filteredCategories.map((category) => (
@@ -162,6 +169,7 @@ export default function AdminCategoryTable() {
                                             <TableCell>{category.id}</TableCell>
                                             <TableCell>{category.name}</TableCell>
                                             <TableCell>{category.description}</TableCell>
+                                            <TableCell>{category.type || "store"}</TableCell>
                                             <TableCell align="center">
                                                 <Tooltip title="Edit">
                                                     <IconButton onClick={() => openEdit(category)}><FaEdit /></IconButton>
@@ -185,10 +193,22 @@ export default function AdminCategoryTable() {
                 <DialogContent>
                     <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} fullWidth />
-                        <TextField label="description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
+                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
+                        
+                        <FormControl fullWidth>
+                            <InputLabel>Type</InputLabel>
+                            <Select
+                                label="Type"
+                                name="type"
+                                value={form.type}
+                                onChange={handleFormChange}
+                            >
+                                <MenuItem value="store">Store</MenuItem>
+                                <MenuItem value="product">Product</MenuItem>
+                                <MenuItem value="service">Service</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Box>
-                   
-                    
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setAddOpen(false)}>Cancel</Button>
@@ -202,7 +222,21 @@ export default function AdminCategoryTable() {
                 <DialogContent>
                     <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
                         <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} fullWidth />
-                        <TextField label="description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
+                        <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth />
+                        
+                        <FormControl fullWidth>
+                            <InputLabel>Type</InputLabel>
+                            <Select
+                                label="Type"
+                                name="type"
+                                value={form.type}
+                                onChange={handleFormChange}
+                            >
+                                <MenuItem value="store">Store</MenuItem>
+                                <MenuItem value="product">Product</MenuItem>
+                                <MenuItem value="service">Service</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Box>
                 </DialogContent>
                 <DialogActions>
