@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BlogCardLayout = ({ id, slug, title, image, author, createdAt, content }) => {
+const BlogCardLayout = ({ slug, title, image, author, createdAt, content }) => {
   return (
     <div className="border-2 border-gray-200 rounded-lg w-full flex-row justify-center group p-4 hover:shadow-lg hover:shadow-blue-400 transition-shadow duration-300">
       {/* Blog Image */}

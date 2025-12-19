@@ -4,12 +4,15 @@ import { getAllPublicStores } from "../@Services/StoreService";
 import { getProductsByStoreId } from "../@Services/ProductService";
 import { FaSearch, FaStar, FaMapMarkerAlt, FaFilter, FaArrowRight } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
+import { useCurrency } from "../context/CurrencyContext";
 
 const VendorListPage = () => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedSort, setSelectedSort] = useState("relevance");
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,18 +52,27 @@ const VendorListPage = () => {
 
   // Filter stores based on search and category
   const filteredStores = useMemo(() => {
-    return stores.filter((store) => {
+    const base = stores.filter((store) => {
       const matchesSearch = store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             (store.description && store.description.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = selectedCategory === "All" || (store.category?.name || "General") === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [stores, searchTerm, selectedCategory]);
+    const sorted = [...base];
+    if (selectedSort === "rating_desc") {
+      sorted.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+    } else if (selectedSort === "name_asc") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (selectedSort === "name_desc") {
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    }
+    return sorted;
+  }, [stores, searchTerm, selectedCategory, selectedSort]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
       </div>
     );
   }
@@ -68,11 +80,11 @@ const VendorListPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {/* Hero Section */}
-      <div className="relative bg-blue-600 text-white overflow-hidden">
+      <div className="relative bg-secondary text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         <div className="container mx-auto px-4 py-20 relative z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-            Find the Perfect <span className="text-yellow-400">Service</span> <br /> for Your Needs
+            Find the Perfect <span className="text-accent">Service</span> <br /> for Your Needs
           </h1>
           <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
             Connect with top-rated professionals for home repairs, beauty, cleaning, and more. Quality services at your fingertips.
@@ -90,7 +102,7 @@ const VendorListPage = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold text-lg transition-colors duration-300">
+            <button className="bg-primary hover:bg-orange-600 text-white px-8 py-3 rounded-full font-bold text-lg transition-colors duration-300">
               Search
             </button>
           </div>
@@ -108,8 +120,8 @@ const VendorListPage = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 border ${
                 selectedCategory === cat
-                  ? "bg-blue-600 text-white border-blue-600 shadow-lg scale-105"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                  ? "bg-primary text-white border-primary shadow-lg scale-105"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-orange-400 hover:text-primary"
               }`}
             >
               {cat}
@@ -123,9 +135,19 @@ const VendorListPage = () => {
             {selectedCategory === "All" ? "All Services" : `${selectedCategory} Services`}
             <span className="text-gray-500 text-lg font-normal ml-2">({filteredStores.length})</span>
           </h2>
-          {/* Simple Sort (Mock) */}
-          <div className="flex items-center text-gray-600 text-sm cursor-pointer hover:text-blue-600">
-             <FaFilter className="mr-1" /> Filter & Sort
+          {/* Sort */}
+          <div className="flex items-center gap-2">
+            <FaFilter className="text-gray-600" />
+            <select
+              value={selectedSort}
+              onChange={(e) => setSelectedSort(e.target.value)}
+              className="border border-gray-300 rounded-md text-sm px-2 py-1 bg-white"
+            >
+              <option value="relevance">Relevance</option>
+              <option value="rating_desc">Top Rated</option>
+              <option value="name_asc">Name A–Z</option>
+              <option value="name_desc">Name Z–A</option>
+            </select>
           </div>
         </div>
 
@@ -218,7 +240,7 @@ const VendorListPage = () => {
                               className="w-full h-20 object-cover rounded-md mb-2"
                             />
                             <p className="text-xs font-semibold text-gray-800 truncate">{product.name}</p>
-                            <p className="text-xs text-blue-600 font-bold">${(product.price / 100).toFixed(2)}</p>
+                            <p className="text-xs text-blue-600 font-bold">{formatPrice(Number(product.price) || 0)}</p>
                           </div>
                         ))}
                       </div>

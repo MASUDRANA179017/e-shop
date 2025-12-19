@@ -55,7 +55,7 @@ export default function UpdateProfile() {
             setForm((prev) => ({ ...prev, profileImage: url }));
             setPreview(url);
             toast.success("Image uploaded successfully!");
-        } catch (err) {
+        } catch {
             toast.error("Image upload failed!");
         } finally {
             setUploading(false);

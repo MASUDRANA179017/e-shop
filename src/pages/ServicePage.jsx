@@ -2,14 +2,12 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { getAllPublicStores } from "../@Services/StoreService";
 import { getProductsByStoreId } from "../@Services/ProductService";
-import { getAllCategory } from "../@Services/CategoryService";
 import { FaSearch, FaStar, FaMapMarkerAlt, FaFilter, FaArrowRight, FaBars, FaTimes } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import SidebarFilter from "../components/frontend/SidebarFilter";
 
 const ServicePage = () => {
   const [stores, setStores] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -65,7 +63,7 @@ const ServicePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
       </div>
     );
   }
@@ -94,12 +92,12 @@ const ServicePage = () => {
               {/* Search */}
               <div className="mb-8">
                 <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <FaSearch className="text-blue-600" /> Search
+                  <FaSearch className="text-secondary" /> Search
                 </h3>
                 <input
                   type="text"
                   placeholder="Find service..."
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -151,9 +149,9 @@ const ServicePage = () => {
                       {/* Content */}
                       <div className="flex-grow">
                         <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
+                          <h3 className="text-xl font-bold text-gray-800 group-hover:text-primary transition-colors">
                             {store.name}
-                            {store.isVerified && <MdVerified className="inline-block ml-1 text-blue-500" />}
+                            {store.isVerified && <MdVerified className="inline-block ml-1 text-primary" />}
                           </h3>
                           <div className="flex items-center gap-1 text-yellow-400 text-sm bg-yellow-50 px-2 py-1 rounded-full">
                             <FaStar /> <span className="font-bold text-gray-700">{store.rating || "4.8"}</span>
@@ -177,7 +175,7 @@ const ServicePage = () => {
                                     />
                                   </div>
                                   <p className="text-[10px] font-medium text-gray-700 truncate">{product.name}</p>
-                                  <p className="text-[10px] text-blue-600 font-bold">${(product.price / 100).toFixed(2)}</p>
+                                  <p className="text-[10px] text-primary font-bold">${(product.price / 100).toFixed(2)}</p>
                                 </div>
                               ))}
                               {store.products.length > 4 && (
@@ -196,7 +194,7 @@ const ServicePage = () => {
                           </div>
                           <Link
                             to={`/vendor/${store.id}`}
-                            className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 text-sm"
+                            className="inline-flex items-center text-primary font-semibold hover:text-orange-600 text-sm"
                           >
                             View Profile <FaArrowRight className="ml-2 text-xs" />
                           </Link>
@@ -213,7 +211,7 @@ const ServicePage = () => {
                 <p className="text-gray-500">Try adjusting your search or filters to find what you're looking for.</p>
                 <button 
                   onClick={() => {setSearchTerm(""); setSelectedCategory("All");}}
-                  className="mt-6 text-blue-600 font-medium hover:underline"
+                  className="mt-6 text-primary font-medium hover:underline"
                 >
                   Clear all filters
                 </button>

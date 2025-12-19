@@ -1,7 +1,6 @@
 import React from "react";
 import { FaCartPlus, FaStar, FaStarHalfAlt, FaRegStar, FaHeart, FaRegHeart, FaEye, FaCalendarCheck } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useCurrency } from "../../context/CurrencyContext";
 
@@ -10,7 +9,6 @@ const ServiceLayout = ({ id, img, category, title, rating, totalRating, price, b
     const hasHalf = rating % 1 !== 0;
     const emptyStars = 5 - intRating - (hasHalf ? 1 : 0);
 
-    const { addToCart } = useCart();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { formatPrice } = useCurrency();
     const navigate = useNavigate();

@@ -9,6 +9,7 @@ import { FaHeart, FaRegHeart, FaStar, FaStore, FaCheckCircle, FaTruck, FaUndo, F
 import { MdVerified } from "react-icons/md";
 import { getProductBarcode } from "../../../@Services/BarcodeService";
 import { createReview } from "../../../@Services/ReviewService";
+import { toast } from "react-toastify";
 
 const ServiceDetails = () => {
   const { id } = useParams();
@@ -17,8 +18,6 @@ const ServiceDetails = () => {
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [barcode, setBarcode] = useState(null);
-  const [barcodeLoading, setBarcodeLoading] = useState(false);
-  const [barcodeError, setBarcodeError] = useState(null);
 
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
@@ -65,17 +64,13 @@ const ServiceDetails = () => {
 
   useEffect(() => {
     if (!product?.id) return;
-    setBarcodeLoading(true);
-    setBarcodeError(null);
     getProductBarcode(product.id)
       .then((data) => {
         setBarcode(data?.barcode || data);
       })
       .catch((err) => {
         console.error("Failed to load barcode", err);
-        setBarcodeError("Failed to load barcode");
-      })
-      .finally(() => setBarcodeLoading(false));
+      });
   }, [product?.id]);
 
   useEffect(() => {
@@ -134,6 +129,7 @@ const ServiceDetails = () => {
       type: 'service',
       quantity: 1
     });
+    toast.success("Added to cart");
   };
 
   const handleBuyNow = () => {
@@ -199,14 +195,14 @@ const ServiceDetails = () => {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
     </div>
   );
 
   if (!product) return (
     <div className="container mx-auto py-16 text-center">
       <h2 className="text-2xl font-bold text-gray-700">Service not found.</h2>
-      <Link to="/service" className="text-blue-600 hover:underline mt-4 block">Browse Services</Link>
+      <Link to="/service" className="text-primary hover:underline mt-4 block">Browse Services</Link>
     </div>
   );
 
@@ -222,8 +218,8 @@ const ServiceDetails = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-500 mb-6">
-            <Link to="/" className="hover:text-blue-600">Home</Link> &gt; 
-            <Link to="/service" className="hover:text-blue-600 mx-1">Services</Link> &gt; 
+            <Link to="/" className="hover:text-primary">Home</Link> &gt; 
+            <Link to="/service" className="hover:text-primary mx-1">Services</Link> &gt; 
             <span className="text-gray-800 font-medium ml-1">{product.name}</span>
         </nav>
 
@@ -249,10 +245,10 @@ const ServiceDetails = () => {
             )}
           </div>
 
-          {/* Right Column: Product Info */}
+         {/* Right Column: Product Info */}
           <div className="flex flex-col">
              <div className="mb-4">
-                 <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                 <span className="bg-orange-50 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                     {product.category?.name || "Service"}
                  </span>
              </div>
@@ -273,7 +269,7 @@ const ServiceDetails = () => {
              </div>
 
              <div className="flex items-end gap-3 mb-8">
-                 <div className="text-4xl font-bold text-blue-600">
+                 <div className="text-4xl font-bold text-primary">
                     {formatPrice(product.price)}
                  </div>
                  <div className="text-xl text-gray-400 line-through mb-1">
@@ -290,43 +286,43 @@ const ServiceDetails = () => {
 
              {/* Vendor Info Card */}
              {product.store && (
-                 <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-blue-200 transition-colors">
-                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold text-xl mr-4 border border-gray-100 overflow-hidden">
+                <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-orange-200 transition-colors">
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-primary font-bold text-xl mr-4 border border-gray-100 overflow-hidden">
                         {product.store.imageUrl ? (
                           <img src={product.store.imageUrl} alt={product.store.name} className="w-full h-full object-cover" />
                         ) : (
                           product.store.name.charAt(0)
                         )}
-                     </div>
-                     <div className="flex-grow">
-                         <p className="text-xs text-gray-500 font-semibold uppercase">
-                            Service Provider
-                         </p>
-                         <h3 className="font-bold text-gray-800 flex items-center">
-                             {product.store.name} <MdVerified className="text-blue-500 ml-1" />
-                         </h3>
-                     </div>
-                     <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-blue-600 hover:underline">
-                         View Profile
-                     </Link>
-                 </div>
+                    </div>
+                    <div className="flex-grow">
+                        <p className="text-xs text-gray-500 font-semibold uppercase">
+                           Service Provider
+                        </p>
+                        <h3 className="font-bold text-gray-800 flex items-center">
+                            {product.store.name} <MdVerified className="text-primary ml-1" />
+                        </h3>
+                    </div>
+                    <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-primary hover:underline">
+                        View Profile
+                    </Link>
+                </div>
              )}
 
              {/* Booking Date & Time Selection */}
-             <div className="mb-8 bg-blue-50 p-6 rounded-xl border border-blue-100">
-                <div className="border-b border-blue-200 pb-4 mb-6">
-                    <h3 className="text-xl font-bold text-blue-800 flex items-center">
-                        <FaCalendarCheck className="mr-2 text-blue-600" /> 
+             <div className="mb-8 bg-orange-50 p-6 rounded-xl border border-orange-100">
+                <div className="border-b border-orange-200 pb-4 mb-6">
+                    <h3 className="text-xl font-bold text-secondary flex items-center">
+                        <FaCalendarCheck className="mr-2 text-primary" /> 
                         Schedule Your Service
                     </h3>
-                    <p className="text-sm text-blue-600 mt-1">Select a preferred date and time slot below.</p>
+                    <p className="text-sm text-secondary mt-1">Select a preferred date and time slot below.</p>
                 </div>
 
                 <div className="mb-6">
                     <label className="block text-sm font-bold text-gray-700 mb-2">Select Booking Date</label>
                     <input 
                         type="date" 
-                        className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-700 font-medium shadow-sm"
+                        className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none text-gray-700 font-medium shadow-sm"
                         value={bookingDate}
                         onChange={(e) => setBookingDate(e.target.value)}
                         min={new Date().toISOString().split('T')[0]}
@@ -363,10 +359,10 @@ const ServiceDetails = () => {
                                     disabled={!isAvailable}
                                     className={`py-2 px-1 rounded-lg text-sm font-bold border transition-all ${
                                       bookingTime === time
-                                        ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105"
+                                        ? "bg-primary text-white border-primary shadow-md transform scale-105"
                                         : !isAvailable
                                         ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through opacity-60"
-                                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50"
+                                        : "bg-white text-gray-600 border-gray-200 hover:border-orange-400 hover:text-primary hover:bg-orange-50"
                                     }`}
                                   >
                                     {time}
@@ -382,13 +378,13 @@ const ServiceDetails = () => {
              <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                  <button
                     onClick={handleBuyNow}
-                    className="flex-1 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
+                    className="flex-1 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 bg-primary hover:bg-orange-600 text-white shadow-orange-200"
                  >
                     Book Now
                  </button>
                  <button
                     onClick={handleAddToCart}
-                    className="flex-1 border-2 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl transition-colors bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
+                    className="flex-1 border-2 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl transition-colors bg-white border-primary text-primary hover:bg-orange-50"
                  >
                     Add to Cart
                  </button>
@@ -409,14 +405,14 @@ const ServiceDetails = () => {
                 { icon: <FaUndo />, title: "Easy Cancellation", desc: "Up to 24h before" },
                 { icon: <FaShieldAlt />, title: "Secure Payment", desc: "100% Protected" },
                 { icon: <FaHeadset />, title: "24/7 Support", desc: "Dedicated Team" }
-            ].map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                    <div className="text-3xl text-blue-500 mb-3">{item.icon}</div>
+                ].map((item, idx) => (
+                    <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div className="text-3xl text-secondary mb-3">{item.icon}</div>
                     <h4 className="font-bold text-gray-800">{item.title}</h4>
                     <p className="text-sm text-gray-500">{item.desc}</p>
-                </div>
-            ))}
-        </div>
+                    </div>
+                ))}
+             </div>
 
         {/* Reviews Section */}
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-12">
@@ -425,12 +421,12 @@ const ServiceDetails = () => {
                 {!showReviewForm && (
                     <button 
                         onClick={() => setShowReviewForm(true)}
-                        className="text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors"
+                        className="text-primary font-bold hover:bg-orange-50 px-4 py-2 rounded-lg transition-colors"
                     >
                         Write a Review
                     </button>
                 )}
-            </div>
+             </div>
 
             {showReviewForm && (
                 <div className="bg-gray-50 p-6 rounded-xl mb-8 border border-gray-100">
@@ -456,7 +452,7 @@ const ServiceDetails = () => {
                             <textarea
                                 value={reviewComment}
                                 onChange={(e) => setReviewComment(e.target.value)}
-                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                                 rows="4"
                                 placeholder="Share your experience..."
                                 required
@@ -473,7 +469,7 @@ const ServiceDetails = () => {
                             <button
                                 type="submit"
                                 disabled={reviewSubmitting}
-                                className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 disabled:opacity-50"
+                                className="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow hover:bg-orange-600 disabled:opacity-50"
                             >
                                 {reviewSubmitting ? "Submitting..." : "Submit Review"}
                             </button>
@@ -529,14 +525,14 @@ const ServiceDetails = () => {
                                     alt={p.name}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
-                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-blue-600 shadow-sm">
+                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-primary shadow-sm">
                                     {p.category?.name}
                                 </div>
                             </div>
                             <div className="p-4">
-                                <h4 className="font-bold text-gray-800 mb-1 truncate group-hover:text-blue-600 transition-colors">{p.name}</h4>
+                                <h4 className="font-bold text-gray-800 mb-1 truncate group-hover:text-primary transition-colors">{p.name}</h4>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-blue-600 font-bold">{formatPrice(p.price)}</span>
+                                    <span className="text-primary font-bold">{formatPrice(p.price)}</span>
                                     <div className="flex items-center text-xs text-gray-500">
                                         <FaStar className="text-yellow-400 mr-1" /> 4.8
                                     </div>

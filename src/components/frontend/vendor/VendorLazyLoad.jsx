@@ -8,8 +8,7 @@ const PRODUCTS_PER_LOAD = 8;
 const VendorLazyLoad = () => {
   const [products, setProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(PRODUCTS_PER_LOAD);
-  const [selectedCategory, setSelectedCategory] = useState("Featured Products");
-
+  const selectedCategory = "Featured Products";
   
 
   useEffect(() => {
@@ -48,17 +47,6 @@ const VendorLazyLoad = () => {
 
   const visibleItems = products.slice(0, visibleProducts);
 
-  if (visibleItems.length === 0 && selectedCategory !== "Featured Products") {
-    return (
-      <section className="bg-gray-900 py-16 px-4 md:py-20 lg:py-24 text-white text-center">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-bold mb-4">{selectedCategory}</h2>
-          <p>No products found in this category.</p>
-        </div>
-      </section>
-    );
-  }
-
 
   // console.log(products);
   
@@ -78,7 +66,7 @@ const VendorLazyLoad = () => {
         <div className="text-center mt-8">
           <button
             onClick={handleLoadMore}
-            className="bg-[#FF624C] hover:bg-[#FF3B2F] text-white font-semibold py-2 px-4 rounded"
+            className="bg-primary hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
           >
             {buttonText}
           </button>

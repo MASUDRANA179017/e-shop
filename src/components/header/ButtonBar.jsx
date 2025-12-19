@@ -6,14 +6,12 @@ import Container from "../commonLayouts/Container";
 import { getAllCategory } from "../../@Services/CategoryService";
 
 const ButtonBar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLimitedSaleDropdownOpen, setIsLimitedSaleDropdownOpen] =
     useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [categories, setCategories] = useState([]);
 
-  const productRef = useRef(null);
   const saleRef = useRef(null);
 
   useEffect(() => {
@@ -28,9 +26,6 @@ const ButtonBar = () => {
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (productRef.current && !productRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
       if (saleRef.current && !saleRef.current.contains(event.target)) {
         setIsLimitedSaleDropdownOpen(false);
       }
@@ -40,7 +35,7 @@ const ButtonBar = () => {
   }, []);
 
   return (
-    <div className="w-full bg-[#FF624C] text-white sticky top-0 z-40">
+    <div className="w-full bg-secondary text-white sticky top-0 z-40">
       <Container>
         <div className="p-4 flex items-center justify-between">
           {/* Left Section */}

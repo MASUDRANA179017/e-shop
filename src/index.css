@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+  --color-blue-dianne: #233C4B;
+  --color-crusta: #FF7D2D;
+  --color-bright-sun: #FAC846;
+  --color-olivine: #A0C382;
+  --color-patina: #5F9B8C;
+  
+  /* Semantic Colors */
+  --color-primary: #FF7D2D; /* Crusta */
+  --color-secondary: #233C4B; /* Blue Dianne */
+  --color-accent: #FAC846; /* Bright Sun */
+  --color-success: #A0C382; /* Olivine */
+  --color-info: #5F9B8C; /* Patina */
+}

@@ -48,8 +48,8 @@ export default function CouponTable() {
   const [activeCoupon, setActiveCoupon] = useState(null);
   const [search, setSearch] = useState("");
 
-  const [allProducts, setAllProducts] = useState([]);
-  const [allCategories, setAllCategories] = useState([]);
+  const allProducts = [];
+  const allCategories = [];
 
   const [form, setForm] = useState({
     code: "",

@@ -15,7 +15,6 @@ export default function AdminUsersTable() {
     const [error, setError] = useState(null);
     const [viewOpen, setViewOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
-    const [deleteOpen, setDeleteOpen] = useState(false);
     const [activeUser, setActiveUser] = useState(null);
     const [form, setForm] = useState({});
     const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
@@ -68,7 +67,6 @@ export default function AdminUsersTable() {
         });
         setEditOpen(true);
     };
-    const openDelete = (user) => { setActiveUser(user); setDeleteOpen(true); };
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;

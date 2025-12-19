@@ -46,14 +46,12 @@ import { getAllUsers } from "../../../@Services/authService";
 
 import { getAllProducts } from "../../../@Services/ProductService";
 
-import { uploadImage } from "../../../@Services/uploadService";
 import { getAllStores } from "../../../@Services/StoreService";
 
 export default function VendorPrescriptionTable() {
   const [prescriptions, setPrescriptions] = useState([]);
   const [filteredPrescriptions, setFilteredPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const [activeItem, setActiveItem] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -61,7 +59,6 @@ export default function VendorPrescriptionTable() {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [uploading, setUploading] = useState(false);
 
   const [productsList, setProductsList] = useState([]);
   const [usersList, setUsersList] = useState([]);
@@ -112,7 +109,10 @@ export default function VendorPrescriptionTable() {
       const data = await getAllPrescriptions();
       setPrescriptions(data);
     } catch (err) {
-      setError("Failed to load prescriptions");
+      setSnack({
+        open: true,
+        message: "Failed to load prescriptions",
+      });
       console.log(err);
     } finally {
       setLoading(false);
@@ -172,29 +172,6 @@ export default function VendorPrescriptionTable() {
           : [...products, product],
       };
     });
-  };
-
-  // File Upload
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-
-    try {
-      const imageUrl = await uploadImage(file, "prescriptions");
-      setForm((prev) => ({ ...prev, imageUrl }));
-
-      setSnack({
-        open: true,
-        message: "Image uploaded successfully",
-      });
-    } catch (err) {
-      setSnack({ open: true, message: "Image upload failed" });
-      console.log(err);
-    } finally {
-      setUploading(false);
-    }
   };
 
   // OPEN ADD

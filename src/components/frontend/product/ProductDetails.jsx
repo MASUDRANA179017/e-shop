@@ -16,10 +16,7 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [storeProducts, setStoreProducts] = useState([]);
   const [barcode, setBarcode] = useState(null);
-  const [barcodeLoading, setBarcodeLoading] = useState(false);
-  const [barcodeError, setBarcodeError] = useState(null);
 
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
@@ -29,10 +26,7 @@ const ProductDetails = () => {
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { selectedCountry, formatPrice } = useCurrency();
-
-  // Derived from context now
-  const { code, flag, name } = selectedCountry || {};
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     fetch("http://localhost:3000/product/getAll")
@@ -47,12 +41,6 @@ const ProductDetails = () => {
               (p) => p.category?.id === foundProduct.category?.id && p.id !== foundProduct.id
             ).slice(0, 4)
           );
-
-          setStoreProducts(
-            data.filter(
-              (p) => p.store?.id === foundProduct.store?.id && p.id !== foundProduct.id
-            ).slice(0, 4)
-          );
         }
         setLoading(false);
       })
@@ -64,17 +52,13 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (!product?.id) return;
-    setBarcodeLoading(true);
-    setBarcodeError(null);
     getProductBarcode(product.id)
       .then((data) => {
         setBarcode(data?.barcode || data);
       })
       .catch((err) => {
         console.error("Failed to load barcode", err);
-        setBarcodeError("Failed to load barcode");
-      })
-      .finally(() => setBarcodeLoading(false));
+      });
   }, [product?.id]);
 
   const handleAddToCart = () => {
@@ -147,14 +131,14 @@ const ProductDetails = () => {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#FF624C]"></div>
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
     </div>
   );
 
   if (!product) return (
     <div className="container mx-auto py-16 text-center">
       <h2 className="text-2xl font-bold text-gray-700">Product not found.</h2>
-      <Link to="/product" className="text-[#FF624C] hover:underline mt-4 block">Browse Products</Link>
+      <Link to="/product" className="text-primary hover:underline mt-4 block">Browse Products</Link>
     </div>
   );
 
@@ -170,8 +154,8 @@ const ProductDetails = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-500 mb-6">
-            <Link to="/" className="hover:text-[#FF624C]">Home</Link> &gt; 
-            <Link to="/product" className="hover:text-[#FF624C] mx-1">Products</Link> &gt; 
+            <Link to="/" className="hover:text-primary">Home</Link> &gt; 
+            <Link to="/product" className="hover:text-primary mx-1">Products</Link> &gt; 
             <span className="text-gray-800 font-medium ml-1">{product.name}</span>
         </nav>
 
@@ -201,8 +185,8 @@ const ProductDetails = () => {
           {/* Right Column: Product Info */}
           <div className="flex flex-col">
              <div className="mb-4">
-                 <span className="bg-[#fff0ec] text-[#FF624C] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                    {product.category?.name || "Product"}
+                 <span className="bg-orange-50 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    {product.category?.name || "Service"}
                  </span>
              </div>
              
@@ -228,7 +212,7 @@ const ProductDetails = () => {
              </div>
 
              <div className="flex items-end gap-3 mb-8">
-                 <div className="text-4xl font-bold text-[#FF624C]">
+                 <div className="text-4xl font-bold text-primary">
                     {formatPrice(product.price)}
                  </div>
                  {/* Mock original price for discount effect */}
@@ -246,8 +230,8 @@ const ProductDetails = () => {
 
              {/* Vendor Info Card */}
              {product.store && (
-                 <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-[#FF624C] transition-colors">
-                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-[#FF624C] font-bold text-xl mr-4 border border-gray-100 overflow-hidden">
+                 <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-orange-200 transition-colors">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-primary font-bold text-xl mr-4 border border-gray-100 overflow-hidden">
                         {product.store.imageUrl ? (
                           <img src={product.store.imageUrl} alt={product.store.name} className="w-full h-full object-cover" />
                         ) : (
@@ -259,10 +243,10 @@ const ProductDetails = () => {
                             Seller
                          </p>
                          <h3 className="font-bold text-gray-800 flex items-center">
-                             {product.store.name} <MdVerified className="text-blue-500 ml-1" />
+                            {product.store.name} <MdVerified className="text-primary ml-1" />
                          </h3>
                      </div>
-                     <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-[#FF624C] hover:underline">
+                     <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-primary hover:underline">
                          View Profile
                      </Link>
                  </div>
@@ -356,7 +340,7 @@ const ProductDetails = () => {
                 {!showReviewForm && (
                     <button 
                         onClick={() => setShowReviewForm(true)}
-                        className="text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors"
+                        className="text-primary font-bold hover:bg-orange-50 px-4 py-2 rounded-lg transition-colors"
                     >
                         Write a Review
                     </button>
@@ -387,7 +371,7 @@ const ProductDetails = () => {
                             <textarea
                                 value={reviewComment}
                                 onChange={(e) => setReviewComment(e.target.value)}
-                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                                 rows="4"
                                 placeholder="Share your experience..."
                                 required
@@ -404,7 +388,7 @@ const ProductDetails = () => {
                             <button
                                 type="submit"
                                 disabled={reviewSubmitting}
-                                className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 disabled:opacity-50"
+                                className="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow hover:bg-orange-600 disabled:opacity-50"
                             >
                                 {reviewSubmitting ? "Submitting..." : "Submit Review"}
                             </button>
@@ -460,14 +444,14 @@ const ProductDetails = () => {
                                     alt={p.name}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
-                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-blue-600 shadow-sm">
+                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-primary shadow-sm">
                                     {p.category?.name}
                                 </div>
                             </div>
                             <div className="p-4">
-                                <h4 className="font-bold text-gray-800 mb-1 truncate group-hover:text-blue-600 transition-colors">{p.name}</h4>
+                                <h4 className="font-bold text-gray-800 mb-1 truncate group-hover:text-primary transition-colors">{p.name}</h4>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-blue-600 font-bold">{formatPrice(p.price)}</span>
+                                    <span className="text-primary font-bold">{formatPrice(p.price)}</span>
                                     <div className="flex items-center text-xs text-gray-500">
                                         <FaStar className="text-yellow-400 mr-1" /> 4.8
                                     </div>

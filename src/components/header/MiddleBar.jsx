@@ -22,7 +22,7 @@ const MiddleBar = () => {
         <a href="/" className="flex items-center">
           {/* <img src="/logo.png" alt="Logo" className="h-8 mr-2" /> */}
           <div className="text-2xl font-bold text-gray-800">
-            e-<span className="text-red-500">shop</span>
+            e-<span className="text-primary">shop</span>
           </div>
         </a>
 
@@ -31,7 +31,7 @@ const MiddleBar = () => {
           <input
             type="text"
             placeholder="Search Products..."
-            className="w-full border border-[#cccccc] py-2 md:py-[10px] px-4 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-red-400"
+            className="w-full border border-[#cccccc] py-2 md:py-[10px] px-4 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 transition-colors duration-200">
             <FaSearch className="w-5 h-5" />
@@ -42,11 +42,11 @@ const MiddleBar = () => {
         <div className="flex items-center gap-6">
           
           {/* Wishlist */}
-          <Link to="/wishlist" className="flex items-center cursor-pointer text-gray-700 hover:text-red-500 transition-colors duration-200 relative">
+          <Link to="/wishlist" className="flex items-center cursor-pointer text-gray-700 hover:text-primary transition-colors duration-200 relative">
             <div className="relative">
                 <FaHeart className="w-6 h-6" />
                 {wishlistItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                     {wishlistItems.length}
                   </span>
                 )}
@@ -69,7 +69,7 @@ const MiddleBar = () => {
             <div className="relative">
               <FaShoppingCart className="w-6 h-6 mr-2" />
                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-1 bg-[#FF624C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-1 bg-primary text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}

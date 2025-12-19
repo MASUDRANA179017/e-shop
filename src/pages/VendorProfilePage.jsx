@@ -29,7 +29,7 @@ const VendorProfilePage = () => {
         try {
             const status = await checkFollowStatus(id);
             setIsFollowing(status.isFollowing);
-        } catch (e) {
+        } catch {
             console.log("Not logged in or error checking follow status");
         }
 
@@ -64,7 +64,7 @@ const VendorProfilePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
       </div>
     );
   }
@@ -87,7 +87,7 @@ const VendorProfilePage = () => {
             {store.coverImage ? (
                  <img src={store.coverImage} alt="Cover" className="w-full h-full object-cover" />
             ) : (
-                <div className="w-full h-full bg-gradient-to-r from-blue-600 to-indigo-700 relative">
+                <div className="w-full h-full bg-secondary relative">
                      <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                      {/* Decorative Circles */}
                      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
@@ -100,7 +100,7 @@ const VendorProfilePage = () => {
              <div className="relative -mt-20 mb-6 flex flex-col md:flex-row items-end md:items-end">
                 {/* Profile Image */}
                 <div className="w-40 h-40 bg-white rounded-2xl shadow-xl p-2 z-10">
-                    <div className="w-full h-full bg-blue-50 rounded-xl flex items-center justify-center text-6xl font-bold text-blue-600 border border-blue-100 overflow-hidden">
+                    <div className="w-full h-full bg-orange-50 rounded-xl flex items-center justify-center text-6xl font-bold text-primary border border-orange-100 overflow-hidden">
                         {store.imageUrl ? (
                             <img src={store.imageUrl} alt={store.name} className="w-full h-full object-cover" />
                         ) : (
@@ -115,9 +115,9 @@ const VendorProfilePage = () => {
                         <div>
                             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 flex items-center">
                                 {store.name}
-                                <MdVerified className="text-blue-500 ml-2 text-2xl" title="Verified Vendor" />
+                                <MdVerified className="text-primary ml-2 text-2xl" title="Verified Vendor" />
                             </h1>
-                            <p className="text-blue-600 font-medium text-lg mb-2">{store.category?.name || "Professional Service"}</p>
+                            <p className="text-secondary font-medium text-lg mb-2">{store.category?.name || "Professional Service"}</p>
                             
                             <div className="flex items-center text-sm text-gray-500 mb-2">
                                 <span className="flex items-center mr-4">
@@ -134,7 +134,7 @@ const VendorProfilePage = () => {
 
                         {/* Action Buttons */}
                         <div className="flex space-x-3 mt-4 md:mt-0">
-                            <button className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                            <button className="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-orange-600 transition-colors">
                                 Contact
                             </button>
                             <button 
@@ -142,8 +142,8 @@ const VendorProfilePage = () => {
                                 disabled={followLoading}
                                 className={`px-6 py-2 font-bold border rounded-lg shadow-sm transition-colors flex items-center ${
                                     isFollowing 
-                                    ? "bg-blue-50 text-blue-600 border-blue-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200" 
-                                    : "bg-white text-blue-600 border-blue-200 hover:bg-blue-50"
+                                    ? "bg-orange-50 text-primary border-orange-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200" 
+                                    : "bg-white text-primary border-orange-200 hover:bg-orange-50"
                                 }`}
                             >
                                 {isFollowing ? (
@@ -163,7 +163,7 @@ const VendorProfilePage = () => {
              
              {/* Tabs / Navigation (Mock) */}
              <div className="flex space-x-8 border-b border-gray-200 text-gray-500 font-medium overflow-x-auto">
-                 <button className="pb-3 border-b-2 border-blue-600 text-blue-600">Services & Products</button>
+                 <button className="pb-3 border-b-2 border-primary text-primary">Services & Products</button>
                  <button className="pb-3 border-b-2 border-transparent hover:text-gray-800">About</button>
                  <button className="pb-3 border-b-2 border-transparent hover:text-gray-800">Reviews</button>
                  <button className="pb-3 border-b-2 border-transparent hover:text-gray-800">Policies</button>
@@ -183,16 +183,16 @@ const VendorProfilePage = () => {
                   <div className="space-y-3 text-sm">
                       {store.owner?.email && (
                           <div className="flex items-center text-gray-600">
-                              <FaEnvelope className="mr-3 text-blue-500" />
+                              <FaEnvelope className="mr-3 text-secondary" />
                               <span className="truncate">{store.owner.email}</span>
                           </div>
                       )}
                       <div className="flex items-center text-gray-600">
-                          <FaPhone className="mr-3 text-blue-500" />
+                          <FaPhone className="mr-3 text-secondary" />
                           <span>+1 (555) 123-4567</span>
                       </div>
                       <div className="flex items-center text-gray-600">
-                          <FaGlobe className="mr-3 text-blue-500" />
+                          <FaGlobe className="mr-3 text-secondary" />
                           <span>www.website.com</span>
                       </div>
                   </div>

@@ -23,7 +23,7 @@ const FeaturedVendors = () => {
           <h2 className="text-3xl font-bold text-gray-800">Top Vendors</h2>
           <Link
             to="/vendors"
-            className="text-blue-600 font-semibold hover:underline"
+            className="text-primary font-semibold hover:underline"
           >
             View All Vendors
           </Link>
@@ -45,7 +45,7 @@ const FeaturedVendors = () => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative">
+                  <div className="w-full h-full bg-secondary relative">
                      <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                      <div className="absolute inset-0 flex items-center justify-center text-white text-4xl font-bold opacity-30">
                         {store.name.charAt(0)}
@@ -65,16 +65,16 @@ const FeaturedVendors = () => {
                        className="w-full h-full object-cover rounded-md" 
                      />
                    ) : (
-                     <div className="w-full h-full bg-blue-50 rounded-md flex items-center justify-center text-blue-600 text-xl font-bold">
+                     <div className="w-full h-full bg-orange-50 rounded-md flex items-center justify-center text-primary text-xl font-bold">
                        {store.name.charAt(0)}
                      </div>
                    )}
                 </div>
 
-                <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors mb-1 truncate">
+                <h3 className="text-lg font-bold text-gray-800 group-hover:text-primary transition-colors mb-1 truncate">
                   {store.name}
                 </h3>
-                <p className="text-sm text-blue-500 font-medium mb-2 truncate">
+                <p className="text-sm text-secondary font-medium mb-2 truncate">
                   {store.category?.name || "General"}
                 </p>
                 <div className="flex items-center justify-between">

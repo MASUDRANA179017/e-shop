@@ -224,7 +224,7 @@ const VendorPos = () => {
             setAppliedCoupon(null);
             toast.info("Cart updated. Please re-apply coupon.");
         }
-    }, [cart]);
+    }, [cart]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleCheckout = async () => {
         if (cart.length === 0) return;

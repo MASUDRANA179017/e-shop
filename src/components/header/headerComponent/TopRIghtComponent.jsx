@@ -45,7 +45,7 @@ const TopRightComponent = () => {
               {countries.map((country) => (
                 <li
                   key={country.code}
-                  className={`flex items-center gap-2 p-2 cursor-pointer hover:bg-red-50 transition-colors ${selectedCountry?.code === country.code ? 'bg-red-50' : ''}`}
+                  className={`flex items-center gap-2 p-2 cursor-pointer hover:bg-orange-50 transition-colors ${selectedCountry?.code === country.code ? 'bg-orange-50' : ''}`}
                   onClick={() => handleSelect(country)}
                 >
                   <img src={country.flag} alt={country.name} className="w-5 h-4 object-contain" />

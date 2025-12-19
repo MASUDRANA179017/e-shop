@@ -145,13 +145,13 @@ const Login = () => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="mr-2 rounded text-[#FF624C] focus:ring-[#FF624C]"
+                className="mr-2 rounded text-primary focus:ring-primary"
               />
               Remember Me
             </label>
             <span 
               onClick={() => navigate("/forgot-password")}
-              className="text-[#FF624C] hover:underline cursor-pointer"
+              className="text-secondary hover:underline cursor-pointer"
             >
               Forgot Password?
             </span>
@@ -160,7 +160,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#FF624C] text-white font-semibold py-2.5 rounded-lg hover:bg-[#e0523e] transition shadow-md transform hover:scale-[1.02]"
+            className="w-full bg-gradient-to-r from-primary to-orange-400 text-white font-semibold py-2.5 rounded-lg hover:from-orange-600 hover:to-primary transition shadow-md transform hover:scale-[1.02]"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -169,7 +169,7 @@ const Login = () => {
             Don’t have an account?{" "}
             <span
               onClick={() => navigate("/register")}
-              className="text-[#FF624C] hover:underline cursor-pointer font-medium"
+              className="text-primary hover:underline cursor-pointer font-medium"
             >
               Register here
             </span>

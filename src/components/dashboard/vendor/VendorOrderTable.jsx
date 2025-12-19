@@ -23,9 +23,6 @@ export default function VendorOrderTable() {
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [customerProfileOpen, setCustomerProfileOpen] = useState(false);
-    const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [customerHistory, setCustomerHistory] = useState([]);
     const [sendOpen, setSendOpen] = useState(false);
     const [sendForm, setSendForm] = useState({ to: "", subject: "", text: "" });
     const [sending, setSending] = useState(false);
@@ -143,30 +140,6 @@ export default function VendorOrderTable() {
         const text = `Hello ${order.customer},\n\nWe are contacting you about ${order.displayId} placed on ${new Date(order.date).toLocaleDateString()}.\nTotal: ${formatPrice(Number(order.total || 0))}.\n\nThank you,\nVendor`;
         setSendForm({ to, subject, text });
         setSendOpen(true);
-    };
-
-    const handleViewCustomer = (order) => {
-        // Prepare customer data
-        const customerData = {
-            name: order.customer,
-            email: order.source === "Online" ? (order.raw?.user?.email || "N/A") : (order.raw?.customer?.email || "N/A"),
-            phone: order.phone,
-            address: order.shippingAddress,
-            image: order.raw?.user?.profileImage,
-            userId: order.raw?.user?.id
-        };
-        
-        // Filter history for this customer
-        // We use email or user ID to match
-        const history = [...productOrders, ...bookingOrders].filter(o => {
-            if (customerData.userId && o.raw?.user?.id === customerData.userId) return true;
-            if (customerData.email !== "N/A" && o.raw?.user?.email === customerData.email) return true;
-            return false;
-        }).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        setSelectedCustomer(customerData);
-        setCustomerHistory(history);
-        setCustomerProfileOpen(true);
     };
 
     const handlePrintInvoice = (order = selectedOrder) => {
@@ -434,111 +407,7 @@ export default function VendorOrderTable() {
                 </Table>
             </TableContainer>
 
-            {/* Customer Profile Dialog */}
-            <Dialog open={customerProfileOpen} onClose={() => setCustomerProfileOpen(false)} maxWidth="md" fullWidth>
-                <DialogTitle>Customer Profile</DialogTitle>
-                <DialogContent dividers>
-                    {selectedCustomer && (
-                        <Box>
-                            {/* Header / Basic Info */}
-                            <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
-                                <Box 
-                                    sx={{ 
-                                        width: 80, 
-                                        height: 80, 
-                                        bgcolor: 'primary.main', 
-                                        borderRadius: '50%', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center',
-                                        color: 'white',
-                                        fontSize: '2rem',
-                                        overflow: 'hidden'
-                                    }}
-                                >
-                                    {selectedCustomer.image ? (
-                                        <img src={selectedCustomer.image} alt={selectedCustomer.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    ) : (
-                                        selectedCustomer.name.charAt(0).toUpperCase()
-                                    )}
-                                </Box>
-                                <Box>
-                                    <Typography variant="h5" fontWeight="bold">{selectedCustomer.name}</Typography>
-                                    <Typography color="text.secondary">{selectedCustomer.email}</Typography>
-                                    <Chip label="Customer" size="small" color="primary" variant="outlined" sx={{ mt: 1 }} />
-                                </Box>
-                            </Box>
-
-                            {/* Contact Info Grid */}
-                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, mb: 4, bgcolor: '#f8f9fa', p: 3, borderRadius: 2 }}>
-                                <Box>
-                                    <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>Phone</Typography>
-                                    <Typography variant="body1" fontWeight="medium">{selectedCustomer.phone || "N/A"}</Typography>
-                                </Box>
-                                <Box>
-                                    <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>Shipping Address</Typography>
-                                    <Typography variant="body1" fontWeight="medium">{selectedCustomer.address || "N/A"}</Typography>
-                                </Box>
-                            </Box>
-
-                            {/* Order History */}
-                            <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <FaFileInvoice /> Order History ({customerHistory.length})
-                            </Typography>
-                            
-                            {customerHistory.length > 0 ? (
-                                <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 300 }}>
-                                    <Table stickyHeader size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Order ID</TableCell>
-                                                <TableCell>Date</TableCell>
-                                                <TableCell>Total</TableCell>
-                                                <TableCell>Status</TableCell>
-                                                <TableCell align="center">Action</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {customerHistory.map(histOrder => (
-                                                <TableRow key={histOrder.id} hover>
-                                                    <TableCell>{histOrder.displayId}</TableCell>
-                                                    <TableCell>{new Date(histOrder.date).toLocaleDateString()}</TableCell>
-                                                    <TableCell>{formatPrice(Number(histOrder.total || 0))}</TableCell>
-                                                    <TableCell>
-                                                        <Chip 
-                                                            label={histOrder.status} 
-                                                            size="small" 
-                                                            color={getStatusColor(histOrder.status)} 
-                                                            variant="outlined"
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <IconButton 
-                                                            size="small" 
-                                                            color="primary"
-                                                            onClick={() => {
-                                                                setCustomerProfileOpen(false);
-                                                                handleView(histOrder);
-                                                            }}
-                                                        >
-                                                            <FaEye />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            ) : (
-                                <Typography color="text.secondary" align="center" sx={{ py: 3 }}>No order history found.</Typography>
-                            )}
-                        </Box>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setCustomerProfileOpen(false)}>Close</Button>
-                </DialogActions>
-            </Dialog>
+           
 
             <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} maxWidth="md" fullWidth>
                 <DialogTitle>Order Details: {selectedOrder?.displayId}</DialogTitle>

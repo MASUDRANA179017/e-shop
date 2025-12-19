@@ -7,7 +7,7 @@ const PRODUCTS_PER_LOAD = 8;
 const ServiceLazyLoad = ({ products: propProducts }) => {
   const [products, setProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(PRODUCTS_PER_LOAD);
-  const [selectedCategory, setSelectedCategory] = useState("Featured Services");
+  const selectedCategory = "Featured Services";
 
   useEffect(() => {
     if (propProducts) {
@@ -50,17 +50,6 @@ const ServiceLazyLoad = ({ products: propProducts }) => {
 
   const visibleItems = products.slice(0, visibleProducts);
 
-  if (visibleItems.length === 0 && selectedCategory !== "Featured Services") {
-    return (
-      <section className="bg-gray-900 py-16 px-4 md:py-20 lg:py-24 text-white text-center">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-bold mb-4">{selectedCategory}</h2>
-          <p>No services found in this category.</p>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="bg-white py-16">
       <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
@@ -89,7 +78,7 @@ const ServiceLazyLoad = ({ products: propProducts }) => {
         <div className="text-center mt-8">
           <button
             onClick={handleLoadMore}
-            className="bg-[#0071dc] hover:bg-[#005bb5] text-white font-semibold py-2 px-4 rounded"
+            className="bg-primary hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
           >
             {buttonText}
           </button>

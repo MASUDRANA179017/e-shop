@@ -6,7 +6,6 @@ import {
 import { FaEye, FaFileInvoice } from "react-icons/fa";
 import { getAllOrders } from "../../../@Services/CheckoutService";
 import { useCurrency } from "../../../context/CurrencyContext";
-import { toast } from "react-toastify";
 
 const UserOrders = () => {
   const { formatPrice } = useCurrency();

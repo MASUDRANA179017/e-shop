@@ -3,13 +3,13 @@ import api from "../api/axiosInstance";
 
 // Get all Stores (Public)
 export const getAllPublicStores = async () => {
-  const res = await api.get("/store/public/all");
+  const res = await api.get("/store/public/all", { skipRedirect: true });
   return res.data;
 };
 
 // Get single Store by ID (Public)
 export const getPublicStoreById = async (id) => {
-  const res = await api.get(`/store/public/${id}`);
+  const res = await api.get(`/store/public/${id}`, { skipRedirect: true });
   return res.data;
 };
 
@@ -56,19 +56,19 @@ export const deleteStore = async (id) => {
 
 // Follow a store
 export const followStore = async (id) => {
-  const res = await api.post(`/store/${id}/follow`);
+  const res = await api.post(`/store/${id}/follow`, null, { skipRedirect: true });
   return res.data;
 };
 
 // Unfollow a store
 export const unfollowStore = async (id) => {
-  const res = await api.delete(`/store/${id}/follow`);
+  const res = await api.delete(`/store/${id}/follow`, { skipRedirect: true });
   return res.data;
 };
 
 // Check follow status
 export const checkFollowStatus = async (id) => {
-  const res = await api.get(`/store/${id}/is-following`);
+  const res = await api.get(`/store/${id}/is-following`, { skipRedirect: true });
   return res.data;
 };
 
