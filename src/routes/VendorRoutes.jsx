@@ -13,6 +13,7 @@ import VendorServiceTable from "../components/dashboard/vendor/VendorServiceTabl
 import VendorSettings from "../components/dashboard/vendor/VendorSettings";
 import UserWallet from "../components/dashboard/user/UserWallet";
 import WithdrawalRequests from "../components/dashboard/user/WithdrawalRequests";
+import VendorBlogTable from "../components/dashboard/vendor/VendorBlogTable";
 
 export const VendorRoutes = (
   <>
@@ -73,6 +74,14 @@ export const VendorRoutes = (
         element={
           <div className="p-4">
             <VendorProductsTable />
+          </div>
+        }
+      />
+      <Route
+        path="blogs"
+        element={
+          <div className="p-4">
+            <VendorBlogTable />
           </div>
         }
       />

@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import { BlogPage } from "./pages/BlogPage";
+import BlogDetailsPage from "./pages/BlogDetailsPage";
 import { ProductListPage } from "./pages/ProductListPage";
 import { ServiceListPage } from "./pages/ServiceListPage";
 import ContactPage from "./pages/ContactPage";
@@ -29,8 +30,6 @@ import { VendorRoutes } from "./routes/VendorRoutes";
 import { UserRoutes } from "./routes/UserRoutes";
 
 import axios from "axios";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const token = localStorage.getItem("token");
 if (token) {
@@ -51,6 +50,7 @@ function App() {
         <Route path="service/:id" element={<ServiceDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="blog" element={<BlogPage />} />
+        <Route path="blog/:id" element={<BlogDetailsPage />} />
         <Route path="vendors" element={<VendorListPage />} />
         <Route path="vendor/:id" element={<VendorProfilePage />} />
         <Route path="cart" element={<CartPage />} />
@@ -72,7 +72,6 @@ function App() {
       {/* Fallback */}
       <Route path="*" element={<Login />} />
     </Routes>
-    <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }

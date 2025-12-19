@@ -31,7 +31,13 @@ api.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("r-token");
-      window.location.href = "/login";
+      try {
+        const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const encoded = encodeURIComponent(current);
+        window.location.href = `/login?from=${encoded}`;
+      } catch {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

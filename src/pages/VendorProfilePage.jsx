@@ -6,6 +6,8 @@ import ProductLayout from "../components/commonLayouts/ProductLayout";
 import ServiceLayout from "../components/commonLayouts/ServiceLayout";
 import { FaMapMarkerAlt, FaEnvelope, FaStar, FaPhone, FaGlobe, FaUserPlus, FaUserCheck } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
+import { getVendorBlogs } from "../@Services/BlogService";
+import BlogCardLayout from "../components/commonLayouts/BlogCardLayout";
 
 const VendorProfilePage = () => {
   const { id } = useParams();
@@ -14,6 +16,7 @@ const VendorProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,6 +27,14 @@ const VendorProfilePage = () => {
         ]);
         setStore(storeData);
         setProducts(productsData);
+        if (storeData?.owner?.id) {
+          try {
+            const vendorBlogs = await getVendorBlogs(storeData.owner.id, 3);
+            setBlogs(Array.isArray(vendorBlogs) ? vendorBlogs : []);
+          } catch (err) {
+            console.error(err);
+          }
+        }
 
         // Check follow status
         try {
@@ -260,6 +271,25 @@ const VendorProfilePage = () => {
                     </div>
                 ))}
                 </div>
+            )}
+            {blogs.length > 0 && (
+              <div className="mt-10">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Latest Blogs</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {blogs.slice(0, 3).map((b) => (
+                    <BlogCardLayout
+                      key={b.id}
+                      id={b.id}
+                      slug={b.slug || String(b.id)}
+                      title={b.title}
+                      image={b.image || b.thumbnail}
+                      author={b.author || store?.owner?.firstName || "Author"}
+                      createdAt={b.createdAt || ""}
+                      content={b.content || ""}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
       </div>

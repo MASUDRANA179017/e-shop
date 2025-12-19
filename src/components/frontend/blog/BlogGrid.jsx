@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from "react";
 import Container from "../../commonLayouts/Container";
 import { SiLibreofficewriter } from "react-icons/si";
+import { getAllBlogs } from "../../../@Services/BlogService";
 
 const BlogGridView = () => {
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    fetch("data/blogData.json")
-      .then((res) => res.json())
-      .then((data) => setBlogs(data));
+    getAllBlogs()
+      .then((data) => setBlogs(data || []))
+      .catch(() => setBlogs([]));
   }, []);
 
   return (
@@ -25,26 +26,26 @@ const BlogGridView = () => {
           >
             {/* Blog Image */}
             <img
-              src={blog.image}
-              alt={blog.title}
+              src={blog.image || blog.thumbnail || "/frontend/products/product01.png"}
+              alt={blog.title || blog.name}
               className="w-full h-48 object-cover"
             />
 
             {/* Blog Content */}
             <div className="p-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
-                {blog.title}
+                {blog.title || blog.name}
               </h3>
               <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                {blog.content}
+                {blog.content || blog.description}
               </p>
 
               <div className="flex items-center justify-between text-xs text-gray-500">
                 <span>
                     <SiLibreofficewriter className="inline-block mr-1" />
-                    {blog.author}
+                    {blog.author || blog.vendor?.firstName || "Author"}
                 </span>
-                <span>{blog.createdAt}</span>
+                <span>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : ""}</span>
               </div>
 
               <button className="mt-3 text-blue-600 text-sm font-medium hover:underline">

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BlogCardLayout = ({ slug, title, image, author, createdAt, content }) => {
+const BlogCardLayout = ({ id, title, image, author, createdAt, content }) => {
   return (
     <div className="border-2 border-gray-200 rounded-lg w-full flex-row justify-center group p-4 hover:shadow-lg hover:shadow-blue-400 transition-shadow duration-300">
       {/* Blog Image */}
@@ -17,7 +17,7 @@ const BlogCardLayout = ({ slug, title, image, author, createdAt, content }) => {
       </div>
 
       {/* Blog Content */}
-      <Link to={`/blog/${slug}`} className="block">
+      <Link to={`/blog/${id}`} className="block">
         <p className="text-xs uppercase tracking-widest text-gray-500 font-semibold mb-2">
           {new Date(createdAt).toDateString()}
         </p>

@@ -64,11 +64,12 @@ const VendorPos = () => {
         console.log("Starting loadInitialData...");
         try {
             // 1. Fetch Products
-            console.log("Fetching vendor products...");
+            console.log("Fetching vendor products (will filter physical products)...");
             const productData = await getVendorProducts();
             console.log("Fetched products:", productData);
-            setProducts(productData || []);
-            setFilteredProducts(productData || []);
+            const physicalOnly = (productData || []).filter(p => !p.isService);
+            setProducts(physicalOnly);
+            setFilteredProducts(physicalOnly);
 
             // 2. Resolve store and ensure active session
             console.log("Fetching stores...");

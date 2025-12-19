@@ -24,6 +24,7 @@ const VendorLayout = () => {
     { to: "/dashboard/vendor/profile", label: "Profile", icon: <BiUser size={20} /> },
     { to: "/dashboard/vendor/services", label: "Services", icon: <FaStore size={20} /> },
     { to: "/dashboard/vendor/products", label: "Products", icon: <FaBoxOpen size={20} /> },
+    { to: "/dashboard/vendor/blogs", label: "Blogs", icon: <FaFileInvoice size={20} /> },
     { to: "/dashboard/vendor/my-coupons", label: "My Coupons", icon: <FaTicketAlt size={20} /> },
     { to: "/dashboard/vendor/wallet", label: "Wallet", icon: <FaWallet size={20} /> },
     { to: "/dashboard/vendor/withdrawals", label: "Withdrawal Requests", icon: <BiMoneyWithdraw size={20} /> },

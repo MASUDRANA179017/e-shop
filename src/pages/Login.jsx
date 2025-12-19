@@ -60,8 +60,10 @@ const Login = () => {
       }
       // Redirect by user role or back to origin
       setTimeout(() => {
-        if (location.state?.from) {
-          navigate(location.state.from, { 
+        const queryFrom = new URLSearchParams(location.search).get("from");
+        const target = location.state?.from || queryFrom;
+        if (target) {
+          navigate(target, { 
             replace: true,
             state: location.state.checkoutState || {} // Restore the original state
           });
