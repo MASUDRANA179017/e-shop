@@ -88,7 +88,15 @@ const MiddleBar = () => {
             to={user ? (user.role === "admin" ? "/dashboard/admin" : user.role === "vendor" ? "/dashboard/vendor" : "/dashboard/user") : "/login"}
             className="flex items-center cursor-pointer text-gray-700 hover:text-gray-900 transition-colors duration-200"
           >
-            <FaUser className="w-6 h-6 mr-2" />
+            {user && user.profileImage ? (
+                <img 
+                    src={user.profileImage} 
+                    alt={user.firstName} 
+                    className="w-8 h-8 rounded-full mr-2 object-cover border border-gray-200" 
+                />
+            ) : (
+                <FaUser className="w-6 h-6 mr-2" />
+            )}
             <div className="hidden sm:block">
               {user ? (
                 <>

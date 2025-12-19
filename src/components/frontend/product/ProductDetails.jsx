@@ -247,8 +247,12 @@ const ProductDetails = () => {
              {/* Vendor Info Card */}
              {product.store && (
                  <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-[#FF624C] transition-colors">
-                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-[#FF624C] font-bold text-xl mr-4 border border-gray-100">
-                        {product.store.logoUrl ? <img src={product.store.logoUrl} className="w-full h-full rounded-full object-cover" /> : product.store.name.charAt(0)}
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-[#FF624C] font-bold text-xl mr-4 border border-gray-100 overflow-hidden">
+                        {product.store.imageUrl ? (
+                          <img src={product.store.imageUrl} alt={product.store.name} className="w-full h-full object-cover" />
+                        ) : (
+                          product.store.name.charAt(0)
+                        )}
                      </div>
                      <div className="flex-grow">
                          <p className="text-xs text-gray-500 font-semibold uppercase">

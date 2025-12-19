@@ -104,8 +104,12 @@ const AdminLayout = () => {
                  <p className="text-sm font-bold text-gray-800">{user.firstName} {user.lastName}</p>
                  <p className="text-xs text-gray-500 capitalize">{user.role}</p>
              </div>
-             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-sm">
-                {user.firstName?.charAt(0) || "A"}
+             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-sm overflow-hidden">
+                {user.profileImage ? (
+                  <img src={user.profileImage} alt={user.firstName} className="w-full h-full object-cover" />
+                ) : (
+                  user.firstName?.charAt(0) || "A"
+                )}
              </div>
           </div>
         </header>

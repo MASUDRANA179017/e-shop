@@ -100,13 +100,13 @@ const VendorProfilePage = () => {
              <div className="relative -mt-20 mb-6 flex flex-col md:flex-row items-end md:items-end">
                 {/* Profile Image */}
                 <div className="w-40 h-40 bg-white rounded-2xl shadow-xl p-2 z-10">
-                    {store.imageUrl ? (
-                        <img src={store.imageUrl} alt={store.name} className="w-full h-full object-cover rounded-xl border border-blue-100" />
-                    ) : (
-                        <div className="w-full h-full bg-blue-50 rounded-xl flex items-center justify-center text-6xl font-bold text-blue-600 border border-blue-100">
-                            {store.name.charAt(0)}
-                        </div>
-                    )}
+                    <div className="w-full h-full bg-blue-50 rounded-xl flex items-center justify-center text-6xl font-bold text-blue-600 border border-blue-100 overflow-hidden">
+                        {store.imageUrl ? (
+                            <img src={store.imageUrl} alt={store.name} className="w-full h-full object-cover" />
+                        ) : (
+                            store.name.charAt(0)
+                        )}
+                    </div>
                 </div>
                 
                 {/* Vendor Info */}
@@ -224,10 +224,10 @@ const VendorProfilePage = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
                     <div key={product.id}>
-                    {product.type === 'service' ? (
+                    {product.isService ? (
                         <ServiceLayout
                             id={product.id}
-                            img={(product.type === 'service' && product.productGallery && product.productGallery.length > 0) ? product.productGallery[0] : (product.productThumbnail || "/frontend/products/product01.png")}
+                            img={(product.isService && product.productGallery && product.productGallery.length > 0) ? product.productGallery[0] : (product.productThumbnail || "/frontend/products/product01.png")}
                             percentTag={product.discount > 0}
                             roundTag={false}
                             category={product.category?.name}
