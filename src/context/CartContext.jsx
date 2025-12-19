@@ -26,22 +26,26 @@ export const CartProvider = ({ children }) => {
             item.bookingTime === product.bookingTime
         );
         if (exists) {
-          toast.info("This time slot is already in your cart");
+          toast.dismiss();
+          toast.info("This time slot is already in your cart", { toastId: "cart-toast" });
           return prevItems;
         }
-        toast.success("Service booking added to cart!");
+        toast.dismiss();
+        toast.success("Service booking added to cart!", { toastId: "cart-toast" });
         return [...prevItems, { ...product, quantity: 1 }];
       }
       const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
-        toast.info("Item quantity updated in cart");
+        toast.dismiss();
+        toast.info("Item quantity updated in cart", { toastId: "cart-toast" });
         return prevItems.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      toast.success("Product added to cart!");
+      toast.dismiss();
+      toast.success("Product added to cart!", { toastId: "cart-toast" });
       return [...prevItems, { ...product, quantity: 1 }];
     });
   };

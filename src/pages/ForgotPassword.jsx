@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEnvelope } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -38,7 +37,6 @@ const ForgotPassword = () => {
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
-      <ToastContainer />
       <div className="relative z-10 bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-96 border border-white/20">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Forgot Password</h2>

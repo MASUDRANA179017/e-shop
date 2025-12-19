@@ -5,8 +5,7 @@ import { BiLoader } from "react-icons/bi";
 import { FaUpload, FaUser, FaEnvelope, FaLock, FaIdCard, FaImage } from "react-icons/fa";
 import { Box, Button } from "@mui/material";
 import { uploadImage } from "../@Services/uploadService";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -113,8 +112,6 @@ export default function RegisterPage() {
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-      
-      <ToastContainer />
       
       <div className="relative z-10 bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-full max-w-[800px] border border-white/20">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">

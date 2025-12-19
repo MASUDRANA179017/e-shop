@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser } from "../@Services/authService";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import "react-toastify/dist/ReactToastify.css";
+ 
 
 const Login = () => {
   const navigate = useNavigate();
@@ -91,8 +91,13 @@ const Login = () => {
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-4 left-4 z-10 bg-white/90 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-white transition"
+      >
+        Home
+      </button>
 
-      <ToastContainer />
       <div className="relative z-10 bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-96 border border-white/20">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>

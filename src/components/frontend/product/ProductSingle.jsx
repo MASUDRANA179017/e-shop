@@ -4,6 +4,7 @@ import { FaShoppingCart, FaHeart, FaRegHeart, FaCalendarCheck } from "react-icon
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useCurrency } from "../../../context/CurrencyContext";
+import { toast } from "react-toastify";
 
 const ProductSingle = ({ product }) => {
   const { addToCart } = useCart();
@@ -33,6 +34,7 @@ const ProductSingle = ({ product }) => {
       thumbnail: product.image, // fallback
       brand: product.brand
     });
+    toast.success("Added to cart");
   };
 
   const handleToggleWishlist = (e) => {

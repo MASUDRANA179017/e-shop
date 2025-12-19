@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, TextField, Stack } from "@mui/material";
 import { FaUpload } from "react-icons/fa";
 import { BiLoader } from "react-icons/bi";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 import { uploadImage } from "../../../@Services/uploadService";
 import api from "../../../api/axiosInstance";
@@ -58,7 +57,6 @@ export default function CreateStorePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <ToastContainer />
       <Box className="bg-white rounded-lg shadow-md w-full max-w-[600px] p-6">
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
           Create Your Store

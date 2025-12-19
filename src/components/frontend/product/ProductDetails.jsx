@@ -5,6 +5,7 @@ import ProductImageSlider from "../../commonLayouts/ProductImageSlide";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useCurrency } from "../../../context/CurrencyContext";
+import { toast } from "react-toastify";
 import { FaHeart, FaRegHeart, FaStar, FaStore, FaCheckCircle, FaTruck, FaUndo, FaShieldAlt, FaHeadset } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { getProductBarcode } from "../../../@Services/BarcodeService";
@@ -73,7 +74,7 @@ const ProductDetails = () => {
       type: 'product',
       quantity: quantity
     });
-    // Optional: Show toast/notification
+    toast.success("Added to cart");
   };
 
   const handleBuyNow = () => {
