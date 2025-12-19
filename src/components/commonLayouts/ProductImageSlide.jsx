@@ -18,18 +18,13 @@ export default function ProductImageSlider({ product }) {
   };
 
   return (
-    <Slider {...settings}>
+    <Slider {...settings} className="product-image-slider">
       {images.map((img, idx) => (
         <div key={idx}>
           <img
             src={img}
             alt={`Product ${idx + 1}`}
-            style={{
-              width: "100%",
-              height: "700px",
-              objectFit: "cover",
-              borderRadius: "8px",
-            }}
+            className="w-full h-[300px] sm:h-[500px] md:h-[700px] object-cover rounded-lg"
           />
         </div>
       ))}

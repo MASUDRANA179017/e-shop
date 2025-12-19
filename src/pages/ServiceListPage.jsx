@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import NewProductLazyLoad from '../components/frontend/product/NewProductLazyLoad'
+import ServiceLazyLoad from '../components/frontend/service/ServiceLazyLoad'
 import Container from '../components/commonLayouts/Container'
 import SidebarFilter from '../components/frontend/SidebarFilter'
 import { getAllProducts } from '../@Services/ProductService'
@@ -80,7 +80,7 @@ export const ServiceListPage = () => {
                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF624C]"></div>
              </div>
            ) : (
-             <NewProductLazyLoad products={filteredProducts} type="service" />
+             <ServiceLazyLoad products={filteredProducts} />
            )}
         </div>
       </div>

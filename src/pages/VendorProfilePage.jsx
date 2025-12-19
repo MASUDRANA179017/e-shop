@@ -227,7 +227,7 @@ const VendorProfilePage = () => {
                     {product.type === 'service' ? (
                         <ServiceLayout
                             id={product.id}
-                            img={product.productThumbnail || "/frontend/products/product01.png"}
+                            img={(product.type === 'service' && product.productGallery && product.productGallery.length > 0) ? product.productGallery[0] : (product.productThumbnail || "/frontend/products/product01.png")}
                             percentTag={product.discount > 0}
                             roundTag={false}
                             category={product.category?.name}

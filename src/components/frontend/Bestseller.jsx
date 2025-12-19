@@ -8,7 +8,7 @@ const Bestseller = () => {
     // console.log(products);
 
     useEffect(() => {
-        getAllProducts()
+        getAllProducts("product")
             .then((data) => {
                 const formatted = data.map((item) => ({
                     id: item.id,

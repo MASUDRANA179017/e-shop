@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import ProductSingle from "./ProductSingle";
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
-import ProductLayout from "../../commonLayouts/ProductLayout";
+import ServiceLayout from "../../commonLayouts/ServiceLayout";
 import { getAllProducts } from "../../../@Services/ProductService";
 
 const NextArrow = ({ className, style, onClick }) => (
@@ -14,7 +13,7 @@ const NextArrow = ({ className, style, onClick }) => (
     style={{ ...style, display: "block", right: "-25px", zIndex: 10 }}
     onClick={onClick}
   >
-    <FaChevronRight className="text-white text-3xl bg-[#FF624C] hover:bg-[#E05541] rounded-full p-2" />
+    <FaChevronRight className="text-white text-3xl bg-blue-600 hover:bg-blue-500 rounded-full p-2" />
   </div>
 );
 
@@ -24,15 +23,15 @@ const PrevArrow = ({ className, style, onClick }) => (
     style={{ ...style, display: "block", left: "-25px", zIndex: 10 }}
     onClick={onClick}
   >
-    <FaChevronLeft className="text-white text-3xl bg-[#FF624C] hover:bg-[#E05541] rounded-full p-2" />
+    <FaChevronLeft className="text-white text-3xl bg-blue-600 hover:bg-blue-500 rounded-full p-2" />
   </div>
 );
 
-const ProductSlider = () => {
-  const [products, setProducts] = useState([]);
+const ServiceSlide = () => {
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
-    getAllProducts("product")
+    getAllProducts("service")
       .then((data) => {
         const formatted = data.map((item) => ({
           id: item.id,
@@ -40,19 +39,19 @@ const ProductSlider = () => {
           description: item.description,
           currentPrice: item.price / 100,
           oldPrice: item.old_price ? item.old_price / 100 : null,
-          image: item.productThumbnail || "/frontend/products/product01.png",
+          image: (item.productGallery && item.productGallery.length > 0) ? item.productGallery[0] : (item.productThumbnail || "/frontend/products/product01.png"),
           rating: item.rating || 4,
-          reviews: item.reviews || [], // reviews is array
-          category: item.category || { name: "General" }, // Keep object or fallback
+          reviews: item.reviews || [],
+          category: item.category || { name: "General" },
           discount: item.discount || null,
           type: item.type,
           stock: item.stock,
         }));
-        setProducts(formatted);
+        setServices(formatted);
       })
-      .catch((err) => console.error("Failed to fetch products:", err));
+      .catch((err) => console.error("Failed to fetch services:", err));
   }, []);
-  // console.log("hello rana kemon acho?" );
+
   const settings = {
     dots: false,
     infinite: true,
@@ -96,26 +95,40 @@ const ProductSlider = () => {
     ],
   };
 
+  if (services.length === 0) return null;
+
   return (
-    <section className="py-16 px-4 md:py-20 lg:py-24">
+    <section className="py-16 px-4 md:py-20 lg:py-24 bg-gray-50">
       <div className="container mx-auto">
         {/* Section Header */}
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold">Featured Products</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Featured Services</h2>
           <Link
-            to="/product"
-            className="flex items-center text-[#FF624C] hover:text-[#FF3B2F] transition-colors duration-200 font-semibold"
+            to="/service"
+            className="flex items-center text-blue-600 hover:text-blue-500 transition-colors duration-200 font-semibold"
           >
             View All
             <span className="ml-2">→</span>
           </Link>
         </div>
 
-        {/* Product Slider */}
+        {/* Service Slider */}
         <Slider {...settings}>
-          {products.map((product) => (
-            <div key={product.id} className="px-3 py-6">
-              <ProductLayout id={product.id} img={product.image} percentTag={true} roundTag={false} category={product.category.name} stock={product.stock > 0} stockAmount={product.stock} title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" type={product.type} />
+          {services.map((service) => (
+            <div key={service.id} className="px-3 py-6">
+                 <ServiceLayout
+                    id={service.id}
+                    img={service.image}
+                    category={service.category.name}
+                    title={service.title}
+                    rating={service.rating}
+                    totalRating={service.reviews.length}
+                    price={service.currentPrice}
+                    bg="transparent"
+                    stock={service.stock > 0}
+                    stockAmount={service.stock}
+                    percentTag={service.discount > 0}
+                 />
             </div>
           ))}
         </Slider>
@@ -124,4 +137,4 @@ const ProductSlider = () => {
   );
 };
 
-export default ProductSlider;
+export default ServiceSlide;

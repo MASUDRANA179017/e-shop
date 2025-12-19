@@ -296,7 +296,7 @@ const ServiceDetails = () => {
                 {bookingDate && (
                     <div className="animate-fade-in">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Select Available Time</label>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
                             {timeSlots.map(time => (
                                 <button
                                     key={time}
@@ -316,22 +316,22 @@ const ServiceDetails = () => {
              </div>
 
              {/* Action Buttons */}
-             <div className="flex gap-4 mt-auto">
+             <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                  <button
                     onClick={handleBuyNow}
-                    className="flex-1 font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
+                    className="flex-1 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
                  >
                     Book Now
                  </button>
                  <button
                     onClick={handleAddToCart}
-                    className="flex-1 border-2 font-bold py-4 px-8 rounded-xl transition-colors bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
+                    className="flex-1 border-2 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl transition-colors bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
                  >
                     Add to Cart
                  </button>
                  <button
                     onClick={handleToggleWishlist}
-                    className={`p-4 rounded-xl border-2 transition-colors flex items-center justify-center ${isWishlisted ? 'border-red-500 text-red-500 bg-red-50' : 'border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500'}`}
+                    className={`p-3 sm:p-4 rounded-xl border-2 transition-colors flex items-center justify-center ${isWishlisted ? 'border-red-500 text-red-500 bg-red-50' : 'border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500'}`}
                  >
                     {isWishlisted ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
                  </button>

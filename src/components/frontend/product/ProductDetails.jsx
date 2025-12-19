@@ -147,14 +147,14 @@ const ProductDetails = () => {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#FF624C]"></div>
     </div>
   );
 
   if (!product) return (
     <div className="container mx-auto py-16 text-center">
-      <h2 className="text-2xl font-bold text-gray-700">Service not found.</h2>
-      <Link to="/service" className="text-blue-600 hover:underline mt-4 block">Browse Services</Link>
+      <h2 className="text-2xl font-bold text-gray-700">Product not found.</h2>
+      <Link to="/product" className="text-[#FF624C] hover:underline mt-4 block">Browse Products</Link>
     </div>
   );
 
@@ -170,8 +170,8 @@ const ProductDetails = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-500 mb-6">
-            <Link to="/" className="hover:text-blue-600">Home</Link> &gt; 
-            <Link to="/service" className="hover:text-blue-600 mx-1">Services</Link> &gt; 
+            <Link to="/" className="hover:text-[#FF624C]">Home</Link> &gt; 
+            <Link to="/product" className="hover:text-[#FF624C] mx-1">Products</Link> &gt; 
             <span className="text-gray-800 font-medium ml-1">{product.name}</span>
         </nav>
 
@@ -201,7 +201,7 @@ const ProductDetails = () => {
           {/* Right Column: Product Info */}
           <div className="flex flex-col">
              <div className="mb-4">
-                 <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                 <span className="bg-[#fff0ec] text-[#FF624C] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                     {product.category?.name || "Product"}
                  </span>
              </div>
@@ -228,7 +228,7 @@ const ProductDetails = () => {
              </div>
 
              <div className="flex items-end gap-3 mb-8">
-                 <div className="text-4xl font-bold text-blue-600">
+                 <div className="text-4xl font-bold text-[#FF624C]">
                     {formatPrice(product.price)}
                  </div>
                  {/* Mock original price for discount effect */}
@@ -241,13 +241,13 @@ const ProductDetails = () => {
              </div>
              
              <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
-                {product.description || "Experience top-tier service with our dedicated professionals. We ensure quality, reliability, and satisfaction with every booking."}
+                {product.description || "Discover premium quality with this product. We ensure durability, style, and satisfaction with every purchase."}
              </p>
 
              {/* Vendor Info Card */}
              {product.store && (
-                 <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-blue-200 transition-colors">
-                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold text-xl mr-4 border border-gray-100">
+                 <div className="flex items-center bg-gray-50 p-4 rounded-xl mb-8 border border-gray-100 hover:border-[#FF624C] transition-colors">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-[#FF624C] font-bold text-xl mr-4 border border-gray-100">
                         {product.store.logoUrl ? <img src={product.store.logoUrl} className="w-full h-full rounded-full object-cover" /> : product.store.name.charAt(0)}
                      </div>
                      <div className="flex-grow">
@@ -258,7 +258,7 @@ const ProductDetails = () => {
                              {product.store.name} <MdVerified className="text-blue-500 ml-1" />
                          </h3>
                      </div>
-                     <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-blue-600 hover:underline">
+                     <Link to={`/vendor/${product.store.id}`} className="text-sm font-bold text-[#FF624C] hover:underline">
                          View Profile
                      </Link>
                  </div>
@@ -296,14 +296,14 @@ const ProductDetails = () => {
             </div>
 
              {/* Action Buttons */}
-             <div className="flex gap-4 mt-auto">
+             <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                  <button
                     onClick={handleBuyNow}
                     disabled={product.stock <= 0}
-                    className={`flex-1 font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 ${
+                    className={`flex-1 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 ${
                         (product.stock <= 0) 
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none" 
-                        : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
+                        : "bg-[#FF624C] hover:bg-[#FF3B2F] text-white shadow-orange-200"
                     }`}
                  >
                     Buy Now
@@ -311,17 +311,17 @@ const ProductDetails = () => {
                  <button
                     onClick={handleAddToCart}
                     disabled={product.stock <= 0}
-                    className={`flex-1 border-2 font-bold py-4 px-8 rounded-xl transition-colors ${
+                    className={`flex-1 border-2 font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-xl transition-colors ${
                         (product.stock <= 0)
                         ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-white border-blue-600 text-blue-600 hover:bg-blue-50"
+                        : "bg-white border-[#FF624C] text-[#FF624C] hover:bg-[#FFF0EC]"
                     }`}
                  >
                     Add to Cart
                  </button>
                  <button
                     onClick={handleToggleWishlist}
-                    className={`p-4 rounded-xl border-2 transition-colors flex items-center justify-center ${isWishlisted ? 'border-red-500 text-red-500 bg-red-50' : 'border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500'}`}
+                    className={`p-3 sm:p-4 rounded-xl border-2 transition-colors flex items-center justify-center ${isWishlisted ? 'border-red-500 text-red-500 bg-red-50' : 'border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500'}`}
                  >
                     {isWishlisted ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
                  </button>
@@ -332,13 +332,13 @@ const ProductDetails = () => {
         {/* Facilities / Trust Badges */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 my-12">
             {[
-                { icon: <FaTruck />, title: "Service Guarantee", desc: "Verified Professionals" },
-                { icon: <FaUndo />, title: "Easy Cancellation", desc: "Up to 24h before" },
+                { icon: <FaTruck />, title: "Fast Delivery", desc: "Ships within 24h" },
+                { icon: <FaUndo />, title: "Easy Return", desc: "30 Day Returns" },
                 { icon: <FaShieldAlt />, title: "Secure Payment", desc: "100% Protected" },
                 { icon: <FaHeadset />, title: "24/7 Support", desc: "Dedicated Team" }
             ].map((item, idx) => (
                 <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                    <div className="text-3xl text-blue-500 mb-3">{item.icon}</div>
+                    <div className="text-3xl text-[#FF624C] mb-3">{item.icon}</div>
                     <h4 className="font-bold text-gray-800">{item.title}</h4>
                     <p className="text-sm text-gray-500">{item.desc}</p>
                 </div>

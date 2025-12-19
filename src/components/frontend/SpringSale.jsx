@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getAllProducts } from "../../@Services/ProductService";
 
 
 const NextArrow = (props) => {
@@ -66,17 +67,16 @@ const SpringSale = () => {
     })
 
     useEffect(() => {
-        fetch("http://localhost:3000/product/getAll")
-            .then((res) => res.json())
+        getAllProducts("product")
             .then((data) => {
                 const formatted = data.map((item) => ({
                     id: item.id,
-                    img:item.image,
+                    img: item.productThumbnail,
                     title: item.name,
                     description: item.description,
                     currentPrice: item.price / 100,
                     oldPrice: item.old_price ? item.old_price / 100 : null,
-                    image: item.productThumbnail || "/frontend/products/product01.png", // fallback
+                    image: item.productThumbnail || "/frontend/products/product01.png",
                     rating: item.rating || 4,
                     reviews: item.reviews || 100,
                     category: item.category || "Laptop",
@@ -139,26 +139,26 @@ const SpringSale = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="w-full h-auto flex flex-col justify-center align-middle ">
-                        <h3 className="font-['Montserrat'] text-[56px] font-bold">Spring Sale</h3>
-                        <div className='flex flex-row justify-start align-middle'>
-                            <div className='flex flex-col px-5'>
-                                <span className="text-[#FF624C] font-['Poppins'] text-[36px]">{timerLeft.days}</span>
-                                <span className="text-[#303030] text-[15px] front-['Montserrat']">Day</span>
+                        <h3 className="font-['Montserrat'] text-[32px] md:text-[56px] font-bold text-center md:text-left">Spring Sale</h3>
+                        <div className='flex flex-row justify-center md:justify-start align-middle flex-wrap'>
+                            <div className='flex flex-col px-2 md:px-5 items-center'>
+                                <span className="text-[#FF624C] font-['Poppins'] text-[24px] md:text-[36px]">{timerLeft.days}</span>
+                                <span className="text-[#303030] text-[12px] md:text-[15px] front-['Montserrat']">Day</span>
                             </div>
-                            <span className="text-[#FF624C] text-[36px]">:</span>
-                            <div className='flex flex-col px-5'>
-                                <span className="text-[#FF624C] font-['Poppins'] text-[36px]">{timerLeft.hours}</span>
-                                <span className="text-[#303030] text-[15px] front-['Montserrat']">Hours</span>
+                            <span className="text-[#FF624C] text-[24px] md:text-[36px]">:</span>
+                            <div className='flex flex-col px-2 md:px-5 items-center'>
+                                <span className="text-[#FF624C] font-['Poppins'] text-[24px] md:text-[36px]">{timerLeft.hours}</span>
+                                <span className="text-[#303030] text-[12px] md:text-[15px] front-['Montserrat']">Hours</span>
                             </div>
-                            <span className="text-[#FF624C] text-[36px]">:</span>
-                            <div className='flex flex-col px-5'>
-                                <span className="text-[#FF624C] font-['Poppins'] text-[36px]">{timerLeft.minutes}</span>
-                                <span className="text-[#303030] text-[15px] front-['Montserrat']">Minutes</span>
+                            <span className="text-[#FF624C] text-[24px] md:text-[36px]">:</span>
+                            <div className='flex flex-col px-2 md:px-5 items-center'>
+                                <span className="text-[#FF624C] font-['Poppins'] text-[24px] md:text-[36px]">{timerLeft.minutes}</span>
+                                <span className="text-[#303030] text-[12px] md:text-[15px] front-['Montserrat']">Minutes</span>
                             </div>
-                            <span className="text-[#FF624C] text-[36px]">:</span>
-                            <div className='flex flex-col px-5'>
-                                <span className="text-[#FF624C] font-['Poppins'] text-[36px]">{timerLeft.seconds}</span>
-                                <span className="text-[#303030] text-[15px] front-['Montserrat']">Seconds</span>
+                            <span className="text-[#FF624C] text-[24px] md:text-[36px]">:</span>
+                            <div className='flex flex-col px-2 md:px-5 items-center'>
+                                <span className="text-[#FF624C] font-['Poppins'] text-[24px] md:text-[36px]">{timerLeft.seconds}</span>
+                                <span className="text-[#303030] text-[12px] md:text-[15px] front-['Montserrat']">Seconds</span>
                             </div>
 
                         </div>
@@ -170,7 +170,20 @@ const SpringSale = () => {
                                 {products.map((product) => (
                                     <div key={product.id} className="px-3 py-6">
                                         {/* <ProductSingle product={product} /> */}
-                                        <ProductLayout id={product.id} img={product.image} percentTag={false} roundTag={true} category={product.category.name} stock={product.stock > 0} stockAmount={product.stock} title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" type={product.type} />
+                                        {product.type === 'service' ? (
+                                            <ServiceLayout
+                                                id={product.id}
+                                                img={product.image}
+                                                category={product.category.name}
+                                                title={product.title}
+                                                rating={product.rating}
+                                                totalRating={product.reviews.length}
+                                                price={product.currentPrice}
+                                                bg="transparent"
+                                            />
+                                        ) : (
+                                            <ProductLayout id={product.id} img={product.image} percentTag={false} roundTag={true} category={product.category.name} stock={product.stock > 0} stockAmount={product.stock} title={product.title} rating={product.rating} totalRating={product.reviews.length} price={product.currentPrice} border="true" bg="transparent" type={product.type} />
+                                        )}
                                     </div>
                                 ))}
                             </Slider>
