@@ -79,7 +79,4 @@ export const deleteProduct = async (id) => {
   return res.data;
 };
 
-export const getServiceAvailability = async (serviceId, date, time) => {
-  const res = await api.get("/product/availability", { params: { serviceId, date, time } });
-  return res.data;
-};
+

@@ -170,14 +170,14 @@ export default function VendorOrderTable() {
     };
 
     const handlePrintInvoice = (order = selectedOrder) => {
-        if (!selectedOrder) return;
+        if (!order) return;
         
         const printWindow = window.open('', '_blank');
-        const itemsHtml = selectedOrder.items.map(item => `
+        const itemsHtml = order.items.map(item => `
             <tr>
                 <td>
                     ${item.productName || item.product?.name || "Item"}
-                    ${item.serviceDate ? `<br><small style="color: #666;">Service Date: ${new Date(item.serviceDate).toLocaleDateString()}</small>` : ''}
+                    ${item.serviceDate ? `<br><small style="color: #666; font-weight: bold;">Service Date: ${new Date(item.serviceDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</small>` : ''}
                 </td>
                 <td>${item.quantity}</td>
                 <td>${formatPrice(Number(item.unitPrice || item.product?.price || 0))}</td>
@@ -188,7 +188,7 @@ export default function VendorOrderTable() {
         const content = `
             <html>
             <head>
-                <title>Invoice - ${selectedOrder.displayId}</title>
+                <title>Invoice - ${order.displayId}</title>
                 <style>
                     body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #333; }
                     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
@@ -214,23 +214,23 @@ export default function VendorOrderTable() {
                     </div>
                     <div class="invoice-details">
                         <div class="invoice-title">INVOICE</div>
-                        <p style="text-align: right; margin: 5px 0;"># ${selectedOrder.displayId}</p>
-                        <p style="text-align: right; margin: 0;">Date: ${new Date(selectedOrder.date).toLocaleDateString()}</p>
+                        <p style="text-align: right; margin: 5px 0;"># ${order.displayId}</p>
+                        <p style="text-align: right; margin: 0;">Date: ${new Date(order.date).toLocaleDateString()}</p>
                     </div>
                 </div>
                 
                 <div class="meta-grid">
                     <div class="meta-box">
                         <h3>Bill To</h3>
-                        <p><strong>${selectedOrder.customer}</strong></p>
-                        <p>${selectedOrder.phone || ''}</p>
-                        <p>${selectedOrder.shippingAddress || ''}</p>
+                        <p><strong>${order.customer}</strong></p>
+                        <p>${order.phone || ''}</p>
+                        <p>${order.shippingAddress || ''}</p>
                     </div>
                     <div class="meta-box">
                         <h3>Order Details</h3>
-                        <p>Source: ${selectedOrder.source}</p>
-                        <p>Status: ${selectedOrder.status}</p>
-                        ${selectedOrder.notes ? `<p>Notes: ${selectedOrder.notes}</p>` : ''}
+                        <p>Source: ${order.source}</p>
+                        <p>Status: ${order.status}</p>
+                        ${order.notes ? `<p>Notes: ${order.notes}</p>` : ''}
                     </div>
                 </div>
 
@@ -251,7 +251,7 @@ export default function VendorOrderTable() {
                 <div class="totals">
                     <div class="total-row total-final">
                         <span>Total</span>
-                        <span>${formatPrice(Number(selectedOrder.total || 0))}</span>
+                        <span>${formatPrice(Number(order.total || 0))}</span>
                     </div>
                 </div>
                 
@@ -376,7 +376,14 @@ export default function VendorOrderTable() {
                              if (tab === 2 || (tab === 0 && order.items?.some(i => i.serviceDate))) {
                                  const sItem = order.items?.find(i => i.serviceDate);
                                  if (sItem) {
-                                     serviceDateDisplay = new Date(sItem.serviceDate).toLocaleDateString();
+                                     serviceDateDisplay = new Date(sItem.serviceDate).toLocaleString('en-US', { 
+                                         year: 'numeric', 
+                                         month: 'short', 
+                                         day: 'numeric', 
+                                         hour: 'numeric', 
+                                         minute: 'numeric', 
+                                         hour12: true 
+                                     });
                                  }
                              }
 
@@ -599,8 +606,8 @@ export default function VendorOrderTable() {
                                         {selectedOrder.items.map((item, i) => (
                                             <TableRow key={i}>
                                                 <TableCell>{item.productName || item.product?.name || "Item"}</TableCell>
-                                                <TableCell align="right">
-                                                    {item.serviceDate ? new Date(item.serviceDate).toLocaleString() : "-"}
+                                                <TableCell align="right" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                                    {item.serviceDate ? new Date(item.serviceDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) : "-"}
                                                 </TableCell>
                                                 <TableCell align="right">{item.quantity}</TableCell>
                                                 <TableCell align="right">{formatPrice(Number(item.unitPrice || item.product?.price || 0))}</TableCell>

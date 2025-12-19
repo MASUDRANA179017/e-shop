@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { createOrder } from "../@Services/CheckoutService";
-import { getServiceAvailability } from "../@Services/ProductService";
 import { useNavigate, useLocation } from "react-router-dom";
 import Container from "../components/commonLayouts/Container";
 import { toast } from "react-toastify";
 
 const CheckoutPage = () => {
-  const { cartItems, cartTotal, clearCart, removeFromCart } = useCart();
+  const { cartItems, cartTotal, removeFromCart } = useCart();
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,7 +51,7 @@ const CheckoutPage = () => {
           }
           // If user object has phone or address in future, we can pre-fill here too
         }
-      } catch (e) {
+      } catch {
         console.error("Failed to parse user from local storage");
       }
     }
@@ -73,39 +72,35 @@ const CheckoutPage = () => {
     setLoading(true);
     try {
       if (isServiceCheckout) {
-        for (const item of itemsToCheckout) {
-          if (item.isService || item.bookingDate) {
-            const resp = await getServiceAvailability(item.id, item.bookingDate, item.bookingTime || null);
-            if (resp && resp.bookedSlots && resp.bookedSlots[item.bookingDate]) {
-              const toMin = (t) => {
-                const [hm, ap] = t.split(" ");
-                const [h, m] = hm.split(":").map(Number);
-                const hh = (h % 12) + (ap === "PM" ? 12 : 0);
-                return hh * 60 + m;
-              };
-              const overlaps30 = (a, b) => Math.abs(toMin(a) - toMin(b)) < 30;
-              const booked = resp.bookedSlots[item.bookingDate];
-              const conflict = booked.some((t) => overlaps30(t, item.bookingTime));
-              if (conflict) {
-                alert("Selected time overlaps with an existing booking. Please choose another time.");
-                setLoading(false);
-                return;
-              }
-            }
-            if (resp && resp.available === false) {
-              alert(resp.message || "Selected time is unavailable. Please choose another time.");
-              setLoading(false);
-              return;
-            }
-          }
-        }
+        // Validation for service checkout can be added here if needed
+        // For now, we trust the client-side selection as per requirements
       }
       // Map items to order items, ensuring bookingDate is mapped to serviceDate
-      const items = itemsToCheckout.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
-        serviceDate: item.bookingDate || null, // Map bookingDate to serviceDate
-      }));
+      const items = itemsToCheckout.map((item) => {
+        let serviceDate = null;
+        if (item.bookingDate) {
+            // Parse date components to create local date
+            const [year, month, day] = item.bookingDate.split('-').map(Number);
+            const d = new Date(year, month - 1, day); // Local midnight
+            
+            if (item.bookingTime) {
+                const [time, modifier] = item.bookingTime.split(' ');
+                let [hours, minutes] = time.split(':').map(Number);
+                if (hours === 12) hours = 0;
+                if (modifier === 'PM') hours += 12;
+                d.setHours(hours, minutes, 0, 0);
+            }
+            const pad = (n) => String(n).padStart(2, '0');
+            const localStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+            serviceDate = localStr;
+        }
+        
+        return {
+            productId: item.id,
+            quantity: item.quantity,
+            serviceDate: serviceDate,
+        };
+      });
 
       const payload = {
         shippingAddress: address,

@@ -190,7 +190,7 @@ const ProductDetails = () => {
                         Product Code
                     </span>
                     <img
-                        src={`data:image/png;base64,${barcode}`}
+                        src={barcode}
                         alt="Barcode"
                         className="h-10 opacity-80 mix-blend-multiply"
                     />

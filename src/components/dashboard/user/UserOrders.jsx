@@ -52,13 +52,16 @@ const UserOrders = () => {
     setSelectedOrder(null);
   };
 
-  const handlePrintInvoice = () => {
-    if (!selectedOrder) return;
+  const handlePrintInvoice = (order = selectedOrder) => {
+    if (!order) return;
     
     const printWindow = window.open('', '_blank');
-    const itemsHtml = selectedOrder.items.map(item => `
+    const itemsHtml = order.items.map(item => `
         <tr>
-            <td>${item.product?.title || "Item"}</td>
+            <td>
+                ${item.product?.title || "Item"}
+                ${item.serviceDate ? `<br><small style="color: #666; font-weight: bold;">Service Date: ${new Date(item.serviceDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</small>` : ''}
+            </td>
             <td>${item.quantity}</td>
             <td>${formatPrice(item.price)}</td>
             <td>${formatPrice(item.price * item.quantity)}</td>
@@ -68,7 +71,7 @@ const UserOrders = () => {
     const content = `
         <html>
         <head>
-            <title>Invoice - #${selectedOrder.id}</title>
+            <title>Invoice - #${order.id}</title>
             <style>
                 body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #333; }
                 .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
@@ -93,22 +96,22 @@ const UserOrders = () => {
                 </div>
                 <div class="invoice-details">
                     <div class="invoice-title">INVOICE</div>
-                    <p style="text-align: right; margin: 5px 0;"># ${selectedOrder.id}</p>
-                    <p style="text-align: right; margin: 0;">Date: ${new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+                    <p style="text-align: right; margin: 5px 0;"># ${order.id}</p>
+                    <p style="text-align: right; margin: 0;">Date: ${new Date(order.createdAt).toLocaleDateString()}</p>
                 </div>
             </div>
             
             <div class="meta-grid">
                 <div class="meta-box">
                     <h3>Bill To</h3>
-                    <p><strong>${selectedOrder.customerName || "Customer"}</strong></p>
-                    <p>${selectedOrder.customerPhone || ''}</p>
-                    <p>${selectedOrder.shippingAddress || ''}</p>
+                    <p><strong>${order.customerName || "Customer"}</strong></p>
+                    <p>${order.customerPhone || ''}</p>
+                    <p>${order.shippingAddress || ''}</p>
                 </div>
                 <div class="meta-box">
                     <h3>Order Details</h3>
-                    <p>Status: ${selectedOrder.status || "Completed"}</p>
-                    ${selectedOrder.notes ? `<p>Notes: ${selectedOrder.notes}</p>` : ''}
+                    <p>Status: ${order.status || "Completed"}</p>
+                    ${order.notes ? `<p>Notes: ${order.notes}</p>` : ''}
                 </div>
             </div>
 
@@ -129,7 +132,7 @@ const UserOrders = () => {
             <div class="totals">
                 <div class="total-row total-final">
                     <span>Total</span>
-                    <span>${formatPrice(selectedOrder.totalAmount)}</span>
+                    <span>${formatPrice(order.totalAmount)}</span>
                 </div>
             </div>
             

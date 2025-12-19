@@ -39,6 +39,7 @@ const ServiceDetails = () => {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { formatPrice } = useCurrency();
   const blockedOverride = { 5: { "2025-12-22": ["10:00 AM"] } };
+  const [bookedTimes, setBookedTimes] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:3000/product/getAll?type=service") // Optimize if backend supports
@@ -77,6 +78,19 @@ const ServiceDetails = () => {
       .finally(() => setBarcodeLoading(false));
   }, [product?.id]);
 
+  useEffect(() => {
+    if (!product?.id || !bookingDate) {
+      setBookedTimes([]);
+      return;
+    }
+    fetch(`http://localhost:3000/checkout/availability?productId=${product.id}&date=${bookingDate}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setBookedTimes(data?.bookedTimes || []);
+      })
+      .catch(() => setBookedTimes([]));
+  }, [product?.id, bookingDate]);
+
   const handleAddToCart = () => {
     if (!bookingDate) {
       alert("Please select a date for your service booking.");
@@ -101,7 +115,7 @@ const ServiceDetails = () => {
         overlaps30(item.bookingTime, bookingTime)
     );
     const globallyBooked =
-      (product?.bookedSlots?.[bookingDate]?.some((t) => overlaps30(t, bookingTime)) ||
+      (bookedTimes?.some((t) => overlaps30(t, bookingTime)) ||
        blockedOverride?.[product?.id]?.[bookingDate]?.some((t) => overlaps30(t, bookingTime))) || false;
     if (alreadyInCart || globallyBooked) {
       alert("This time slot is unavailable or already in your cart.");
@@ -227,7 +241,7 @@ const ServiceDetails = () => {
                         Service Code
                     </span>
                     <img
-                        src={`data:image/png;base64,${barcode}`}
+                        src={barcode}
                         alt="Barcode"
                         className="h-10 opacity-80 mix-blend-multiply"
                     />
@@ -335,7 +349,7 @@ const ServiceDetails = () => {
                                     overlaps30(ci.bookingTime, time)
                                 );
                                 const globallyBooked =
-                                  (product?.bookedSlots?.[bookingDate]?.some((t) => overlaps30(t, time)) ||
+                                  (bookedTimes?.some((t) => overlaps30(t, time)) ||
                                    blockedOverride?.[product?.id]?.[bookingDate]?.some((t) => overlaps30(t, time))) || false;
                                 const isAvailable = !globallyBooked && !takenInCart;
                                 return (
