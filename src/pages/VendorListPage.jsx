@@ -158,107 +158,91 @@ const VendorListPage = () => {
             <p className="text-gray-500">Try adjusting your search or category filter.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6">
             {filteredStores.map((store) => (
               <div
                 key={store.id}
-                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
               >
-                {/* Card Header / Banner */}
-                <div className="h-48 bg-gray-200 relative overflow-hidden">
-                    {store.coverImage ? (
-                      <img 
-                        src={store.coverImage} 
-                        alt={store.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                <div className="flex flex-col sm:flex-row gap-6 p-6">
+                  {/* Left: Vendor Image */}
+                  <div className="w-full sm:w-48 h-48 flex-shrink-0 relative overflow-hidden rounded-lg bg-gray-100">
+                    {store.imageUrl ? (
+                      <img
+                        src={store.imageUrl}
+                        alt={store.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 relative">
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-6xl font-bold opacity-30">
-                            {store.name.charAt(0)}
+                      <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-gray-300">
+                        {store.name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-gray-700 shadow-sm">
+                      {store.category?.name || "General"}
+                    </div>
+                  </div>
+
+                  {/* Right: Vendor Info */}
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
+                          {store.name}
+                        </h3>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <span className="flex items-center mr-4">
+                            <FaStar className="text-yellow-400 mr-1" />
+                            <span className="font-bold text-gray-700">{store.averageRating || "4.8"}</span>
+                          </span>
+                          <span className="flex items-center text-gray-500">
+                            <FaMapMarkerAlt className="mr-1 text-gray-400" />
+                            {store.city || "Available Online"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="hidden sm:block">
+                        <span className="inline-flex items-center bg-blue-50 text-blue-600 px-2 py-1 rounded-md border border-blue-100 text-xs font-bold">
+                          <MdVerified className="mr-1 text-blue-500" /> Verified
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-600 text-sm mb-4">
+                      {store.description || "Professional services tailored to your needs. Dedicated to quality and customer satisfaction."}
+                    </p>
+
+                    {/* Featured Services */}
+                    {store.products && store.products.length > 0 && (
+                      <div className="mt-2">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Popular Services</h4>
+                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                          {store.products.slice(0, 4).map((product) => (
+                            <div key={product.id} className="flex-shrink-0 w-24">
+                              <div className="w-24 h-16 rounded-md overflow-hidden bg-gray-50 mb-1 border border-gray-100">
+                                <img
+                                  src={product.productThumbnail || "/frontend/products/product01.png"}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="text-[11px] font-semibold text-gray-800 truncate">{product.name}</div>
+                              <div className="text-[11px] text-blue-600 font-bold">{formatPrice(Number(product.price) || 0)}</div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
-                    
-                    {/* Badge */}
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-600 shadow-sm flex items-center">
-                        <MdVerified className="mr-1 text-blue-500" /> Verified Pro
-                    </div>
-                </div>
 
-                {/* Card Body */}
-                <div className="p-6 flex-grow flex flex-col relative">
-                  {/* Logo overlapping banner */}
-                  <div className="absolute -top-10 left-6 w-16 h-16 bg-white rounded-xl shadow-md p-1">
-                      {store.imageUrl ? (
-                        <img 
-                          src={store.imageUrl} 
-                          alt={store.name} 
-                          className="w-full h-full object-cover rounded-lg" 
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-2xl font-bold">
-                          {store.name.charAt(0)}
-                        </div>
-                      )}
-                  </div>
-
-                  <div className="mt-6 mb-2">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
-                                {store.name}
-                            </h3>
-                            <p className="text-sm text-blue-500 font-medium mb-1">{store.category?.name || "General Service"}</p>
-                        </div>
-                        <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-md border border-yellow-100">
-                            <FaStar className="text-yellow-400 mr-1 text-sm" />
-                            <span className="font-bold text-gray-700 text-sm">{store.averageRating || "4.8"}</span>
-                        </div>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-500 text-sm mb-4 line-clamp-2 flex-grow">
-                    {store.description || "Professional services tailored to your needs. Dedicated to quality and customer satisfaction."}
-                  </p>
-
-                  <div className="flex items-center text-gray-400 text-xs mb-6">
-                      <FaMapMarkerAlt className="mr-1" />
-                      {store.city || "Available Online"}
-                  </div>
-
-                  {/* Products Section */}
-                  {store.products && store.products.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-sm font-bold text-gray-700 mb-3">Featured Services:</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {store.products.slice(0, 4).map((product) => (
-                          <div key={product.id} className="border rounded-lg p-2 bg-gray-50">
-                            <img 
-                              src={product.productThumbnail || "https://via.placeholder.com/150"} 
-                              alt={product.name} 
-                              className="w-full h-20 object-cover rounded-md mb-2"
-                            />
-                            <p className="text-xs font-semibold text-gray-800 truncate">{product.name}</p>
-                            <p className="text-xs text-blue-600 font-bold">{formatPrice(Number(product.price) || 0)}</p>
-                          </div>
-                        ))}
-                      </div>
-                      {store.products.length > 4 && (
-                        <p className="text-xs text-center text-gray-500 mt-2">
-                          + {store.products.length - 4} more services
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="mt-auto pt-4 border-t border-gray-100">
-                    <Link
+                    {/* View Profile */}
+                    <div className="mt-4">
+                      <Link
                         to={`/vendor/${store.id}`}
-                        className="block w-full text-center bg-gray-50 hover:bg-blue-600 hover:text-white text-gray-700 font-bold py-3 rounded-xl transition-all duration-300 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white"
-                    >
-                        View Services <FaArrowRight className="ml-2 text-sm opacity-70 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                        className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 text-sm"
+                      >
+                        View Profile <FaArrowRight className="ml-2 text-xs" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
